@@ -1,0 +1,38 @@
+<div class="row" style="text-align: center">
+  <div class="col-md-12" style="text-align: center">
+    <h3>ელექტრონული ზედდებული #{{ transferToSection.addon }}</h3>
+  </div>
+</div>
+<div class="row">
+  <p-table [value]="transferToSection.listData">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>თარიღი</th>
+        <th>დასახელება</th>
+        <th>მარკა</th>
+        <th>მოდელი</th>
+        <th>ფასი</th>
+        <th>რაოდენობა</th>
+        <th>შტრიხკოდი</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-cart>
+      <tr>
+        <td>{{cart.entryDate}}</td>
+        <td>{{cart.name}}</td>
+        <td>{{cart.maker['name'] }}</td>
+        <td>{{cart.model['name']}}</td>
+        <td>{{cart['price']}}</td>
+        <td>{{cart['amount']}}</td>
+        <td>{{cart['barcode']}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+<div class="row">
+  <ul style="position: absolute;bottom: 0px;">
+    <li>ფროფერთი: {{transferToSection.toWhomStockDetails["name"]}}</li>
+    <li>ტრანსპორტირებაზე პასუხისმგებელი თანამშრომელი:  {{transferToSection.carrierPersonDetails['fname'] }}</li>
+  </ul>
+
+</div>

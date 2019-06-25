@@ -1,0 +1,68 @@
+/deep/ app-warehouse{
+  p-autocomplete{
+    input{
+      width: 86% !important;
+    }
+  }
+  p-spinner{
+    input{
+      width: 100% !important;
+    }
+  }
+  table {
+    td{
+      p-autocomplete{
+        input{
+          width: 100% !important;
+        }
+      }
+    }
+  }
+  .lastCode{
+    position: absolute;
+    left: 10px;
+  }
+  .measureUnits{
+    width: 100%;
+  }
+  .width100{
+    input{
+      width: 100%;
+    }
+  }
+
+  p-dropdown {
+    .ui-dropdown{
+      width: 100%;
+    }
+  }
+  p-tree{
+    .ui-tree{
+      width: 100%;
+    }
+  }
+
+  .table{
+    tr{
+      td {
+        border:1px  solid #c8ced3;
+        white-space:nowrap;
+      }
+    }
+  }
+
+  input{
+    &.red{
+      border:1px solid red;
+    }
+  }
+  .red{
+    input{
+      border:1px solid red;
+    }
+    .ui-dropdown{
+      border:1px solid red;
+    }
+  }
+}
+

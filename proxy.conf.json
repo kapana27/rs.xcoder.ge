@@ -1,0 +1,7 @@
+{
+  "/api/*": {
+    "target": "http://api.xcoder.ge:7777",
+    "secure": false,
+    "logLevel": "debug"
+  }
+}
