@@ -84,4 +84,9 @@ export class OperationsService {
   generaTeTransferToSection(formData){
     return this.Request.Post(Config.List.post.invoice, formData)
   }
+
+  generateTransferToPerson(formData){
+    return this.Request.Post(Config.transfer.post.transfer,formData);
+  }
+
 }

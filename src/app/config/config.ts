@@ -17,6 +17,15 @@ export  const Config = {
         types:'/api/secured/ItemStatus/Select'
     }
   },
+  transfer:{
+    post:{
+        transfer: '/api/secured/Item/Stock/Transfer'
+
+    },
+    get:{
+
+    }
+  },
   List: {
       get:{
         itemFilterByName: '/api/secured/Item/Filter/ByName',
@@ -52,6 +61,16 @@ export  const Config = {
       getAll: "/api/secured/internal/session/getAll",
       remove: "/api/secured/internal/session/remove",
       clear: "/api/secured/internal/session/clear",
+    }
+  },
+  massage: {
+    get: {
+      list: '/api/secured/Item/Inbox/Select',
+      selectedList: '/api/secured/Item/Inbox/Detail/Select'
+    },
+    post: {
+      NotApprove: '/api/secured/Item/Inbox/NotApprove',
+      Approve: '/api/secured/Item/Inbox/Approve'
     }
   }
 

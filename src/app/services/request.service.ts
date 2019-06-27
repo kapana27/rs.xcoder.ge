@@ -8,7 +8,7 @@ export class RequestService {
   constructor(private http: HttpClient) { }
   Get(uri){
     return new Promise((resolve, reject) => {
-      this.http.get('/rs'+uri)
+      this.http.get(uri)
         .toPromise()
         .then(response=>{
             if(response['status']===200){
@@ -20,7 +20,7 @@ export class RequestService {
   }
   Post(url,params ={}){
     return new Promise((resolve, reject) => {
-      this.http.post('/rs'+url,params)
+      this.http.post(url,params)
         .toPromise()
         .then(response=>{
             resolve(response)

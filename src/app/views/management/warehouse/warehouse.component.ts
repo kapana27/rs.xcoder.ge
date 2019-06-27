@@ -10,6 +10,8 @@ import * as moment from 'moment';
 import {Barcode} from "../../../models/barcode";
 import {Inventory} from "../../../models/inventory";
 import {TransferToSection} from "../../../models/transfer-to-section";
+import {InventorTransfer} from "../../../models/inventorTransfer";
+import {ValidatorService} from "../../../services/validator/validator.service";
 
 interface Default{
   id?: number,
@@ -102,12 +104,19 @@ export class WarehouseComponent implements OnInit{
   transferToSection: TransferToSection ={
     Datetime: new Date()
   };
+  inventorTransfer: InventorTransfer ={
+    date: new Date(),
+    selectedIndex:0,
+    generator: false,
+    roomId: 89
+  };
   stockList: Array<Default> = [];
   propertyData: Array<any> = [];
   staffList: Array<any> = [];
   transferToSectionInvoiceGenerator: boolean = false;
+  formErrors: Array<string> = [];
 
-  constructor(private http: HttpClient, private operation: OperationsService) {
+  constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService) {
     this.sections = [
       {label:'აირჩიეთ სექცია', value:null},
       {label:'სექცია1', value:{id:1, name: 'სექცია1', code: 'NY'}},
@@ -489,7 +498,7 @@ export class WarehouseComponent implements OnInit{
       }).catch();
   }
   onTabChange($event: any) {
-     console.log($event)
+    this.inventorTransfer.selectedIndex = $event.index;
   }
   newRecordDialog(type){
       this.newItem.selected = type;
@@ -830,6 +839,75 @@ export class WarehouseComponent implements OnInit{
         })
   }
   filterBrands($event: any) {
+  }
+
+  generaTeInventorTransfer() {
+    let filter = ['date','selectedProperty','selectedPerson','selectedCarrier'];
+    if(this.inventorTransfer.selectedIndex ===1){
+       filter.push('selectedSection')
+    }
+    this.formErrors =this.validator.checkObject(this.inventorTransfer,filter);
+
+    if(this.formErrors.length === 0){
+
+      this.operation.getAddonNumber()
+        .then(response=>{
+          if(response['status'] ===200){
+            this.inventorTransfer.addon = response["data"];
+            this.inventorTransfer.generator = true;
+            this.inventorTransfer.trDate = moment(this.inventorTransfer.date).format("DD-MM-YYYY");
+
+            this.inventorTransfer.fromStock = 11;
+            this.inventorTransfer.listData = this.cartItemsData;
+            this.inventorTransfer.carrierPerson = this.inventorTransfer.selectedCarrier["id"];
+            this.inventorTransfer.toWhomSection = this.inventorTransfer.selectedProperty["id"];
+            this.inventorTransfer.requestPerson = this.inventorTransfer.selectedPerson["id"];
+            this.inventorTransfer.list = this.cartItemsData.map(value => {
+              return {itemId:value["id"],amount:value["amount"]}
+            });
+          }
+
+        })
+        .catch()
+    }
+  }
+
+  activeInventorTransfer() {
+    let formData =  new FormData();
+    for(let key in this.inventorTransfer){
+      if(key==='list' || key==='listData'){
+        formData.append(key,JSON.stringify(this.inventorTransfer[key]));
+      }else{
+        formData.append(key,this.inventorTransfer[key]);
+      }
+    }
+
+    this.operation.generateTransferToPerson(formData)
+      .then(response=>{
+        if(response['status'] ===200){
+          this.inventorTransfer ={
+            date: new Date(),
+            selectedIndex:0,
+            generator: false
+          };
+          this.inventorTransfer.generator = false;
+          this.inventoryToBuildingDialogShow=false;
+        }else{
+          alert(response["error"])
+        }
+      })
+      .catch(response=>{
+        alert(response["error"])
+      })
+
+  }
+  if_error(data: Array<string>, field: string){
+    console.log(data,field, data.indexOf(field));
+    return data.indexOf(field) >-1;
+  }
+
+  selectPerson($event: any) {
+    this.inventorTransfer.toWhomSection = $event['id'];
   }
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {
