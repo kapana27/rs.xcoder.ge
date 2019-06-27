@@ -1,16 +1,20 @@
 <div class="row">
-  <p-tabMenu [model]="items" [activeItem]="items[0]" (dblclick)="clickTabMenu($event)"></p-tabMenu>
-</div>
-<br>
-<div class="row" >
-  <button (click)="showDialog()" *ngIf="distributed" pButton type="button" label="ინვენტარის საწყობში დაბრუნება" class="ui-button-raised" style="position: absolute; right: 400px"></button> &nbsp;&nbsp;
-  <button (click)="inventoryToBuildingDialog()" *ngIf="distributed" pButton type="button" label="ინვენტარის მოძრაობა შენობებს შორის" class="ui-button-raised"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
-  <button (click)="personDialog()" *ngIf="!distributed" pButton type="button" label="განპიროვნება" class="ui-button-raised"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
-  <span style="position: absolute;right: 37px;margin-top: 3px;color: #007ad9;">
+
+  <div class="col-m-12 col-lg-5">
+    <p-tabMenu [model]="items" [activeItem]="items[0]" (dblclick)="clickTabMenu($event)"></p-tabMenu>
+  </div>
+  <div class="col-m-12 col-lg-7">
+    <button (click)="showDialog()" *ngIf="distributed" pButton type="button" label="ინვენტარის საწყობში დაბრუნება" class="ui-button-raised" style="position: absolute; right: 400px"></button> &nbsp;&nbsp;
+    <button (click)="inventoryToBuildingDialog()" *ngIf="distributed" pButton type="button" label="ინვენტარის მოძრაობა შენობებს შორის" class="ui-button-raised"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
+    <button (click)="personDialog()" *ngIf="!distributed" pButton type="button" label="განპიროვნება" class="ui-button-raised"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
+    <span style="position: absolute;right: 37px;margin-top: 3px;color: #007ad9;">
     <fa-icon [icon]="faCartPlus"  (click)="cartDialog()" size="2x"  ></fa-icon>
-    {{this.cartItems.length}}
+      {{this.cartItems.length}}
   </span>
+  </div>
 </div>
+
+
 <br>
 <div class="row">
   <ag-grid-angular

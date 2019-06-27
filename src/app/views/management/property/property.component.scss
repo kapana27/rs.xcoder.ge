@@ -13,6 +13,13 @@
      overflow: hidden;
    }
 
+   button {
+     white-space: nowrap;
+     text-overflow: ellipsis;
+     overflow: hidden;
+     font-family: 'lbet-mt',sans-serif;
+   }
+
    input{
      &.red{
        border:1px solid red;
