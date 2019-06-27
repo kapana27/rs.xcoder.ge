@@ -12,7 +12,7 @@ import {DirectoryComponent} from './views/directory/directory.component';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'management',
+    redirectTo: 'management/warehouse',
     pathMatch: 'full',
   },
 

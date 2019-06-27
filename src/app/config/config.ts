@@ -19,8 +19,8 @@ export  const Config = {
   },
   transfer:{
     post:{
-        transfer: '/api/secured/Item/Stock/Transfer'
-
+        transfer: '/api/secured/Item/Stock/Transfer',
+        section: '/api/secured/Item/Section/Transfer'
     },
     get:{
 
@@ -31,7 +31,7 @@ export  const Config = {
         itemFilterByName: '/api/secured/Item/Filter/ByName',
         MeasureUnit: '/api/secured/MeasureUnit/List',
         barcode: '/api/secured/List/BarCode/Select',
-        ItemGroup: '/rs/api/secured/ItemGroup/Select',
+        ItemGroup: '/api/secured/ItemGroup/Select',
         marker: '/api/secured/List/Maker/Filter',
         supplier: '/api/secured/List/Supplier/Filter',
         model: '/api/secured/List/Model/Filter',
@@ -47,7 +47,9 @@ export  const Config = {
         staff: '/api/secured/Staff/Filter/ByName/V2',
         stock: '/api/secured/Item/Stock/Change',
         addon: '/api/secured/Item/Addon',
-        invoice: '/api/secured/Item/Stock/Change'
+        invoice: '/api/secured/Item/Stock/Change',
+        return: '/api/secured/Item/Stock/Return',
+        section: '/api/secured/Item/Section/Transfer'
       }
   },
   inventory:{

@@ -12,6 +12,20 @@
      text-indent: -99999px;
      overflow: hidden;
    }
+
+   input{
+     &.red{
+       border:1px solid red;
+     }
+   }
+   .red{
+     input{
+       border:1px solid red;
+     }
+     .ui-dropdown{
+       border:1px solid red;
+     }
+   }
 }
 
 

@@ -5,7 +5,7 @@
 
 
 <div class="row">
-  <div class="col-sm-12 col-lg-3">
+  <div class="col-sm-12 col-lg-4">
     <p-table [value]="data"  selectionMode="single"   (onRowSelect)="rowSelect($event)" [(selection)]="selectedCar3"  dataKey="id">
       <ng-template pTemplate="header">
         <tr>
@@ -31,7 +31,7 @@
     </p-table>
     <p-paginator [rows]="30" totalRecords="{{totalRecord}}" (onPageChange)="paginate($event)"></p-paginator>
   </div>
-  <div class="col-sm-12 col-lg-9">
+  <div class="col-sm-12 col-lg-8">
     <p-table [value]="selectedData">
       <ng-template pTemplate="header">
         <tr>

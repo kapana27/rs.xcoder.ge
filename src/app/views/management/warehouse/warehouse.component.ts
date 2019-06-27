@@ -87,7 +87,9 @@ export class WarehouseComponent implements OnInit{
   ItemGroup: TreeNode[] = [];
   newInventor: Inventor = {
     date: new Date(),
-    consumption: false
+    consumption: false,
+    price:0,
+    amount:0
   };
   frustrate: boolean = false;
   errors:{
@@ -452,6 +454,9 @@ export class WarehouseComponent implements OnInit{
     this.inventoryToBuildingDialogShow = true;
   }
   showDialog() {
+    this.transferToSection ={
+      Datetime: new Date()
+    };
     this.display = true;
   }
   cartDialog(){
@@ -467,14 +472,17 @@ export class WarehouseComponent implements OnInit{
       })
   }
   itemGroupDialog(){
+    console.log("group");
     this.itemGroupDialogShow = true;
      this.operation.getItemGroup()
        .then((response: TreeNode)=>{
-         //const treeNode: TreeNode[] = [];
-        // treeNode.push(response);
+         console.log("group1");
+
+         console.log(response);
          this.ItemGroup = parseTree(response.children );
        })
        .catch()
+
 
   }
   inventorDialog(){
@@ -640,78 +648,96 @@ export class WarehouseComponent implements OnInit{
   frustrateInventor() {
     this.lastBarCodes=[];
     this.errors ={}
-    this.newInventor.entryDate = moment(this.newInventor.date).format("DD-MM-YYYY");
-    this.newInventor.name = (this.newInventor.fullname !== undefined)?this.newInventor.fullname['name']: null;
-    this.newInventor.itemType = (this.newInventor.selectedItemType !=undefined)?this.newInventor.selectedItemType['id']: null;
-    this.newInventor.maker = (this.newInventor.selectedMaker !==undefined)?this.newInventor.selectedMaker['id']: null;
-    this.newInventor.supplier = (this.newInventor.selectedSupplier !==undefined)?this.newInventor.selectedSupplier['id']: null;
-    this.newInventor.itemStatus = (this.newInventor.selectedItemStatus !== undefined)?this.newInventor.selectedItemStatus['id']: null ;
-    this.newInventor.measureUnit = (this.newInventor.selectedMeasureUnitName != undefined) ?this.newInventor.selectedMeasureUnitName['id']: null;
-    this.newInventor.measureUnitName = (this.newInventor.selectedMeasureUnitName != undefined) ?this.newInventor.selectedMeasureUnitName['name']: null;
-    this.newInventor.model = (this.newInventor.selectedModel!== undefined) ?this.newInventor.selectedModel['id'] : null;
 
-    this.errors ={
+    let filter = [
+      'date',
+      'amount',
+      'selectedMeasureUnitName',
+      'itemGroupName',
+      'fullname',
+      'factoryNumber',
+      'selectedItemType',
+      'selectedMaker',
+      'selectedSupplier',
+      'selectedItemStatus',
+      'selectedModel',
+      'invoice',
+      'inspectionNumber',
+      'price',
+      'invoiceAddon'
+    ];
+
+    if(this.newInventor.spend ===1){
+      filter.push( 'packageAmount');
+
+    }else{
+      filter.push( 'selectedBarcode');
+      filter.push( 'barCode');
+    }
+    this.formErrors =this.validator.checkObject(this.newInventor,filter);
+    console.log(filter, this.newInventor, this.formErrors);
+
+    if(this.formErrors.length === 0){
+      this.newInventor.entryDate = moment(this.newInventor.date).format("DD-MM-YYYY");
+      this.newInventor.name = (this.newInventor.fullname !== undefined)?this.newInventor.fullname['name']: null;
+      this.newInventor.itemType = (this.newInventor.selectedItemType !=undefined)?this.newInventor.selectedItemType['id']: null;
+      this.newInventor.maker = (this.newInventor.selectedMaker !==undefined)?this.newInventor.selectedMaker['id']: null;
+      this.newInventor.supplier = (this.newInventor.selectedSupplier !==undefined)?this.newInventor.selectedSupplier['id']: null;
+      this.newInventor.itemStatus = (this.newInventor.selectedItemStatus !== undefined)?this.newInventor.selectedItemStatus['id']: null ;
+      this.newInventor.measureUnit = (this.newInventor.selectedMeasureUnitName != undefined) ?this.newInventor.selectedMeasureUnitName['id']: null;
+      this.newInventor.measureUnitName = (this.newInventor.selectedMeasureUnitName != undefined) ?this.newInventor.selectedMeasureUnitName['name']: null;
+      this.newInventor.model = (this.newInventor.selectedModel!== undefined) ?this.newInventor.selectedModel['id'] : null;
+
+      this.errors ={
         barcode: (this.newInventor.barCodeType === undefined)? "test":"",
         name: (this.newInventor.name ===undefined || this.newInventor.name ==null)? "test":"",
         inventarType: (this.newInventor.selectedItemType ===undefined)? "test":"",
         price: (this.newInventor.price ===undefined)? "test":"",
         measureUnit: (this.newInventor.selectedMeasureUnitName === undefined)? "test": "",
         group: (this.newInventor.itemGroup === undefined)? "test": ""
-    }
-
-     if(this.newInventor.itemGroup !== undefined && this.newInventor.consumption ===false){
-       const err = [];
-       for(let key in this.errors){
-         if(this.errors[key] ==='test'){
-           err.push(1);
-         }
-       }
-       if(err.length === 0){
-         this.operation.getFreeCodes({
-           barCodeType: this.newInventor.barCodeType,
-           count: this.newInventor.amount,
-           start: this.newInventor.barCode
-         })
-           .then((response: {
-             TotalCount: number,
-             status: number,
-             success: boolean,
-             totalCount: number,
-             data: Barcode[]
-           })=>{
-             this.newInventor.amount = (this.newInventor.spend ==1 )? this.newInventor.packageAmount: 1;
-
-             this.lastBarCodes = response.data.map(value => {
-               value.fullBarcode = value.value+value.barCodeVisualValue;
-               value.factoryNumber = this.newInventor.factoryNumber;
-               return value;
-             });
-             this.frustrate = true;
-           })
-           .catch(reason => {
-             alert(reason["error"]);
-           })
-       }
-
-     }else{
-      this.errors.barcode =(this.newInventor.consumption )? '': "test";
-      const err = [];
-       for(let key in this.errors){
-          if(this.errors[key] ==='test'){
-              err.push(1);
-          }
-       }
-      if(err.length ===0){
-        this.newInventor.amount = (this.newInventor.spend ==1 )? this.newInventor.packageAmount: 1;
-        this.newInventor.barCodeType=null;
-        this.newInventor.barCode=null;
-
-        for(let i=0;i<this.newInventor.amount;i++){
-          this.lastBarCodes.push({value:'', barCodeVisualValue:''});
-          this.frustrate = true;
-        }
       }
-     }
+
+      if(this.newInventor.itemGroup !== undefined && this.newInventor.consumption ===false){
+
+          this.operation.getFreeCodes({
+            barCodeType: this.newInventor.barCodeType,
+            count: this.newInventor.amount,
+            start: this.newInventor.barCode
+          })
+            .then((response: {
+              TotalCount: number,
+              status: number,
+              success: boolean,
+              totalCount: number,
+              data: Barcode[]
+            })=>{
+              this.newInventor.amount = (this.newInventor.spend ==1 )? this.newInventor.packageAmount: 1;
+
+              this.lastBarCodes = response.data.map(value => {
+                value.fullBarcode = value.value+value.barCodeVisualValue;
+                value.factoryNumber = this.newInventor.factoryNumber;
+                return value;
+              });
+              this.frustrate = true;
+            })
+            .catch(reason => {
+              alert(reason["error"]);
+            })
+
+
+      } else{
+
+          this.newInventor.amount = (this.newInventor.spend ==1 )? this.newInventor.packageAmount: 1;
+          this.newInventor.barCodeType=null;
+          this.newInventor.barCode=null;
+
+          for(let i=0;i<this.newInventor.amount;i++){
+            this.lastBarCodes.push({value:'', barCodeVisualValue:''});
+            this.frustrate = true;
+          }
+
+      }
+    }
   }
   selectedName() {
     this.newInventor.selectedMaker=this.newInventor.fullname['maker'];
@@ -731,9 +757,6 @@ export class WarehouseComponent implements OnInit{
     this.newInventor.spend=this.newInventor.fullname['itemGroup']['spend'];
     this.newInventor.consumption = (this.newInventor.spend===1)? true: false;
     this.filterItemSingle({query:""},'marker');
-
-
-    console.log(this.newInventor)
 
   }
   private getCartItems() {
@@ -763,29 +786,35 @@ export class WarehouseComponent implements OnInit{
               if(response['status']===200){
                   this.cartItemsData = [];
                   this.cartItems=[];
+                this.onGridReady(this.eventData)
               }
         })
         .catch()
   }
   generaTeTransferToSection() {
+    let filter = ['Datetime','fromDetails','toWhomStockDetails','carrierPersonDetails'];
+    this.formErrors =this.validator.checkObject(this.transferToSection,filter);
 
-    this.transferToSection.trDate = moment(this.transferToSection.Datetime).format("DD-MM-YYYY");
-    this.transferToSection.carrierPerson = this.transferToSection.carrierPersonDetails["id"];
-    this.transferToSection.toWhomStock = this.transferToSection.toWhomStockDetails["id"];
-    this.transferToSection.listData = this.cartItemsData;
-    this.transferToSection.fromStock = this.transferToSection.fromDetails['id'];
-    this.transferToSection.list = this.cartItemsData.map(value => {
-      return {itemId:value["id"],amount:value["amount"]}
-    });
-    this.operation.getAddonNumber()
-      .then(response=>{
-        if(response['status'] ===200){
-          this.transferToSection.addon = response["data"];
-          this.transferToSectionInvoiceGenerator = true;
-        }
+    if(this.formErrors.length === 0){
+      this.transferToSection.trDate = moment(this.transferToSection.Datetime).format("DD-MM-YYYY");
+      this.transferToSection.carrierPerson = this.transferToSection.carrierPersonDetails["id"];
+      this.transferToSection.toWhomStock = this.transferToSection.toWhomStockDetails["id"];
+      this.transferToSection.listData = this.cartItemsData;
+      this.transferToSection.fromStock = this.transferToSection.fromDetails['id'];
+      this.transferToSection.list = this.cartItemsData.map(value => {
+        return {itemId:value["id"],amount:value["amount"]}
+      });
+      this.operation.getAddonNumber()
+        .then(response=>{
+          if(response['status'] ===200){
+            this.transferToSection.addon = response["data"];
+            this.transferToSectionInvoiceGenerator = true;
+          }
 
-      })
-      .catch()
+        })
+        .catch()
+    }
+
   }
   getTransferProperty() {
     let formData = new FormData();
@@ -824,7 +853,7 @@ export class WarehouseComponent implements OnInit{
           }
       }
 
-      this.operation.generaTeTransferToSection(formData)
+      this.operation.generaTeTransferToSection(formData,'section')
         .then(response=>{
           if(response['status'] ===200){
             this.transferToSection = {};
@@ -840,7 +869,6 @@ export class WarehouseComponent implements OnInit{
   }
   filterBrands($event: any) {
   }
-
   generaTeInventorTransfer() {
     let filter = ['date','selectedProperty','selectedPerson','selectedCarrier'];
     if(this.inventorTransfer.selectedIndex ===1){
@@ -871,7 +899,6 @@ export class WarehouseComponent implements OnInit{
         .catch()
     }
   }
-
   activeInventorTransfer() {
     let formData =  new FormData();
     for(let key in this.inventorTransfer){
@@ -882,7 +909,7 @@ export class WarehouseComponent implements OnInit{
       }
     }
 
-    this.operation.generateTransferToPerson(formData)
+    this.operation.generateTransferToPerson(formData, 'transfer')
       .then(response=>{
         if(response['status'] ===200){
           this.inventorTransfer ={
@@ -902,10 +929,9 @@ export class WarehouseComponent implements OnInit{
 
   }
   if_error(data: Array<string>, field: string){
-    console.log(data,field, data.indexOf(field));
+   // console.log(data,field, data.indexOf(field));
     return data.indexOf(field) >-1;
   }
-
   selectPerson($event: any) {
     this.inventorTransfer.toWhomSection = $event['id'];
   }

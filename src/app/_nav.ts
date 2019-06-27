@@ -30,7 +30,7 @@ export interface NavData {
 }
 
 export const navItems: NavData[] = [
-  {
+  /*{
     name: 'ოპერაციები',
     url: '/management',
     icon: 'icon-speedometer',
@@ -47,6 +47,17 @@ export const navItems: NavData[] = [
         icon: 'icon-puzzle'
       }
     ]
+  },*/
+
+  {
+    name: 'საწყობის მართვა',
+    url: '/management/warehouse',
+    icon: 'icon-puzzle'
+  },
+  {
+    name: 'ქონების მართვა',
+    url: '/management/property',
+    icon: 'icon-puzzle'
   },
   {
     name: 'შეტყობინებები',

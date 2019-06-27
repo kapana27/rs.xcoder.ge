@@ -5,8 +5,12 @@ import {HttpClient} from "@angular/common/http";
   providedIn: 'root'
 })
 export class RequestService {
-  constructor(private http: HttpClient) { }
+  private prod: string = '';
+  constructor(private http: HttpClient) {
+
+  }
   Get(uri){
+    uri = this.prod + uri;
     return new Promise((resolve, reject) => {
       this.http.get(uri)
         .toPromise()
@@ -18,9 +22,22 @@ export class RequestService {
         .catch()
     });
   }
-  Post(url,params ={}){
+  GetWitoutStatus(uri){
+    uri = this.prod + uri;
     return new Promise((resolve, reject) => {
-      this.http.post(url,params)
+      this.http.get(uri)
+        .toPromise()
+        .then(response=>{
+            resolve(response)
+
+        })
+        .catch()
+    });
+  }
+  Post(uri,params ={}){
+    uri = this.prod + uri;
+    return new Promise((resolve, reject) => {
+      this.http.post(uri,params)
         .toPromise()
         .then(response=>{
             resolve(response)

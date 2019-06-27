@@ -33,7 +33,7 @@ export class OperationsService {
 
 
   getItemGroup(){
-    return this.http.get(Config.List.get.ItemGroup+"?node=root").toPromise();
+    return  this.Request.GetWitoutStatus(Config.List.get.ItemGroup+"?node=root");
   }
 
   saveNewItem(newItem, params) {
@@ -81,12 +81,15 @@ export class OperationsService {
     return this.Request.Post(Config.List.post.addon,{});
   }
 
-  generaTeTransferToSection(formData){
-    return this.Request.Post(Config.List.post.invoice, formData)
+  generaTeTransferToSection(formData,type='invoice'){
+    return this.Request.Post(Config.List.post[type], formData)
   }
 
-  generateTransferToPerson(formData){
-    return this.Request.Post(Config.transfer.post.transfer,formData);
+  generateReturnInvetorInvoice(formData){
+    return this.Request.Post(Config.List.post.return, formData)
+  }
+  generateTransferToPerson(formData,type='transfer'){
+    return this.Request.Post(Config.transfer.post[type],formData);
   }
 
 }
