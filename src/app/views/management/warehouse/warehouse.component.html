@@ -271,7 +271,7 @@
             <tr >
               <td colspan="2" style="padding: 0px;line-height: 20px;margin: 0px;" *ngIf="!newInventor.consumption">შტრიხკოდი</td>
               <td style="padding: 0px; line-height: 20px;margin: 0px;" > რაოდენობა</td>
-              <td *ngIf="newInventor.consumption" style="padding: 0px;line-height: 20px;margin: 0px;" >ერთ. რაოდენობა</td>
+              <!--td *ngIf="newInventor.consumption" style="padding: 0px;line-height: 20px;margin: 0px;" >ერთ. რაოდენობა</td-->
             </tr>
             <tr >
               <td *ngIf="!newInventor.consumption" width="35px">
@@ -283,9 +283,9 @@
               <td>
                 <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.amount"  [ngClass]="{ 'red':if_error(formErrors,'amount')?'1px solid red': '' }">
               </td>
-              <td *ngIf="newInventor.consumption">
+              <!--td *ngIf="newInventor.consumption">
                 <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.packageAmount" [ngClass]="{ 'red':if_error(formErrors,'packageAmount')?'1px solid red': '' }">
-              </td>
+              </td-->
             </tr>
           </table>
         </div>
@@ -436,7 +436,7 @@
             <td>{{newInventor.selectedMaker.name}}</td>
             <td>{{newInventor.selectedModel.name}}</td>
             <td>{{newInventor.price}}</td>
-            <td>{{newInventor.amount}}</td>
+            <td>{{newInventor.showAmount}}</td>
             <td>{{newInventor.measureUnitName}}</td>
             <td>{{c.value}}<input type="text" [(ngModel)]="c.barCodeVisualValue" class="input"></td>
             <td><input type="text" [(ngModel)]="c.factoryNumber" class="input"></td>

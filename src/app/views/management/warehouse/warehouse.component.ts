@@ -775,7 +775,6 @@ export class WarehouseComponent implements OnInit{
     ];
 
     if(this.newInventor.spend ===1){
-      filter.push( 'packageAmount');
 
     }else{
       filter.push( 'selectedBarcode');
@@ -815,8 +814,7 @@ export class WarehouseComponent implements OnInit{
               totalCount: number,
               data: Barcode[]
             })=>{
-              this.newInventor.amount = (this.newInventor.spend ==1 )? this.newInventor.packageAmount: 1;
-
+              this.newInventor['showAmount'] = 1;
               this.lastBarCodes = response.data.map(value => {
                 value.fullBarcode = value.value+value.barCodeVisualValue;
                 value.factoryNumber = this.newInventor.factoryNumber;
@@ -831,11 +829,11 @@ export class WarehouseComponent implements OnInit{
 
       } else{
 
-          this.newInventor.amount = (this.newInventor.spend ==1 )? this.newInventor.packageAmount: 1;
           this.newInventor.barCodeType=null;
           this.newInventor.barCode=null;
+          this.newInventor['showAmount'] = this.newInventor.amount;
 
-          for(let i=0;i<this.newInventor.amount;i++){
+          for(let i=0;i<1;i++){
             this.lastBarCodes.push({value:'', barCodeVisualValue:''});
             this.frustrate = true;
           }

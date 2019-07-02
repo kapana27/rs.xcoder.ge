@@ -48,7 +48,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {AgGridModule} from "ag-grid-angular";
 import {TableModule} from "primeng/table";
 import { CartComponent } from './components/cart/cart.component';
-import {ConfirmDialogModule, PaginatorModule, TabMenuModule, TooltipModule} from "primeng/primeng";
+import {ConfirmDialogModule, PaginatorModule, TabMenuModule, TabViewModule, TooltipModule} from "primeng/primeng";
 
 @NgModule({
   imports: [
@@ -71,6 +71,7 @@ import {ConfirmDialogModule, PaginatorModule, TabMenuModule, TooltipModule} from
     ConfirmDialogModule,
     PaginatorModule,
     TooltipModule,
+    TabViewModule,
   ],
   declarations: [
     AppComponent,

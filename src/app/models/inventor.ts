@@ -39,5 +39,6 @@ export interface Inventor {
   packageAmount?: number,
   list?: [{"barCode":string,"serialNumber":string,"amount":number}],
   consumption?: boolean,
-  tmpAmount?: number
+  tmpAmount?: number,
+  showAmount?: number,
 }

@@ -1,3 +1,20 @@
-<p>
-  directory works!
-</p>
+<p-tabMenu [model]="mainTabs"   [activeItem]="activeItem" ></p-tabMenu>
+<br>
+<p-tabMenu [model]="subTabs" [activeItem]="subTabs[0]"></p-tabMenu>
+<br>
+<div *ngIf="activeItem['type']==='table'">
+  <p-table [value]="cars">
+    <ng-template pTemplate="header">
+      <tr>
+        <th width="100">id</th>
+        <th>დასახელება</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-car>
+      <tr>
+        <td>{{car.vin}}</td>
+        <td>{{car.year}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
