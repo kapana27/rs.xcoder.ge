@@ -1,17 +1,20 @@
 import {Default} from "./default";
 
 export interface Inventor {
+  id?: number,
   selectedMeasureUnitName?: Default;
   date?: Date,
+  inCart?: boolean,
   entryDate?: string,
   name?: string,
-  fullname?: string,
+  fullname?: any,
   selectedMaker?: Default,
   maker?: number,
   selectedModel?: Default,
   model?: number,
   price?: number,
-  selectedBarcode?: Default,
+  inStock?: number,
+  selectedBarcode?: {id?: number, name?: string, length?: number, startPoint?: number, value?: string},
   barCodeType?: number,
   barCode?: string,
   fullBarCode?: string,
@@ -28,12 +31,13 @@ export interface Inventor {
   itemType?: number,
   selectedItemStatus?: Default,
   itemStatus?: number,
-  inspectionNumber?:number;
+  inspectionNumber?:string;
   itemGroupName?: string
   itemGroup?:number,
   spend?: number,
   note?: string,
   packageAmount?: number,
   list?: [{"barCode":string,"serialNumber":string,"amount":number}],
-  consumption?: boolean
+  consumption?: boolean,
+  tmpAmount?: number
 }

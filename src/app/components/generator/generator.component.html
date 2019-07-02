@@ -18,12 +18,12 @@
     </ng-template>
     <ng-template pTemplate="body" let-cart>
       <tr>
-        <td>{{cart.entryDate}}</td>
-        <td>{{cart.name}}</td>
-        <td>{{cart.maker['name'] }}</td>
-        <td>{{cart.model['name']}}</td>
+        <td>{{cart['entryDate']}}</td>
+        <td>{{cart['name']}}</td>
+        <td>{{cart['maker']?cart['maker']['name']:'' }}</td>
+        <td>{{cart['model']? cart['model']['name']: ''}}</td>
         <td>{{cart['price']}}</td>
-        <td>{{cart['amount']}}</td>
+        <td>{{cart['count']}}</td>
         <td>{{cart['barcode']}}</td>
       </tr>
     </ng-template>

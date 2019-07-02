@@ -4,12 +4,13 @@ import "ag-grid-enterprise";
 import {OperationsService} from "../../../services/operations/operations.service";
 import {Item} from "../../../models/item";
 import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
-import {MenuItem, SelectItem} from "primeng/api";
+import {ConfirmationService, MenuItem, SelectItem} from "primeng/api";
 import {Default} from "../../../models/default";
 import {InventorReturn} from "../../../models/inventorReturn";
 import {ValidatorService} from "../../../services/validator/validator.service";
 import * as moment from 'moment';
 import {InventorTransfer} from "../../../models/inventorTransfer";
+import {ForPerson} from "../../../models/forPerson";
 
 interface Data {
   TotalCount: number
@@ -21,14 +22,15 @@ interface Data {
 @Component({
   selector: 'app-property',
   templateUrl: './property.component.html',
-  styleUrls: ['./property.component.scss']
+  styleUrls: ['./property.component.scss'],
+  providers: [ConfirmationService]
 })
 export class PropertyComponent implements OnInit {
-  eventData: any =null;
-
+  eventData: any = null;
+  public dataChecker = false;
   public gridApi;
   public gridColumnApi;
-  faCartPlus=faCartPlus;
+  faCartPlus = faCartPlus;
   public columnDefs;
   public defaultColDef;
   public rowSelection;
@@ -47,56 +49,61 @@ export class PropertyComponent implements OnInit {
   date: Date;
   sections: SelectItem[];
   properties: SelectItem[];
-  brands: string[] = ['Audi','BMW','Fiat','Ford','Honda','Jaguar','Mercedes','Renault','Volvo','VW'];
+  brands: string[] = ['Audi', 'BMW', 'Fiat', 'Ford', 'Honda', 'Jaguar', 'Mercedes', 'Renault', 'Volvo', 'VW'];
   filteredBrands: any[];
   inventoryToBuildingDialogShow: boolean = false;
   cartDialogShow: boolean = false;
   personDialogShow: boolean = false;
   distributed: boolean = true;
   cartItemsData: Array<any> = [];
-  selectedTabId: number = 12;
-  cartItems: Array<any>=[];
+  selectedTabId: number = -1;
+  cartItems: Array<any> = [];
   stockList: Array<Default> = [];
+  roomsList: Array<Default> = [];
   formErrors: Array<string> = [];
-
+  inOut: string = 'out';
+  forPerson: ForPerson = {
+    date: new Date(),
+    generator: false
+  };
   inventorReturnModel: InventorReturn = {
     inventarReturnGenerator: false,
-    date: new Date()
+    date: new Date(),
   };
   propertyData: Array<any> = [];
   staffList: Array<any> = [];
-  inventorTransfer: InventorTransfer ={
+  inventorTransfer: InventorTransfer = {
     date: new Date(),
-    selectedIndex:0,
+    selectedIndex: 0,
     generator: false,
     roomId: 89
   };
-
-  constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService) {
+  public getRowStyle;
+  constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService) {
+    this.getCartItems();
     this.sections = [
-      {label:'აირჩიეთ სექცია', value:null},
-      {label:'სექცია1', value:{id:1, name: 'სექცია1', code: 'NY'}},
-      {label:'სექცია2', value:{id:1, name: 'სექცია2', code: 'NY'}}
+      {label: 'აირჩიეთ სექცია', value: null},
+      {label: 'სექცია1', value: {id: 1, name: 'სექცია1', code: 'NY'}},
+      {label: 'სექცია2', value: {id: 1, name: 'სექცია2', code: 'NY'}}
     ];
     this.properties = [
-      {label:'აირჩიეთ ფროფერთი', value:null},
-      {label:'ფროფერთი1', value:{id:1, name: 'ფროფერთი1', code: 'NY'}},
+      {label: 'აირჩიეთ ფროფერთი', value: null},
+      {label: 'ფროფერთი1', value: {id: 1, name: 'ფროფერთი1', code: 'NY'}},
     ];
 
     this.columnDefs = [
       {
         headerName: "#",
-        field:'rowId',
+        field: 'rowId',
         width: 30,
         cellRenderer: "loadingCellRenderer",
         sortable: false,
         suppressMenu: false
       },
       {
-        headerName: "",
-        field:'cartId',
+        headerName: " ",
+        field: 'cartId',
         width: 50,
-        valueGetter: "cartId",
         cellRenderer: "cardCellRenderer",
         sortable: false,
         suppressMenu: false,
@@ -105,7 +112,7 @@ export class PropertyComponent implements OnInit {
       {
         headerName: "ID",
         width: 50,
-        field:'id',
+        field: 'id',
         cellRenderer: "loadingCellRenderer",
         sortable: false,
         suppressMenu: true
@@ -115,7 +122,7 @@ export class PropertyComponent implements OnInit {
         field: "entryDate",
         width: 150,
         filter: 'agDateColumnFilter',
-        filterParams:{
+        filterParams: {
           comparator: function (filterLocalDateAtMidnight, cellValue) {
             const dateAsString = cellValue;
             if (dateAsString == null) return 0;
@@ -141,7 +148,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "მარკა",
@@ -149,7 +156,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "მოდელი",
@@ -157,7 +164,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "ფასი",
@@ -185,7 +192,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "შტრიხკოდი",
@@ -193,7 +200,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "ქარხ.#",
@@ -201,7 +208,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "ჯგუფი",
@@ -209,7 +216,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "ტიპი",
@@ -217,7 +224,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "სტატუსი",
@@ -225,7 +232,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "მიმწოდებელი",
@@ -233,7 +240,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "ზედნადები",
@@ -241,7 +248,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "ზედდებული",
@@ -249,7 +256,7 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       },
       {
         headerName: "ინსპ",
@@ -257,13 +264,20 @@ export class PropertyComponent implements OnInit {
         width: 150,
         suppressMenu: true,
         filter: "agTextColumnFilter",
-        filterParams: { defaultOption: "startsWith" }
+        filterParams: {defaultOption: "startsWith"}
       }
     ];
     this.defaultColDef = {
       sortable: true,
       resizable: true
     };
+    this.getRowStyle={
+      "ag-red": function(params) {
+        try {
+          return params['data']["tmpAmount"] > 0
+        }catch (e) {}
+      }
+    }
     this.rowSelection = "single";
     this.rowModelType = "infinite";
     this.paginationPageSize = 100;
@@ -271,152 +285,196 @@ export class PropertyComponent implements OnInit {
     this.maxConcurrentDatasourceRequests = 2;
     this.infiniteInitialRowCount = 1;
     this.maxBlocksInCache = 2;
-    this.getRowNodeId = function(item) {
+    this.getRowNodeId = function (item) {
       return item.id;
     };
     this.components = {
-      loadingCellRenderer: function(params) {
+      loadingCellRenderer: function (params) {
         if (params.value !== undefined) {
           return params.value;
         } else {
           return '<img src="https://raw.githubusercontent.com/ag-grid/ag-grid/master/packages/ag-grid-docs/src/images/loading.gif">';
         }
       },
-      cardCellRenderer: function(params) {
-        if(params["data"] !==undefined && params["data"]["inCart"]){
-          return '<i class="pi pi-shopping-cart"  style="font-size: 3em;color: green;width: 20px; height: 20px; margin-top: -4px;"></i>';
-        }else{
-          return '<i class="pi pi-shopping-cart"  style="font-size: 3em;width: 20px; height: 20px; margin-top: -4px;"></i>';
+      cardCellRenderer: function (params) {
+          try {
+            if(params["data"]["tmpAmount"] === params['data']['amount']){
+              return  '';
+            }
+          }catch (e) {}
+
+        if (params["data"] !== undefined && params["data"]["inCart"]) {
+          return '<i class="pi pi-shopping-cart cursor"  style="font-size: 3em;color: #bd0000;width: 20px; height: 20px; margin-top: -4px;"></i>';
+        } else {
+          return '<i class="pi pi-shopping-cart cursor"  style="font-size: 3em;width: 20px; height: 20px; margin-top: -4px;"></i>';
         }
       }
     };
 
-    this.getCartItems().then(value => {
-      for(let key in value['data']){
-        this.cartItemsData.push(JSON.parse(value['data'][key]));
-      }
-    });
+
     this.operation.getStoks()
-      .then(response=>{
-        this.stockList = (response['status']===200)?response["data"]: [];
+      .then(response => {
+        this.stockList = (response['status'] === 200) ? response["data"] : [];
       })
       .catch()
   }
-  cart($event: any) {
-    if($event['colDef']['field'] ==='cartId'){
-      this.cartItems.indexOf($event['data']["id"].toString());
-      let formData = new FormData();
-      formData.append("globalKey",this.selectedTabId.toString());
-      formData.append("key",$event['data']["id"]);
-      formData.append("value",JSON.stringify($event['data']));
-
-      if(this.cartItems.indexOf($event['data']["id"].toString()) === -1){
-        this.operation.putInCart(formData)
-          .then(response=>{
-            if(response['status'] === 200){
-              $event["data"]['inCart']= true;
-              this.onGridReady(this.eventData);
-              this.cartItemsData = [];
-              this.getCartItems().then(response=>{
-                for(let key in response['data']){
-                  this.cartItemsData.push(JSON.parse(response['data'][key]));
-                }
-
-              });
-            }
-          }).catch();
-      }else{
-        this.operation.removeCartItem(formData)
-          .then(response=>{
-            if(response['status'] === 200){
-              $event["data"]['inCart']= false;
-              this.onGridReady(this.eventData);
-              this.cartItemsData=[];
-              this.getCartItems().then(response=>{
-                for(let key in response['data']){
-                  this.cartItemsData.push(JSON.parse(response['data'][key]));
-                }
-              });
-            }
-          }).catch();
+/*  getCartItemsData(){
+    this.cartItemsData = [];
+    this.getCartItems().then(response=>{
+      for(let key in response['data']){
+        this.cartItemsData.push(JSON.parse(response['data'][key]));
       }
-    }
+      this.cartItemsData.map(value => {
+        if(value['name'] ===undefined || value['name']===null){
+          value['name'] = '';
+        }
+        return value;
+      })
+    });
+  }*/
+  cart($event: any) {
+    try {
+      const status = $event['data']['tmpAmount'] === 0;
+      if ($event['colDef']['field'] === 'cartId' && status) {
+        if ($event['colDef']['field'] === 'cartId') {
+          this.cartItems.indexOf($event['data']["id"].toString());
+          let formData = new FormData();
+          formData.append("globalKey", this.selectedTabId.toString());
+          formData.append("key", $event['data']["id"]);
+          formData.append("value", JSON.stringify($event['data']));
+
+          if(this.cartItems.indexOf($event['data']["id"].toString()) === -1){
+            this.operation.putInCart(formData)
+              .then(response=>{
+                if(response['status'] === 200){
+                  $event["data"]['inCart']= true;
+                  this.gridApi.refreshCells({ force:true });
+                  //this.onGridReady(this.eventData);
+                  this.getCartItems();
+                }
+              }).catch();
+          }else{
+            this.operation.removeCartItem(formData)
+              .then(response=>{
+                if(response['status'] === 200){
+                  $event["data"]['inCart']= false;
+                  this.gridApi.refreshCells({ force:true });
+                  //this.onGridReady(this.eventData);
+                  this.getCartItems();
+                }
+
+              }).catch();
+          }
+
+        }
+      }
+    }catch (e) {}
   }
 
-  cartDialog(){
+  cartDialog() {
     this.getCartItems()
-      .then(response=>{
-        if(response['status']===200){
+      .then(response => {
+        if (response['status'] === 200) {
           this.cartItemsData = [];
-          for (let key in response['data']){
+          for (let key in response['data']) {
             this.cartItemsData.push(JSON.parse(response['data'][key]));
           }
+          this.cartItemsData.map(value => {
+            if(value['name'] ===undefined || value['name']===null){
+              value['name'] = '';
+            }
+            return value;
+          })
+        }else{
+          this.error("შეცდომა",response['error'])
         }
         this.cartDialogShow = true;
-      })
+      }).catch(response=>{
+      this.error("შეცდომა",response['error'])
+    })
   }
+
   private getCartItems() {
     return new Promise((resolve, reject) => {
-      let formData= new FormData();
-      formData.append("globalKey",this.selectedTabId.toString());
+      let formData = new FormData();
+      formData.append("globalKey", this.selectedTabId.toString());
       this.operation.getCartItems(formData)
-        .then(response=>{
+        .then(response => {
+          this.cartItemsData = [];
           this.cartItems = [];
-          if(response["status"]===200){
-            for (let i in response['data']){
+          if (response["status"] === 200) {
+            for (let i in response['data']) {
+              this.cartItemsData.push(JSON.parse(response['data'][i]));
               this.cartItems.push(i);
             }
+            this.cartItemsData.map(value => {
+              if(value['name'] ===undefined || value['name']===null){
+                value['name'] = '';
+              }
+              return value;
+            })
             resolve(response);
           }
         })
         .catch()
     })
   }
+
   removeCartItem() {
 
     let formData = new FormData()
     formData.append("globalKey", this.selectedTabId.toString());
 
     this.operation.clearCart(formData)
-      .then(response=>{
-        if(response['status']===200){
+      .then(response => {
+        if (response['status'] === 200) {
           this.cartItemsData = [];
-          this.cartItems=[];
+          this.cartItems = [];
           this.onGridReady(this.eventData)
+        }else{
+          this.error('შეცდომა',response["error"])
         }
       })
-      .catch()
+      .catch(response=>{
+        this.error('შეცდომა',response["error"])
+      })
   }
-  inCart(inCard){
+
+  inCart(inCard) {
     alert(inCard);
   }
+
   filterBrands(event) {
     this.filteredBrands = [];
-    for(let i = 0; i < this.brands.length; i++) {
+    for (let i = 0; i < this.brands.length; i++) {
       let brand = this.brands[i];
-      if(brand.toLowerCase().indexOf(event.query.toLowerCase()) == 0) {
+      if (brand.toLowerCase().indexOf(event.query.toLowerCase()) == 0) {
         this.filteredBrands.push(brand);
       }
     }
   }
+
   onGridReady(params) {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
 
-    this.operation.getData(1,30)
+    this.operation.getAllData(this.inOut,1, 30)
       .then((response: Data) => {
         //this.totalCount= response.TotalCount;
         //this.virtualItems = response.data;
-        const data  = response.data.map((v,i)=>{
-          v['rowId'] = i+1;
-          if(v['barcode'].toString().length <= v['barCodeType']['length'] ){
-            v.barcode = v['barCodeType']['value']+ new Array(v['barCodeType']['length']-(v['barcode'].toString().length-1)).join('0').slice((v['barCodeType']['length']-(v['barcode'].toString().length-1) || 2) * -1) + v['barcode'];
+        const data = response.data.map((v, i) => {
+          v['rowId'] = i + 1;
+          if (v['barcode'].toString().length <= v['barCodeType']['length']) {
+            v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
           }
-          v['inCart']= (this.cartItems.indexOf(v['id'].toString())>-1)? true: false;
+          v['count']=1;
+          v['cartId'] = v['id'];
+          v['inCart'] = (this.cartItems.indexOf(v['id'].toString()) > -1) ? true : false;
 
           return v;
         });
+        console.log(data)
         const dataSource = {
           rowCount: null,
           getRows: function (params) {
@@ -434,7 +492,9 @@ export class PropertyComponent implements OnInit {
         };
         params.api.setDatasource(dataSource);
       })
-      .catch(()=>alert("ერრორ"));
+      .catch(response=>{
+        this.error("შეცდომა",response['error'])
+      });
 
     /* this.http
        .get("https://raw.githubusercontent.com/ag-grid/ag-grid/master/packages/ag-grid-docs/src/olympicWinners.json")
@@ -461,26 +521,41 @@ export class PropertyComponent implements OnInit {
        });
  */
   }
+
   ngOnInit(): void {
     this.items = [
-      {label: 'განაწილებული', icon: 'fa fa-fw fa-bar-chart', command: (event) => {
-          this.clickTabMenu(0)
-        }},
-      {label: 'გასანაწილებელი', icon: 'fa fa-fw fa-calendar', command: (event) => {
-             this.clickTabMenu(1)
-        }},
+      {
+        label: 'გასანაწილებელი', icon: '', command: (event) => {
+          this.selectedTabId=-1;
+          this.getCartItems().then(()=>{
+            this.clickTabMenu(1)
+
+          });
+        }
+      },
+      {
+        label: 'განაწილებული', icon: '', command: (event) => {
+          this.selectedTabId=-2;
+          this.getCartItems().then(()=>{
+            this.clickTabMenu(0)
+          });
+        }
+      }
     ];
 
   }
-  inventoryToBuildingDialog(){
+
+  inventoryToBuildingDialog() {
     this.inventoryToBuildingDialogShow = true;
-    this.inventorTransfer ={
+    this.inventorTransfer = {
       date: new Date(),
-      selectedIndex:0,
+      selectedIndex: 0,
       generator: false,
       roomId: 89
+
     };
   }
+
   showDialog() {
     this.inventorReturnModel = {
       inventarReturnGenerator: false,
@@ -488,22 +563,34 @@ export class PropertyComponent implements OnInit {
     };
     this.display = true;
   }
-  personDialog(){
+
+  personDialog() {
     this.personDialogShow = true;
+    this.forPerson = {
+      date: new Date(),
+      generator: false
+    };
   }
 
   clickTabMenu(index) {
-     this.distributed = index == 0 ? true: false;
+    this.inOut = (index === 0)?'in':'out';
+    this.distributed = index != 0;
+    this.onGridReady(this.eventData);
   }
 
   generateInventarReturn() {
-    let filter = ['date','selectedSection','selectedProperty','selectedCarrier'];
-    this.formErrors =this.validator.checkObject(this.inventorReturnModel,filter);
-    console.log(this.formErrors)
-    if(this.formErrors.length === 0) {
+    let filter = ['date', 'selectedSection', 'selectedProperty', 'selectedCarrier'];
+    this.formErrors = this.validator.checkObject(this.inventorReturnModel, filter);
+    if (this.formErrors.length === 0 && this.dataChecker) {
       this.operation.getAddonNumber()
-        .then(response=>{
-          if(response['status'] ===200){
+        .then(response => {
+          if (response['status'] === 200) {
+            this.cartItemsData = this.cartItemsData.map(value => {
+              if(value['name'] ===undefined || value['name']===null){
+                value['name'] = '';
+              }
+              return value;
+            });
             this.inventorReturnModel.trDate = moment(this.inventorReturnModel.date).format("DD-MM-YYYY");
             this.inventorReturnModel.addon = response["data"];
             this.inventorReturnModel.inventarReturnGenerator = true;
@@ -512,87 +599,104 @@ export class PropertyComponent implements OnInit {
             this.inventorReturnModel.carrierPerson = this.inventorReturnModel.selectedCarrier["id"];
 
             this.inventorReturnModel.listData = this.cartItemsData;
-            this.inventorReturnModel.list = this.cartItemsData.map(value => {
-              return {itemId:value["id"],amount:value["amount"]}
+            this.inventorReturnModel.list = this.cartItemsData.map(v => {
+              return {itemId: v["id"], amount: v["count"]}
             });
 
+          }else{
+            this.error("შეცდომა",response['error'])
           }
 
         })
-        .catch()
+        .catch(response=>{
+          this.error("შეცდომა",response['error'])
+        })
     }
   }
 
   activateInventarReturn() {
-    let formData =  new FormData();
-    for(let key in this.inventorReturnModel){
-      if(key==='list' || key==='listData'){
-        formData.append(key,JSON.stringify(this.inventorReturnModel[key]));
-      }else{
-        formData.append(key,this.inventorReturnModel[key].toString());
+    let formData = new FormData();
+    for (let key in this.inventorReturnModel) {
+      if (key === 'list' || key === 'listData') {
+        formData.append(key, JSON.stringify(this.inventorReturnModel[key]));
+      } else {
+        formData.append(key, this.inventorReturnModel[key].toString());
       }
     }
 
     this.operation.generateReturnInvetorInvoice(formData)
-      .then(response=>{
-        if(response['status'] ===200){
-          this.display =false;
-        }else{
-          alert(response["error"])
+      .then(response => {
+        if (response['status'] === 200) {
+          this.display = false;
+        } else {
+          this.error('შეცდომა',response["error"])
         }
       })
-      .catch(response=>{
-        alert(response["error"])
+      .catch(response => {
+        this.error('შეცდომა',response["error"])
       })
   }
-  if_error(data: Array<string>, field: string){
+
+  if_error(data: Array<string>, field: string) {
     // console.log(data,field, data.indexOf(field));
-    return data.indexOf(field) >-1;
+    return data.indexOf(field) > -1;
   }
 
   filterStaff($event: any) {
     console.log($event);
     this.operation.getStaffList($event.query)
-      .then((response: {data:Array<any>})=>{
-        this.staffList = (response['status']===200)?response.data.map(v=>{
+      .then((response: { data: Array<any> }) => {
+        this.staffList = (response['status'] === 200) ? response.data.map(v => {
           return {
             id: v['id'],
-            name: v["fullname"]+" , "+v["position"]["name"]+" ,"+ v["department"]["name"],
-            fname:  v["fullname"]
+            name:  v["fullname"] + " , " + v["position"]["name"] + " ," + v["department"]["name"],
+            fname: v["fullname"],
+            position: v["position"]["name"],
+            department:  v["department"]["name"]
           }
-        }): [];
+        }) : [];
       })
-      .catch()
+      .catch(response=>{
+        this.error("შეცდომა",response['error'])
+      })
 
   }
 
   getTransferProperty() {
     let formData = new FormData();
-    formData.append("stockId",this.inventorReturnModel.selectedSection.id.toString());
+    formData.append("stockId", this.inventorReturnModel.selectedSection.id.toString());
     this.operation.getPropertyByStock(formData)
-      .then((response: {data:Array<any>})=>{
-        this.propertyData=response.data;
-
+      .then((response: { data: Array<any> }) => {
+        this.propertyData = response.data;
       })
-      .catch()
+      .catch(response=>{
+        this.error("შეცდომა",response['error'])
+      })
     ;
   }
 
   onTabChange($event: any) {
     this.inventorTransfer.selectedIndex = $event.index;
   }
+
   generaTeInventorTransfer() {
-    let filter = ['date','selectedProperty','selectedPerson','selectedCarrier'];
-    if(this.inventorTransfer.selectedIndex ===1){
+    let filter = ['date', 'selectedProperty', 'selectedPerson', 'selectedCarrier'];
+    if (this.inventorTransfer.selectedIndex === 1) {
       filter.push('selectedSection')
     }
-    this.formErrors =this.validator.checkObject(this.inventorTransfer,filter);
+    this.formErrors = this.validator.checkObject(this.inventorTransfer, filter);
 
-    if(this.formErrors.length === 0){
-
+    console.log(this.formErrors, this.dataChecker);
+    if (this.formErrors.length === 0 && this.dataChecker) {
       this.operation.getAddonNumber()
-        .then(response=>{
-          if(response['status'] ===200){
+        .then(response => {
+          if (response['status'] === 200) {
+            this.cartItemsData = this.cartItemsData.map(value => {
+              if(value['name'] ===undefined || value['name']===null){
+                value['name'] = '';
+              }
+              return value;
+            });
             this.inventorTransfer.addon = response["data"];
             this.inventorTransfer.generator = true;
             this.inventorTransfer.trDate = moment(this.inventorTransfer.date).format("DD-MM-YYYY");
@@ -603,42 +707,138 @@ export class PropertyComponent implements OnInit {
             this.inventorTransfer.toWhomSection = this.inventorTransfer.selectedProperty["id"];
             this.inventorTransfer.requestPerson = this.inventorTransfer.selectedPerson["id"];
             this.inventorTransfer.list = this.cartItemsData.map(value => {
-              return {itemId:value["id"],amount:value["amount"]}
+              return {itemId: value["id"], amount: value["count"]}
             });
+          }else{
+            this.error("შეცდომა",response['error'])
           }
 
         })
-        .catch()
+        .catch(response=>{
+          this.error("შეცდომა",response['error'])
+        })
     }
   }
+
   activeInventorTransfer() {
-    let formData =  new FormData();
-    for(let key in this.inventorTransfer){
-      if(key==='list' || key==='listData'){
-        formData.append(key,JSON.stringify(this.inventorTransfer[key]));
-      }else{
-        formData.append(key,this.inventorTransfer[key]);
+    let formData = new FormData();
+    for (let key in this.inventorTransfer) {
+      if (key === 'list' || key === 'listData') {
+        formData.append(key, JSON.stringify(this.inventorTransfer[key]));
+      } else {
+        formData.append(key, this.inventorTransfer[key]);
       }
     }
 
-    this.operation.generateTransferToPerson(formData,'section')
-      .then(response=>{
-        if(response['status'] ===200){
-          this.inventorTransfer ={
+    this.operation.generateTransferToPerson(formData, 'section')
+      .then(response => {
+        if (response['status'] === 200) {
+          this.inventorTransfer = {
             date: new Date(),
-            selectedIndex:0,
+            selectedIndex: 0,
             generator: false
           };
+          this.removeCartItem();
           this.inventorTransfer.generator = false;
-          this.inventoryToBuildingDialogShow=false;
-        }else{
-          alert(response["error"])
+          this.inventoryToBuildingDialogShow = false;
+        } else {
+          this.error("შეცდომა",response['error'])
         }
       })
-      .catch(response=>{
-        alert(response["error"])
+      .catch(response => {
+        this.error("შეცდომა",response['error'])
       })
 
+  }
+
+  selectPerson($event: any) {
+      this.operation.getRoomsByPerson($event['id'])
+        .then(response => {
+          if(response['status']===200){
+              this.roomsList = response['data'];
+          }else{
+            this.error("შეცდომა",response['error'])
+          }
+        })
+        .catch(response=>{
+          this.error("შეცდომა",response['error'])
+        })
+  }
+
+  generateForPersonInvoice(){
+    let filter = ['date', 'selectedPerson', 'selectedRoom'];
+    this.formErrors = this.validator.checkObject(this.forPerson, filter);
+    if (this.formErrors.length === 0 && this.dataChecker) {
+        this.operation.getAddonNumber()
+          .then(response => {
+            if (response['status'] === 200) {
+              this.cartItemsData = this.cartItemsData.map(value => {
+                if(value['name'] ===undefined || value['name']===null){
+                  value['name'] = '';
+                }
+                return value;
+              });
+              this.forPerson.addon = response["data"];
+              this.forPerson.generator = true;
+              this.forPerson.trDate = moment(this.forPerson.date).format("DD-MM-YYYY");
+              this.forPerson.receiverPerson = this.forPerson.selectedPerson['id'];
+              this.forPerson.roomId = this.forPerson.selectedRoom['id'];
+              this.forPerson.list = this.cartItemsData.map(value => {
+                return {itemId: value["id"], amount: value["count"]}
+              });
+              this.forPerson.listData = this.cartItemsData;
+
+            }else{
+              this.error("შეცდომა",response['error'])
+            }
+          }).catch(response=>{
+            this.error("შეცდომა",response['error'])
+        })
+    }
+  }
+
+  activeForPersonTransferInvoice() {
+    let formData = new FormData();
+    for (let key in this.forPerson) {
+      if (key === 'list' || key === 'listData') {
+        formData.append(key, JSON.stringify(this.forPerson[key]));
+      } else {
+        formData.append(key, this.forPerson[key]);
+      }
+    }
+
+    this.operation.generateTransferToPerson(formData, 'person')
+      .then(response => {
+        if (response['status'] === 200) {
+          this.forPerson = {
+            date: new Date(),
+            generator: false
+          };
+          this.removeCartItem();
+
+          this.personDialogShow = false;
+        } else {
+          this.error("შეცდომა",response['error'])
+        }
+      })
+      .catch(response => {
+        this.error("შეცდომა",response['error'])
+      })
+  }
+
+  checker($event) {
+    this.dataChecker=$event['status'];
+    console.log($event);
+  }
+
+  error(title,data) {
+    this.confirmationService.confirm({
+      message:data,
+      header: title,
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+      }
+    });
   }
 }
 

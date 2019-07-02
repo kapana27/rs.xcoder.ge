@@ -4,7 +4,7 @@ import "ag-grid-enterprise";
 import {OperationsService} from "../../../services/operations/operations.service";
 import {Item} from "../../../models/item";
 import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
-import {MenuItem, SelectItem} from "primeng/api";
+import {ConfirmationService, MenuItem, SelectItem} from "primeng/api";
 import {Inventor} from "../../../models/inventor";
 import * as moment from 'moment';
 import {Barcode} from "../../../models/barcode";
@@ -38,7 +38,9 @@ interface Data {
 @Component({
   selector: 'app-warehouse',
   templateUrl: './warehouse.component.html',
-  styleUrls: ['./warehouse.component.scss']
+  styleUrls: ['./warehouse.component.scss'],
+  providers: [ConfirmationService]
+
 })
 export class WarehouseComponent implements OnInit{
   eventData: any =null;
@@ -71,6 +73,7 @@ export class WarehouseComponent implements OnInit{
   itemTypes: Default[]=[];
   itemStatus: Default[]=[];
   barcodes: Barcode[]=[];
+  visualBarcodes: Array<{label: string, value: Barcode}> = [];
   lastBarCodes: Barcode[]=[];
   measureUnits: Default[]=[];
   selectedCity: Default;
@@ -100,7 +103,7 @@ export class WarehouseComponent implements OnInit{
     inventarType?: string,
     price?: string,
   } = {};
-  selectedTabId: number = 12;
+  selectedTabId: number = 11;
   cartItems: Array<any>=[];
   cartItemsData: Array<any> = [];
   transferToSection: TransferToSection ={
@@ -115,10 +118,15 @@ export class WarehouseComponent implements OnInit{
   stockList: Array<Default> = [];
   propertyData: Array<any> = [];
   staffList: Array<any> = [];
+  roomsList: Array<any> = [];
   transferToSectionInvoiceGenerator: boolean = false;
   formErrors: Array<string> = [];
+  public getRowStyle;
+  private dataChecker =false;
+  tmpData: Item ={};
+  private inventorOperation: string = 'new';
+  constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService,  private confirmationService: ConfirmationService) {
 
-  constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService) {
     this.sections = [
       {label:'აირჩიეთ სექცია', value:null},
       {label:'სექცია1', value:{id:1, name: 'სექცია1', code: 'NY'}},
@@ -128,6 +136,10 @@ export class WarehouseComponent implements OnInit{
       {label:'აირჩიეთ ფროფერთი', value:null},
       {label:'ფროფერთი1', value:{id:1, name: 'ფროფერთი1', code: 'NY'}},
     ];
+
+
+
+
     this.columnDefs = [
       {
         headerName: "#",
@@ -305,10 +317,20 @@ export class WarehouseComponent implements OnInit{
         filterParams: { defaultOption: "startsWith" }
       }
     ];
+    this.getRowStyle={
+      "ag-red": function(params) {
+        try {
+          return params['data']["tmpAmount"] > 0
+        }catch (e) {}
+      }
+    }
     this.defaultColDef = {
       sortable: true,
       resizable: true
     };
+
+
+
     this.rowSelection = "single";
     this.rowModelType = "infinite";
     this.paginationPageSize = 100;
@@ -319,7 +341,9 @@ export class WarehouseComponent implements OnInit{
     this.getRowNodeId = function(item) {
       return item.id;
     };
+
     this.components = {
+
       loadingCellRenderer: function(params) {
         if (params.value !== undefined) {
           return params.value;
@@ -327,25 +351,29 @@ export class WarehouseComponent implements OnInit{
           return '<img src="https://raw.githubusercontent.com/ag-grid/ag-grid/master/packages/ag-grid-docs/src/images/loading.gif">';
         }
       },
-      cardCellRenderer: function(params,test) {
+      cardCellRenderer: function(params) {
+        try {
+          if(params["data"]["tmpAmount"] === params["data"]["amount"]){
+            return  '';
+          }
+        }catch (e) {}
         if(params["data"] !==undefined && params["data"]["inCart"]){
-          return '<i class="pi pi-shopping-cart"  style="font-size: 3em;color: green;width: 20px; height: 20px; margin-top: -4px;"></i>';
+          return '<i class="pi pi-shopping-cart cursor"  style="font-size: 3em;color: #bd0000;width: 20px; height: 20px; margin-top: -4px;"></i>';
         }else{
-          return '<i class="pi pi-shopping-cart"  style="font-size: 3em;width: 20px; height: 20px; margin-top: -4px;"></i>';
+          return '<i class="pi pi-shopping-cart cursor"  style="font-size: 3em;width: 20px; height: 20px; margin-top: -4px;"></i>';
         }
       }
     };
-    this.getCartItems().then(value => {
-          for(let key in value['data']){
-               this.cartItemsData.push(JSON.parse(value['data'][key]));
-          }
-      });
+
     this.operation.getStoks()
       .then(response=>{
         this.stockList = (response['status']===200)?response["data"]: [];
       })
       .catch()
+
+
   }
+
   filterInventorsByName(event) {
     let query = event.query;
     if(query.length > 1){
@@ -355,21 +383,23 @@ export class WarehouseComponent implements OnInit{
         })
         .catch()
     }
+    return query;
   }
   onGridReady(params) {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
-    this.operation.getData(1,30)
+    this.operation.getData(this.selectedTabId,1,30)
       .then((response: Data) => {
         //this.totalCount= response.TotalCount;
         //this.virtualItems = response.data;
         const data  = response.data.map((v,i)=>{
           v['rowId'] = i+1;
+          v['cartId'] = v['id'];
           if(v['barcode'].toString().length <= v['barCodeType']['length'] ){
               v.barcode = v['barCodeType']['value']+ new Array(v['barCodeType']['length']-(v['barcode'].toString().length-1)).join('0').slice((v['barCodeType']['length']-(v['barcode'].toString().length-1) || 2) * -1) + v['barcode'];
           }
-
+          v['count']=1;
           v['inCart']= (this.cartItems.indexOf(v['id'].toString())>-1)? true: false;
           return v;
         });
@@ -391,29 +421,27 @@ export class WarehouseComponent implements OnInit{
         };
         params.api.setDatasource(dataSource);
       })
-      .catch(()=>alert("ერრორ"));
+      .catch(response=>{
+        this.error("შეცდომა",response['error'])
+      });
   }
   cart($event: any) {
-      if($event['colDef']['field'] ==='cartId'){
+    try {
+      const status = $event['data']['tmpAmount'] === 0;
+      if($event['colDef']['field'] ==='cartId' && status){
         this.cartItems.indexOf($event['data']["id"].toString());
         let formData = new FormData();
         formData.append("globalKey",this.selectedTabId.toString());
         formData.append("key",$event['data']["id"]);
         formData.append("value",JSON.stringify($event['data']));
-
         if(this.cartItems.indexOf($event['data']["id"].toString()) === -1){
           this.operation.putInCart(formData)
             .then(response=>{
               if(response['status'] === 200){
                 $event["data"]['inCart']= true;
-                  this.onGridReady(this.eventData);
-                this.cartItemsData = [];
-                this.getCartItems().then(response=>{
-                  for(let key in response['data']){
-                    this.cartItemsData.push(JSON.parse(response['data'][key]));
-                  }
-
-                });
+                this.gridApi.refreshCells({ force:true });
+                //this.onGridReady(this.eventData);
+                    this.getCartItems();
               }
             }).catch();
         }else{
@@ -421,29 +449,31 @@ export class WarehouseComponent implements OnInit{
             .then(response=>{
               if(response['status'] === 200){
                 $event["data"]['inCart']= false;
-                this.onGridReady(this.eventData);
-                this.cartItemsData=[];
-                this.getCartItems().then(response=>{
-                  for(let key in response['data']){
-                    this.cartItemsData.push(JSON.parse(response['data'][key]));
-                  }
-                });
+                this.gridApi.refreshCells({ force:true });
+                //this.onGridReady(this.eventData);
+                this.getCartItems();
               }
+
             }).catch();
         }
       }
+    }catch (e) {}
+
  }
   ngOnInit(): void {
+    this.getCartItems();
     this.items = [
       {
-        label: 'საწყობი A', id:"12", icon: 'fa fa-fw fa-bar-chart', command: (event) => {
-          this.selectedTabId = 12;
+        label: 'A', id:"12", icon: 'fa fa-fw fa-home', command: (event) => {
+          this.selectedTabId = 11;
+          this.getCartItems();
           this.onGridReady(this.eventData);
         }
        },
       {
-        label: 'საწყობი B', id: "13",icon: 'fa fa-fw fa-calendar',  command: (event) => {
-          this.selectedTabId = 13;
+        label: 'B', id: "13",icon: 'fa fa-fw fa-home',  command: (event) => {
+          this.selectedTabId = 12;
+          this.getCartItems();
           this.onGridReady(this.eventData);
 
       }},
@@ -452,22 +482,24 @@ export class WarehouseComponent implements OnInit{
   }
   inventoryToBuildingDialog(){
     this.inventoryToBuildingDialogShow = true;
+    this.inventorTransfer={
+      date: new Date(),
+      selectedIndex:0,
+      generator: false,
+      roomId: 89
+    };
+
   }
   showDialog() {
     this.transferToSection ={
       Datetime: new Date()
     };
     this.display = true;
+    this.transferToSectionInvoiceGenerator = false;
   }
   cartDialog(){
     this.getCartItems()
       .then(response=>{
-        if(response['status']===200){
-          this.cartItemsData = [];
-            for (let key in response['data']){
-                this.cartItemsData.push(JSON.parse(response['data'][key]));
-            }
-        }
         this.cartDialogShow = true;
       })
   }
@@ -486,7 +518,16 @@ export class WarehouseComponent implements OnInit{
 
   }
   inventorDialog(){
+    this.inventorOperation='new';
+
     this.inventorDialogShow=true;
+    this.frustrate = false;
+    this.newInventor={
+      date: new Date(),
+      consumption: false,
+      price:0,
+      amount:0
+    };
     this.operation.getItemTypes()
       .then(response=>{
         this.itemTypes = response['data'];
@@ -497,13 +538,75 @@ export class WarehouseComponent implements OnInit{
       }).catch()
     this.operation.getListBarcodes()
       .then(response=>{
-        this.barcodes = response['data'];
+        this.barcodes = response['data'].map(v=>{
+          delete v.endPoint;
+          return v
+        });
       }).catch()
     this.operation.getMeasureUnits()
       .then(response=>{
         this.measureUnits = response['data'];
         console.log(this.measureUnits)
       }).catch();
+  }
+  inventorEditDialog(){
+     this.inventorOperation='edit';
+    if(Object.entries(this.tmpData).length >1){
+      this.inventorDialogShow=true;
+      this.frustrate = false;
+      this.operation.getItemTypes()
+        .then(response=>{
+          this.itemTypes = response['data'];
+        }).catch();
+      this.operation.getItemStatus()
+        .then(response=>{
+          this.itemStatus = response['data'];
+        }).catch()
+      this.operation.getListBarcodes()
+        .then(response=>{
+          this.barcodes = response['data'].map(v=>{
+            delete v.endPoint;
+            return v
+          });
+        }).catch()
+      this.operation.getMeasureUnits()
+        .then(response=>{
+          this.measureUnits = response['data'];
+          console.log(this.measureUnits)
+        }).catch();
+      const date = this.tmpData.entryDate.split("-");
+        this.newInventor={
+          id: this.tmpData.id,
+          date: new Date(moment(date[2]+"-"+date[1]+"-"+date[0]).format("YYYY-MM-DD")) ,
+          consumption: false,
+          fullname: this.tmpData,
+          price:this.tmpData.price,
+          amount:this.tmpData.amount,
+          entryDate: this.tmpData.entryDate,
+          selectedBarcode: this.tmpData.barCodeType,
+          fullBarCode:this.tmpData.barcode,
+          inCart: this.tmpData.inCart,
+          inStock: this.tmpData.inStock,
+          inspectionNumber: this.tmpData.inspectionNumber.toString(),
+          itemGroup: this.tmpData.itemGroup.id,
+          itemGroupName: this.tmpData.itemGroup.name,
+          selectedItemStatus: this.tmpData.itemStatus,
+          itemStatus: this.tmpData.itemStatus.id,
+          selectedItemType: this.tmpData.itemType,
+          itemType: this.tmpData.itemType.id,
+          selectedMaker: this.tmpData.maker,
+          selectedMeasureUnitName: this.tmpData.measureUnit,
+          measureUnit: this.tmpData.measureUnit.id,
+          selectedModel: this.tmpData.model,
+          name: this.tmpData.name,
+          selectedSupplier: this.tmpData.supplier,
+          tmpAmount: this.tmpData.tmpAmount,
+          invoice:this.tmpData.invoice,
+          invoiceAddon: this.tmpData.invoiceAddon
+        };
+
+    }
+
   }
   onTabChange($event: any) {
     this.inventorTransfer.selectedIndex = $event.index;
@@ -523,7 +626,9 @@ export class WarehouseComponent implements OnInit{
             this.newItem ={};
 
           })
-          .catch()
+          .catch(response=>{
+            this.error("შეცდომა",response['error'])
+          })
       }else{
         const  newItem = "?name="+this.newItem.value;
         this.operation.saveNewItem(this.newItem, newItem)
@@ -533,7 +638,9 @@ export class WarehouseComponent implements OnInit{
             this.newItem ={};
 
           })
-          .catch()
+          .catch(response=>{
+            this.error("შეცდომა",response['error'])
+          })
       }
     }
   }
@@ -548,7 +655,9 @@ export class WarehouseComponent implements OnInit{
       .then(response=>{
           this.ItemData = response['data'];
       })
-      .catch();
+      .catch(response=>{
+        this.error("შეცდომა",response['error'])
+      });
   }
   nodeSelect($event: any) {
     this.itemGroupDialogShow=false;
@@ -563,7 +672,7 @@ export class WarehouseComponent implements OnInit{
   saveNewInventor() {
     this.inventorDialogShow=true;
     this.newInventor.entryDate = moment(this.newInventor.date).format("DD-MM-YYYY");
-    this.newInventor.name = (this.newInventor.fullname !== undefined)?this.newInventor.fullname['name']: null;
+    this.newInventor.name =(typeof this.newInventor.fullname === 'string')?this.newInventor.fullname: this.newInventor.fullname['name'];
     this.newInventor.itemType = (this.newInventor.selectedItemType!==undefined)?this.newInventor.selectedItemType['id']: null;
     this.newInventor.maker = (this.newInventor.selectedMaker !==undefined)?this.newInventor.selectedMaker['id']: null;
     this.newInventor.supplier = (this.newInventor.selectedSupplier !==undefined)?this.newInventor.selectedSupplier['id']: null;
@@ -578,7 +687,7 @@ export class WarehouseComponent implements OnInit{
       price: this.newInventor.price,
       barCodeType: this.newInventor.barCodeType,
       barCode: this.newInventor.barCode,
-      amount: (this.newInventor.spend ==1 )? this.newInventor.packageAmount: 1,
+      amount: (this.newInventor.spend ==1 )? 1: this.newInventor.packageAmount,
       itemNumber: this.newInventor.itemNumber,
       factoryNumber: this.newInventor.factoryNumber,
       supplier: this.newInventor.supplier,
@@ -626,23 +735,29 @@ export class WarehouseComponent implements OnInit{
            this.onGridReady(this.eventData);
            alert("ოპერაცია წარმატებით დასრულდა");
          }else {
-           console.log(response);
-           alert(response['error'])
+           this.error("შეცდომა",response['error'])
          }
       })
-      .catch(reason => {
-        alert(reason["error"]);
+      .catch(response => {
+        this.error("შეცდომა",response['error'])
       })
 
   }
   getLastCode() {
+    console.log(this.newInventor);
     if(!this.newInventor.consumption){
       this.newInventor.barCodeType = this.newInventor.selectedBarcode['id'];
+      console.log(this.newInventor.barCodeType);
+      this.newInventor.selectedItemType =  ["rsk1","rs1"].indexOf(this.newInventor.selectedBarcode['name'].toLocaleLowerCase())>-1 ? {id: 2, name: "მცირე ფასიანი"}: {id: 1, name: "ძირითადი საშუალებები"};
+
+
       this.operation.getLastCode(this.newInventor.barCodeType)
         .then(response => {
           this.newInventor.fullBarCode = response['data']['value'] + response['data']['barCodeVisualValue'];
         })
-        .catch()
+        .catch(response=>{
+          this.error("შეცდომა",response['error'])
+        })
     }
   }
   frustrateInventor() {
@@ -655,16 +770,8 @@ export class WarehouseComponent implements OnInit{
       'selectedMeasureUnitName',
       'itemGroupName',
       'fullname',
-      'factoryNumber',
       'selectedItemType',
-      'selectedMaker',
-      'selectedSupplier',
-      'selectedItemStatus',
-      'selectedModel',
-      'invoice',
-      'inspectionNumber',
-      'price',
-      'invoiceAddon'
+      'price'
     ];
 
     if(this.newInventor.spend ===1){
@@ -672,37 +779,34 @@ export class WarehouseComponent implements OnInit{
 
     }else{
       filter.push( 'selectedBarcode');
-      filter.push( 'barCode');
     }
     this.formErrors =this.validator.checkObject(this.newInventor,filter);
     console.log(filter, this.newInventor, this.formErrors);
 
     if(this.formErrors.length === 0){
       this.newInventor.entryDate = moment(this.newInventor.date).format("DD-MM-YYYY");
-      this.newInventor.name = (this.newInventor.fullname !== undefined)?this.newInventor.fullname['name']: null;
+      this.newInventor.name =(typeof this.newInventor.fullname === 'string')?this.newInventor.fullname: this.newInventor.fullname['name'];
       this.newInventor.itemType = (this.newInventor.selectedItemType !=undefined)?this.newInventor.selectedItemType['id']: null;
+
       this.newInventor.maker = (this.newInventor.selectedMaker !==undefined)?this.newInventor.selectedMaker['id']: null;
+      this.newInventor.selectedMaker = (this.newInventor.selectedMaker !==undefined)? this.newInventor.selectedMaker: { id:null,name: ""};
+      this.newInventor.selectedItemType = (this.newInventor.selectedItemType !==undefined)? this.newInventor.selectedItemType: { id:null,name: ""};
+      this.newInventor.selectedItemStatus = (this.newInventor.selectedItemStatus !==undefined)? this.newInventor.selectedItemStatus: { id:null,name: ""};
+
       this.newInventor.supplier = (this.newInventor.selectedSupplier !==undefined)?this.newInventor.selectedSupplier['id']: null;
+      this.newInventor.selectedSupplier = (this.newInventor.selectedSupplier !==undefined)?this.newInventor.selectedSupplier:  {id:null,name: ""};
       this.newInventor.itemStatus = (this.newInventor.selectedItemStatus !== undefined)?this.newInventor.selectedItemStatus['id']: null ;
       this.newInventor.measureUnit = (this.newInventor.selectedMeasureUnitName != undefined) ?this.newInventor.selectedMeasureUnitName['id']: null;
       this.newInventor.measureUnitName = (this.newInventor.selectedMeasureUnitName != undefined) ?this.newInventor.selectedMeasureUnitName['name']: null;
       this.newInventor.model = (this.newInventor.selectedModel!== undefined) ?this.newInventor.selectedModel['id'] : null;
-
-      this.errors ={
-        barcode: (this.newInventor.barCodeType === undefined)? "test":"",
-        name: (this.newInventor.name ===undefined || this.newInventor.name ==null)? "test":"",
-        inventarType: (this.newInventor.selectedItemType ===undefined)? "test":"",
-        price: (this.newInventor.price ===undefined)? "test":"",
-        measureUnit: (this.newInventor.selectedMeasureUnitName === undefined)? "test": "",
-        group: (this.newInventor.itemGroup === undefined)? "test": ""
-      }
+      this.newInventor.selectedModel = (this.newInventor.selectedModel!== undefined) ? this.newInventor.selectedModel : { id:null,name: ""};
 
       if(this.newInventor.itemGroup !== undefined && this.newInventor.consumption ===false){
 
           this.operation.getFreeCodes({
             barCodeType: this.newInventor.barCodeType,
             count: this.newInventor.amount,
-            start: this.newInventor.barCode
+            start: (this.newInventor.spend===0 && (this.newInventor.barCode !== undefined || this.newInventor.barCode !== null))?  this.newInventor.barCode : ''
           })
             .then((response: {
               TotalCount: number,
@@ -720,8 +824,8 @@ export class WarehouseComponent implements OnInit{
               });
               this.frustrate = true;
             })
-            .catch(reason => {
-              alert(reason["error"]);
+            .catch(response => {
+              this.error("შეცდომა",response['error'])
             })
 
 
@@ -740,6 +844,7 @@ export class WarehouseComponent implements OnInit{
     }
   }
   selectedName() {
+    console.log(this.newInventor);
     this.newInventor.selectedMaker=this.newInventor.fullname['maker'];
     this.newInventor.selectedModel=this.newInventor.fullname['model'];
     this.newInventor.factoryNumber=this.newInventor.fullname['factoryNumber'];
@@ -750,8 +855,11 @@ export class WarehouseComponent implements OnInit{
     this.newInventor.inspectionNumber = this.newInventor.fullname['inspectionNumber'];
     this.newInventor.price = this.newInventor.fullname['price'];
     this.newInventor.invoiceAddon = this.newInventor.fullname['invoiceAddon'];
-    this.newInventor.selectedBarcode = this.newInventor.fullname['barCodeType'];
+    this.newInventor.selectedBarcode = this.newInventor.fullname['barCodeType']
+    this.newInventor.barCodeType = this.newInventor.fullname['barCodeType']['id'];
+    this.newInventor.barCode = this.newInventor.fullname['barCodeType']['id'];
     this.newInventor.selectedMeasureUnitName = this.newInventor.fullname['measureUnit'];
+    this.newInventor.measureUnit = this.newInventor.fullname['measureUnit']['id'];
     this.newInventor.itemGroup = this.newInventor.fullname['itemGroup']['id'];
     this.newInventor.itemGroupName=this.newInventor.fullname['itemGroup']['name'];
     this.newInventor.spend=this.newInventor.fullname['itemGroup']['spend'];
@@ -762,19 +870,33 @@ export class WarehouseComponent implements OnInit{
   private getCartItems() {
     return new Promise((resolve, reject) => {
       let formData= new FormData();
+      this.cartItemsData=[];
       formData.append("globalKey",this.selectedTabId.toString());
       this.operation.getCartItems(formData)
         .then(response=>{
+
           this.cartItems = [];
           if(response["status"]===200){
             for (let i in response['data']){
+              this.cartItemsData.push(JSON.parse(response['data'][i]));
               this.cartItems.push(i);
             }
+            this.cartItemsData.map(value => {
+              if(value['name'] ===undefined || value['name']===null){
+                value['name'] = '';
+              }
+              return value;
+            })
             resolve(response);
           }
         })
         .catch()
     })
+  }
+
+  checker($event) {
+    this.dataChecker=$event['status'];
+    console.log($event);
   }
   removeCartItem() {
 
@@ -786,33 +908,47 @@ export class WarehouseComponent implements OnInit{
               if(response['status']===200){
                   this.cartItemsData = [];
                   this.cartItems=[];
-                this.onGridReady(this.eventData)
+                 this.onGridReady(this.eventData)
+              }else{
+                this.error("შეცდომა",response['error'])
               }
         })
-        .catch()
+        .catch(response=>{
+          this.error("შეცდომა",response['error'])
+        })
   }
   generaTeTransferToSection() {
     let filter = ['Datetime','fromDetails','toWhomStockDetails','carrierPersonDetails'];
     this.formErrors =this.validator.checkObject(this.transferToSection,filter);
 
-    if(this.formErrors.length === 0){
+    if(this.formErrors.length === 0 && this.dataChecker){
+      this.cartItemsData = this.cartItemsData.map(value => {
+        if(value['name'] ===undefined || value['name']===null){
+          value['name'] = '';
+        }
+        return value;
+      });
       this.transferToSection.trDate = moment(this.transferToSection.Datetime).format("DD-MM-YYYY");
       this.transferToSection.carrierPerson = this.transferToSection.carrierPersonDetails["id"];
       this.transferToSection.toWhomStock = this.transferToSection.toWhomStockDetails["id"];
       this.transferToSection.listData = this.cartItemsData;
       this.transferToSection.fromStock = this.transferToSection.fromDetails['id'];
       this.transferToSection.list = this.cartItemsData.map(value => {
-        return {itemId:value["id"],amount:value["amount"]}
+        return {itemId:value["id"],amount:value["count"]}
       });
       this.operation.getAddonNumber()
         .then(response=>{
           if(response['status'] ===200){
             this.transferToSection.addon = response["data"];
             this.transferToSectionInvoiceGenerator = true;
+          }else{
+            this.error("შეცდომა",response['error'])
           }
 
         })
-        .catch()
+        .catch(response=>{
+          this.error("შეცდომა",response['error'])
+        })
     }
 
   }
@@ -825,7 +961,9 @@ export class WarehouseComponent implements OnInit{
         this.propertyData=response.data;
 
       })
-      .catch()
+      .catch(response=>{
+        this.error("შეცდომა",response['error'])
+      })
         ;
   }
   filterStaff($event: any) {
@@ -835,12 +973,16 @@ export class WarehouseComponent implements OnInit{
           this.staffList = (response['status']===200)?response.data.map(v=>{
             return {
               id: v['id'],
-              name: v["fullname"]+" , "+v["position"]["name"]+" ,"+ v["department"]["name"],
-              fname:  v["fullname"]
+              name:  v["fullname"] + " , " + v["position"]["name"] + " ," + v["department"]["name"],
+              fname: v["fullname"],
+              position: v["position"]["name"],
+              department:  v["department"]["name"]
             }
           }): [];
         })
-        .catch()
+        .catch(response=>{
+          this.error("შეცდომა",response['error'])
+        })
 
   }
   activeTransferToSection() {
@@ -853,18 +995,19 @@ export class WarehouseComponent implements OnInit{
           }
       }
 
-      this.operation.generaTeTransferToSection(formData,'section')
+      this.operation.generaTeTransferToSection(formData,'stock')
         .then(response=>{
           if(response['status'] ===200){
             this.transferToSection = {};
             this.transferToSectionInvoiceGenerator = false;
             this.display =false;
+            this.removeCartItem();
           }else{
-            alert(response["error"])
+            this.error("შეცდომა",response['error'])
           }
         })
         .catch(response=>{
-          alert(response["error"])
+          this.error("შეცდომა",response['error'])
         })
   }
   filterBrands($event: any) {
@@ -876,11 +1019,17 @@ export class WarehouseComponent implements OnInit{
     }
     this.formErrors =this.validator.checkObject(this.inventorTransfer,filter);
 
-    if(this.formErrors.length === 0){
+    if(this.formErrors.length === 0 && this.dataChecker){
 
       this.operation.getAddonNumber()
         .then(response=>{
           if(response['status'] ===200){
+            this.cartItemsData = this.cartItemsData.map(value => {
+              if(value['name'] ===undefined || value['name']===null){
+                value['name'] = '';
+              }
+              return value;
+            });
             this.inventorTransfer.addon = response["data"];
             this.inventorTransfer.generator = true;
             this.inventorTransfer.trDate = moment(this.inventorTransfer.date).format("DD-MM-YYYY");
@@ -888,15 +1037,24 @@ export class WarehouseComponent implements OnInit{
             this.inventorTransfer.fromStock = 11;
             this.inventorTransfer.listData = this.cartItemsData;
             this.inventorTransfer.carrierPerson = this.inventorTransfer.selectedCarrier["id"];
-            this.inventorTransfer.toWhomSection = this.inventorTransfer.selectedProperty["id"];
+            if(this.inventorTransfer.selectedIndex===1){
+              this.inventorTransfer.receiverPerson  = this.inventorTransfer.selectedProperty["id"];
+
+            }else{
+              this.inventorTransfer.toWhomSection = this.inventorTransfer.selectedProperty["id"];
+            }
             this.inventorTransfer.requestPerson = this.inventorTransfer.selectedPerson["id"];
             this.inventorTransfer.list = this.cartItemsData.map(value => {
-              return {itemId:value["id"],amount:value["amount"]}
+              return {itemId:value["id"],amount:value["count"]}
             });
+            console.log(this.inventorTransfer);
+          }else{
+            this.error("შეცდომა",response['error'])
           }
-
         })
-        .catch()
+        .catch(response=>{
+          this.error("შეცდომა",response['error'])
+        })
     }
   }
   activeInventorTransfer() {
@@ -917,14 +1075,15 @@ export class WarehouseComponent implements OnInit{
             selectedIndex:0,
             generator: false
           };
+          this.removeCartItem();
           this.inventorTransfer.generator = false;
           this.inventoryToBuildingDialogShow=false;
         }else{
-          alert(response["error"])
+          this.error("შეცდომა",response['error'])
         }
       })
       .catch(response=>{
-        alert(response["error"])
+        this.error("შეცდომა",response.error)
       })
 
   }
@@ -934,6 +1093,64 @@ export class WarehouseComponent implements OnInit{
   }
   selectPerson($event: any) {
     this.inventorTransfer.toWhomSection = $event['id'];
+    this.operation.getRoomsByPerson($event['id'])
+      .then(response => {
+        if(response['status']===200){
+          this.roomsList = response['data'];
+        }else{
+          this.error("შეცდომა",response['error'])
+        }
+      })
+      .catch(response=>{
+        this.error("შეცდომა",response['error'])
+      })
+  }
+  error(title,data) {
+    this.confirmationService.confirm({
+      message:data,
+      header: title,
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+      }
+    });
+  }
+
+  selectCell($event: any) {
+     this.tmpData =$event['data'];
+     console.log(this.tmpData);
+  }
+
+  editNewInventor() {
+    let formdata = new FormData();
+    for(let key in this.newInventor){
+
+      if(this.newInventor[key] !==null && this.newInventor[key] !== undefined){
+        if(key=='list'){
+          formdata.append(key, JSON.stringify(this.newInventor[key]).replace("null","").replace("undefined",""))
+        }else{
+          formdata.append(key, this.newInventor[key]);
+        }
+      }
+
+    }
+    this.operation.editInvetor((formdata))
+      .then(response=>{
+        if(response['status']==200){
+          this.newInventor = {
+            date: new Date(),
+            consumption: false
+          };
+          this.frustrate = false;
+          this.inventorDialogShow = false;
+          this.onGridReady(this.eventData);
+          alert("ოპერაცია წარმატებით დასრულდა");
+        }else {
+          this.error("შეცდომა",response['error'])
+        }
+      })
+      .catch(response => {
+        this.error("შეცდომა",response['error'])
+      })
   }
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {

@@ -5,7 +5,7 @@ import {HttpClient} from "@angular/common/http";
   providedIn: 'root'
 })
 export class RequestService {
-  private prod: string = '';
+  private prod: string = '/rs';
   constructor(private http: HttpClient) {
 
   }
@@ -15,9 +15,10 @@ export class RequestService {
       this.http.get(uri)
         .toPromise()
         .then(response=>{
-            if(response['status']===200){
+          resolve(response)
+           /* if(response['status']===200){
                 resolve(response)
-            }
+            }*/
         })
         .catch()
     });
@@ -29,7 +30,6 @@ export class RequestService {
         .toPromise()
         .then(response=>{
             resolve(response)
-
         })
         .catch()
     });

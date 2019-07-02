@@ -1,4 +1,23 @@
 /deep/ app-warehouse{
+
+  button, p-tabmenu ul li a {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-family: 'lbet-mt',sans-serif !important;
+    font-size: 13px !important;
+  }
+
+  div[role="dialog"] {
+    .ui-dialog-title {
+      font-family: 'lbet-mt',sans-serif !important;
+    }
+    p {
+      font-family: 'lbet-st',sans-serif !important;
+    }
+    ul[role="tablist"] li a {font-family: 'lbet-mt',sans-serif !important;}
+  }
+
   p-autocomplete{
     input{
       width: 86% !important;
@@ -56,6 +75,11 @@
       border:1px solid red;
     }
   }
+
+  ag-grid-angular div[role="row"] div:nth-child(2) {
+    cursor: pointer;
+  }
+
   .red{
     input{
       border:1px solid red;
@@ -63,6 +87,12 @@
     .ui-dropdown{
       border:1px solid red;
     }
+  }
+  .ag-red{
+    background: rgba(255, 0, 0, 0.4196078431372549) !important;
+  }
+  .cursor{
+    cursor: pointer;
   }
 }
 

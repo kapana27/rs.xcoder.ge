@@ -12,9 +12,9 @@
           <th>ზედ. ნომერი</th>
           <th>ოპერაციის ტიპი</th>
           <th>
-            <div *ngIf="selectedParams.id !== 0 && params.approved === 0">
-              <button pButton type="button" icon="pi pi-check"  class="ui-button-success" (click)="confirm(2)"></button>
-              <button pButton type="button" icon="pi  pi-times"  class="ui-button-danger" (click)="confirm(1)"></button>
+            <div *ngIf="selectedParams.id !== 0 && params.approved === 0" style="display: flex; justify-content: space-around; ">
+              <button pButton type="button" icon="pi pi-check" pTooltip="მიღება" tooltipPosition="top"   class="ui-button-success" (click)="confirm(2)"></button>
+              <button pButton type="button" icon="pi  pi-times"  pTooltip="უარყოფა" tooltipPosition="top"   class="ui-button-danger" (click)="confirm(1)"></button>
             </div>
             <span *ngIf="selectedParams.id === 0 || params.approved !== 0">თარიღი</span>
           </th>

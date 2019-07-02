@@ -4,17 +4,21 @@ import { CartComponent } from './cart/cart.component';
 import {TableModule} from "primeng/table";
 import {ButtonModule} from "primeng/button";
 import { GeneratorComponent } from './generator/generator.component';
+import {CartButtonComponent} from "./cart-button/cart-button.component";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
-  declarations: [CartComponent, GeneratorComponent],
+  declarations: [CartComponent, GeneratorComponent,CartButtonComponent],
   imports: [
     CommonModule,
     TableModule,
-    ButtonModule
+    ButtonModule,
+    FormsModule
   ],
   exports:[
     CartComponent,
-    GeneratorComponent
+    GeneratorComponent,
+    CartButtonComponent
   ]
 })
 export class ComponentsModule { }

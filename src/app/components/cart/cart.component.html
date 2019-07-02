@@ -1,8 +1,5 @@
 <div class="ui-g ui-fluid">
   <div class="ui-g-12 ui-md-12">
-    <button pButton type="button" label="კალათის გასუფთავება" class="ui-button-danger" iconPos="left" icon="pi pi-check" style="width: 200px" (click)="clear()"></button>
-    <hr>
-
     <p-table [value]="data">
       <ng-template  pTemplate="header">
         <tr>
@@ -16,8 +13,8 @@
         <tr>
           <td>{{d["name"]}}</td>
           <td>{{d["barcode"]}}</td>
-          <td>{{1}}</td>
-          <td>{{d["amount"]}}</td>
+          <td><input type="text" [(ngModel)]="d['count']" [ngClass]="{ 'red': d['count'] *1>(d['amount'] *1 -d['tmpAmount'] * 1) || d['count']<1 }" style="width: 100%" (ngModelChange)="check(d)" ></td>
+          <td>{{d["amount"] *1 -d["tmpAmount"] * 1}}</td>
         </tr>
       </ng-template>
 

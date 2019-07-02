@@ -16,7 +16,7 @@ export interface Inventory {
   measureUnit?: number,
   itemType?: number,
   itemStatus?: number,
-  inspectionNumber?: number,
+  inspectionNumber?: string,
   itemGroupName?: string,
   itemGroup?: number,
   spend?: number,

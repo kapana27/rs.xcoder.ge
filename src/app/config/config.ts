@@ -3,7 +3,11 @@ export  const Config = {
   operations: {
     property: {
       get:{
-        data: '/api/secured/Item/Section/In/Select'
+        data: '/api/secured/Item/Section/In/Select',
+        in: '/api/secured/Item/Section/In/Select',
+        out: '/api/secured/Item/Section/Out/Select',
+        list: '/api/secured/Item/Select',
+
       }
     }
   },
@@ -20,7 +24,9 @@ export  const Config = {
   transfer:{
     post:{
         transfer: '/api/secured/Item/Stock/Transfer',
-        section: '/api/secured/Item/Section/Transfer'
+        section: '/api/secured/Item/Section/Transfer',
+        person: '/api/secured/Item/Person/Transfer',
+
     },
     get:{
 
@@ -35,7 +41,8 @@ export  const Config = {
         marker: '/api/secured/List/Maker/Filter',
         supplier: '/api/secured/List/Supplier/Filter',
         model: '/api/secured/List/Model/Filter',
-        stock:'/api/secured/stock/Select'
+        stock:'/api/secured/stock/Select',
+        rooms: '/api/secured/Item/Building/Rooms'
       },
       post:{
         lastBarCode: '/api/secured/List/BarCode/Get/LastCode',
@@ -54,7 +61,8 @@ export  const Config = {
   },
   inventory:{
     post:{
-      insert: "/api/secured/Item/Insert"
+      insert: "/api/secured/Item/Insert",
+      update: "/api/secured/Item/Update"
     }
   },
   cart:{

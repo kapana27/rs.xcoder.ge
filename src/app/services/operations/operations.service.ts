@@ -9,8 +9,11 @@ import {RequestService} from "../request.service";
 export class OperationsService {
 
   constructor(private http: HttpClient, private Request: RequestService) {}
-  getData(index, length) {
-     return this.Request.Get(Config.baseURI+Config.operations.property.get.data + '?page=1&start='+index+'&limit='+length );
+  getData(tab, index, length) {
+     return this.Request.Get(Config.baseURI+Config.operations.property.get.list + '?stockId='+tab+'&page=1&start='+index+'&limit='+length );
+  }
+  getAllData(inOut,index, length) {
+    return this.Request.Get(Config.baseURI+Config.operations.property.get[inOut] + '?page=1&start='+index+'&limit='+length );
   }
   getItemTypes(){
     return this.Request.Get(Config.itemTypes.get.types);
@@ -88,8 +91,16 @@ export class OperationsService {
   generateReturnInvetorInvoice(formData){
     return this.Request.Post(Config.List.post.return, formData)
   }
-  generateTransferToPerson(formData,type='transfer'){
+  generateTransferToPerson(formData,type){
+    console.log(type);
     return this.Request.Post(Config.transfer.post[type],formData);
   }
 
+  getRoomsByPerson(id){
+    return this.Request.Post(Config.List.get.rooms+'?receiverPerson='+id);
+  }
+
+  editInvetor(formData){
+    return this.Request.Post(Config.inventory.post.update,formData);
+  }
 }

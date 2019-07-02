@@ -1,28 +1,32 @@
-<div class="row">
-  <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
-</div>
-<br>
+<p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
 <div class="row" >
-  <button pButton icon="pi pi-plus" label="ინვენტარის მიღება" class="ui-button-success" (click)="inventorDialog()"></button> &nbsp; &nbsp;
-  <button pButton icon="pi pi-pencil" label="რედაქტირება" class="ui-button-raised" (click)="inventorDialog()"></button>
-
-  <button (click)="inventoryToBuildingDialog()" pButton type="button" label="ინვენტარის გაცემა" class="ui-button-raised" style="position: absolute; right: 400px"></button> &nbsp;&nbsp;
-  <button (click)="showDialog()" pButton type="button" label="ინვენტარის მოძრაობა სექციებს შორის" class="ui-button-raised"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
-  <span style="position: absolute;right: 37px;margin-top: 3px;color: #007ad9;">
-    <fa-icon [icon]="faCartPlus"  (click)="cartDialog()" size="2x"  ></fa-icon>
-    {{this.cartItems.length}}
-  </span>
+  <div class="col-m-12 col-lg-2">
+    <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
+  </div>
+  <div class="col-m-12 col-lg-4">
+    <button pButton icon="pi pi-plus" label="ინვენტარის მიღება" class="ui-button-success" (click)="inventorDialog()"></button> &nbsp; &nbsp;
+    <button pButton icon="pi pi-pencil" label="რედაქტირება" class="ui-button-raised" (click)="inventorEditDialog()"></button>
+  </div>
+  <div class="col-m-12 col-lg-6">
+    <button (click)="inventoryToBuildingDialog()" pButton type="button" label="ინვენტარის გაცემა" class="ui-button-raised" style="position: absolute; right: 350px"></button> &nbsp;&nbsp;
+    <button (click)="showDialog()" pButton type="button" label="ინვ. მოძრაობა სექციებს შორის" class="ui-button-raised"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
+    <span style="position: absolute;right: 37px;margin-top: 3px;color: #007ad9; cursor: pointer;">
+      <fa-icon [icon]="faCartPlus"  (click)="cartDialog()" size="2x"  ></fa-icon>
+      {{this.cartItems.length}}
+    </span>
+  </div>
 </div>
 <br>
 <div class="row">
   <ag-grid-angular
     #agGrid
-    style="width: 100%;height: calc(100vh - 260px);"
+    style="width: 100%;height: calc(100vh - 135px);"
     id="myGrid"
     class="ag-theme-balham"
     [columnDefs]="columnDefs"
     [floatingFilter]="true"
     [debug]="true"
+    [rowClassRules]="getRowStyle"
     [defaultColDef]="defaultColDef"
     [rowSelection]="rowSelection"
     [rowDeselection]="true"
@@ -38,59 +42,69 @@
     [pivotPanelShow]="true"
     (gridReady)="onGridReady($event)"
     (cellClicked)="cart($event)"
+    (rowSelected)="selectCell($event)"
   ></ag-grid-angular>
 </div>
 
 
 
-<p-dialog header="ინვენტარის მოძრაობა სექციებს შორის" [(visible)]="display" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="500"
+<p-dialog header="ინვენტარის მოძრაობა სექციებს შორის" *ngIf="display" [(visible)]="display" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
   <div style="width: 100%;height: 500px;" *ngIf="transferToSectionInvoiceGenerator">
     <app-generator [transferToSection]="transferToSection" ></app-generator>
   </div>
   <div style="width: 100%;height: 500px;" *ngIf="!transferToSectionInvoiceGenerator">
     <div class="ui-g ui-fluid">
-      <div class="ui-g-12 ui-md-4">
-       <p>თარიღი</p>
-        <p-calendar [(ngModel)]="transferToSection.Datetime" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+      <div class="ui-g-12 ui-md-8">
+        <div class="ui-g-12 ui-md-6">
+          <p>თარიღი</p>
+          <p-calendar [(ngModel)]="transferToSection.Datetime" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+        </div>
+        <div class="ui-g-12 ui-md-6">
+          <p>სექცია</p>
+          <p-dropdown  [ngClass]="{ 'red':if_error(formErrors,'fromDetails')?'1px solid red': '' }" [options]="stockList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="transferToSection.fromDetails" (ngModelChange)="getTransferProperty()"></p-dropdown>
+        </div>
+        <div class="ui-g-12 ui-md-6">
+          <p>ფროფერთი</p>
+          <p-dropdown  [ngClass]="{ 'red':if_error(formErrors,'toWhomStockDetails')?'1px solid red': '' }" [options]="propertyData" optionLabel="fullname" placeholder="ფროფერთი" [(ngModel)]="transferToSection.toWhomStockDetails" ></p-dropdown>
+        </div>
+        <div class="ui-g-12 ui-md-6">
+          <p>ტრანსპორტ. პასხ. პირი:</p>
+          <p-autoComplete [ngClass]="{ 'red':if_error(formErrors,'carrierPersonDetails')?'1px solid red': '' }"  [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="transferToSection.carrierPersonDetails"
+                          [minLength]="1" placeholder=""  field="fname" [dropdown]="true">
+            <ng-template let-brand pTemplate="item">
+              <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                <div style="font-size:12px;">{{brand['position']}}</div>
+              </div>
+            </ng-template>
+          </p-autoComplete>
+        </div>
       </div>
-      <div class="ui-g-12 ui-md-4">
-        <p>სექცია</p>
-        <p-dropdown  [ngClass]="{ 'red':if_error(formErrors,'fromDetails')?'1px solid red': '' }" [options]="stockList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="transferToSection.fromDetails" (ngModelChange)="getTransferProperty()"></p-dropdown>
-      </div>
-      <div class="ui-g-12 ui-md-4">
-        <p>ფროფერთი</p>
-        <p-dropdown  [ngClass]="{ 'red':if_error(formErrors,'toWhomStockDetails')?'1px solid red': '' }" [options]="propertyData" optionLabel="fullname" placeholder="ფროფერთი" [(ngModel)]="transferToSection.toWhomStockDetails" ></p-dropdown>
-      </div>
-      <div class="ui-g-12 ui-md-12">
-         <p>ტრანსპორტ. პასხ. პირი:</p>
-        <p-autoComplete [ngClass]="{ 'red':if_error(formErrors,'carrierPersonDetails')?'1px solid red': '' }"  [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="transferToSection.carrierPersonDetails"
-                        [minLength]="1" placeholder=""  field="name" [dropdown]="true">
 
-        </p-autoComplete>
-      </div>
-      <div class="ui-g-12 ui-md-12">
+      <div class="ui-g-12 ui-md-4">
         <p>კომენტარი</p>
-        <textarea pInputTextarea placeholder="შენიშვნა" [(ngModel)]="transferToSection.note"></textarea>
+        <textarea pInputTextarea placeholder="შენიშვნა" rows="5" [(ngModel)]="transferToSection.note"></textarea>
       </div>
-      <app-cart [data]="cartItemsData" (removeCartItem)="removeCartItem()" ></app-cart>
+      <app-cart [data]="cartItemsData" (removeCartItem)="removeCartItem()" (checker)="checker($event)"></app-cart>
     </div>
   </div>
   <p-footer>
+    <app-cart-button (removeCartItem)="removeCartItem()" ></app-cart-button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="!transferToSectionInvoiceGenerator"(click)="generaTeTransferToSection()" label="ზედდებულის გენერაცია"></button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="transferToSectionInvoiceGenerator" (click)="activeTransferToSection()" label="ზედდებულის გააქტიურება"></button>
     <button type="button" pButton icon="pi pi-close" (click)="display=false" label="დახურვა" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>
 
-<p-dialog header=" "
-[(visible)]="cartDialogShow" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+<p-dialog header=" " *ngIf="cartDialogShow" [(visible)]="cartDialogShow" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
   <div style="width: 100%;height: 500px;">
-    <app-cart [data]="cartItemsData" (removeCartItem)="removeCartItem()" ></app-cart>
+    <app-cart-button (removeCartItem)="removeCartItem()" (checker)="checker($event)"></app-cart-button>
+    <app-cart style="position: relative; top:30px;"  [data]="cartItemsData" (removeCartItem)="removeCartItem()" (checker)="checker($event)"></app-cart>
   </div>
 </p-dialog>
 
-<p-dialog header="ინვენტარის გაცემა" [(visible)]="inventoryToBuildingDialogShow" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="500"
+<p-dialog header="ინვენტარის გაცემა" *ngIf="inventoryToBuildingDialogShow" [(visible)]="inventoryToBuildingDialogShow" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
 
   <div style="width: 100%;height: 500px;" *ngIf="inventorTransfer.generator">
@@ -100,93 +114,129 @@
       <p-tabView (onChange)="onTabChange($event)" >
         <p-tabPanel header="შენობა" [selected]="true" >
           <div class="ui-g ui-fluid" >
+            <div class="ui-g-12 ui-md-8">
+              <div class="ui-g-12 ui-md-6">
+                <p>თარიღი</p>
+                <p-calendar [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+              </div>
+
+              <div class="ui-g-12 ui-md-6">
+                <p>ფროფერთი</p>
+                <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
+                                [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                  <ng-template let-brand pTemplate="item">
+                    <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                      <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                      <div style="font-size:12px;">{{brand['position']}}</div>
+                    </div>
+                  </ng-template>
+                </p-autoComplete>
+              </div>
+
+              <div class="ui-g-12 ui-md-6">
+                <p>მომთხოვნი პიროვნება</p>
+                <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
+                                [minLength]="1" placeholder=""  field="fname" [dropdown]="true"  [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
+                  <ng-template let-brand pTemplate="item">
+                    <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                      <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                      <div style="font-size:12px;">{{brand['position']}}</div>
+                    </div>
+                  </ng-template>
+                </p-autoComplete>
+              </div>
+
+              <div class="ui-g-12 ui-md-6">
+                <p>ტრანსპორტ. პასხ. პირი:</p>
+                <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedCarrier"
+                                [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }" >
+                  <ng-template let-brand pTemplate="item">
+                    <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                      <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                      <div style="font-size:12px;">{{brand['position']}}</div>
+                    </div>
+                  </ng-template>
+                </p-autoComplete>
+              </div>
+            </div>
             <div class="ui-g-12 ui-md-4">
-              <p>თარიღი</p>
-              <p-calendar [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
-            </div>
-
-            <div class="ui-g-12 ui-md-12">
-              <p>ფროფერთი</p>
-              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                              [minLength]="1" placeholder=""  field="name" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
-
-              </p-autoComplete>
-            </div>
-
-            <div class="ui-g-12 ui-md-12">
-              <p>მომთხოვნი პიროვნება</p>
-              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
-                              [minLength]="1" placeholder=""  field="name" [dropdown]="true"  [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
-
-              </p-autoComplete>
-            </div>
-
-            <div class="ui-g-12 ui-md-12">
-              <p>ტრანსპორტ. პასხ. პირი:</p>
-              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedCarrier"
-                              [minLength]="1" placeholder=""  field="name" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }" >
-
-              </p-autoComplete>
-            </div>
-
-            <div class="ui-g-12 ui-md-12">
               <p>კომენტარი</p>
-              <textarea pInputTextarea placeholder="შენიშვნა" [(ngModel)]="inventorTransfer.note" [ngClass]="{ 'red':if_error(formErrors,'note')?'1px solid red': '' }"></textarea>
+              <textarea pInputTextarea placeholder="შენიშვნა" rows="5" [(ngModel)]="inventorTransfer.note" [ngClass]="{ 'red':if_error(formErrors,'note')?'1px solid red': '' }"></textarea>
             </div>
-           <app-cart [data]="cartItemsData"></app-cart>
           </div>
         </p-tabPanel>
         <p-tabPanel header="პიროვნება" >
           <div class="ui-g ui-fluid" >
-            <div class="ui-g-12 ui-md-4">
-              <p>თარიღი</p>
-              <p-calendar [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
-            </div>
+            <div class="ui-g-12 ui-md-8">
+              <div class="ui-g-12 ui-md-6">
+                <p>თარიღი</p>
+                <p-calendar [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+              </div>
 
-            <div class="ui-g-12 ui-md-12">
-              <p>პიროვნება</p>
+              <div class="ui-g-12 ui-md-6">
+                <p>პიროვნება</p>
                 <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                               (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="name" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                                (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                  <ng-template let-brand pTemplate="item">
+                    <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                      <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                      <div style="font-size:12px;">{{brand['position']}}</div>
+                    </div>
+                  </ng-template>
                 </p-autoComplete>
-            </div>
-            <div class="ui-g-12 ui-md-11">
-              <p>სექცია</p>
-              <p-dropdown [disabled]="!inventorTransfer.toWhomSection" [options]="stockList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="inventorTransfer.selectedSection" [ngClass]="{ 'red':if_error(formErrors,'selectedSection')?'1px solid red': '' }" ></p-dropdown>
-            </div>
-            <div class="ui-g-12 ui-md-12">
-              <p>მომთხოვნი პიროვნება</p>
-              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
-                              [minLength]="1" placeholder=""  field="name" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
+              </div>
 
-              </p-autoComplete>
-            </div>
+              <div class="ui-g-12 ui-md-6">
+                <p>ტრანსპორტ. პასხ. პირი:</p>
+                <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedCarrier"
+                                [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }">
+                  <ng-template let-brand pTemplate="item">
+                    <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                      <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                      <div style="font-size:12px;">{{brand['position']}}</div>
+                    </div>
+                  </ng-template>
+                </p-autoComplete>
+              </div>
+              <div class="ui-g-12 ui-md-6">
+                <p>მომთხოვნი პიროვნება</p>
+                <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
+                                [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
+                  <ng-template let-brand pTemplate="item">
+                    <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                      <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                      <div style="font-size:12px;">{{brand['position']}}</div>
+                    </div>
+                  </ng-template>
+                </p-autoComplete>
+              </div>
 
-            <div class="ui-g-12 ui-md-12">
-              <p>ტრანსპორტ. პასხ. პირი:</p>
-              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedCarrier"
-                              [minLength]="1" placeholder=""  field="name" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }">
-
-              </p-autoComplete>
             </div>
+            <div class="ui-g-12 ui-md-4">
 
-            <div class="ui-g-12 ui-md-12">
-              <p>კომენტარი</p>
-              <textarea pInputTextarea placeholder="შენიშვნა" [(ngModel)]="inventorTransfer.note"></textarea>
+              <div class="ui-g-12 ui-md-12">
+                <p>სექცია</p>
+                <p-dropdown [disabled]="!inventorTransfer.toWhomSection" [options]="roomsList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="inventorTransfer.selectedSection" [ngClass]="{ 'red':if_error(formErrors,'selectedSection')?'1px solid red': '' }" ></p-dropdown>
+              </div>
+              <div class="ui-g-12 ui-md-12">
+                <p>კომენტარი</p>
+                <textarea pInputTextarea placeholder="შენიშვნა" rows="1" [(ngModel)]="inventorTransfer.note"></textarea>
+              </div>
             </div>
-            <app-cart [data]="cartItemsData"></app-cart>
           </div>
         </p-tabPanel>
       </p-tabView>
-
+    <app-cart [data]="cartItemsData" (checker)="checker($event)"></app-cart>
   </div>
   <p-footer>
+    <app-cart-button (removeCartItem)="removeCartItem()"></app-cart-button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="!inventorTransfer.generator" (click)="generaTeInventorTransfer()" label="ზედდებულის გენერაცია"></button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="inventorTransfer.generator"  (click)="activeInventorTransfer()" label="ზედდებულის გააქტიურება"></button>
     <button type="button" pButton icon="pi pi-close" (click)="inventoryToBuildingDialogShow=false" label="დახურვა" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>
 
-<p-dialog header="ჩანაწერის დამატება" [(visible)]="newRecordDialogShow" [modal]="true" [responsive]="true" [style]="{width: '350px', minWidth: '200px'}" [minY]="70"
+<p-dialog header="ჩანაწერის დამატება" *ngIf="newRecordDialogShow" [(visible)]="newRecordDialogShow" [modal]="true" [responsive]="true" [style]="{width: '350px', minWidth: '200px'}" [minY]="70"
           [maximizable]="true" [baseZIndex]="10000">
   <input id="input" type="text" size="30" pInputText [(ngModel)]="newItem.value">
   <p-footer>
@@ -195,7 +245,7 @@
   </p-footer>
 </p-dialog>
 
-<p-dialog header="საქონლის ჯგუფი" [(visible)]="itemGroupDialogShow" [modal]="true" [responsive]="true" [style]="{width: '500px', minWidth: '200px'}" [minY]="70"
+<p-dialog header="საქონლის ჯგუფი" style="vertical-align: baseline" *ngIf="itemGroupDialogShow" [(visible)]="itemGroupDialogShow" [modal]="true" [responsive]="true" [style]="{width: '500px', minWidth: '200px'}" [minY]="100"
           [maximizable]="true" [baseZIndex]="10000">
   <p-tree [value]="ItemGroup" selectionMode="single"
           (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)"></p-tree>
@@ -207,7 +257,7 @@
   </p-footer>
 </p-dialog>
 
-<p-dialog header="ინვენტარის მიღება" [(visible)]="inventorDialogShow" [modal]="true" [responsive]="true" [style]="{width: '1200px', minWidth: '200px'}" [minY]="500"
+<p-dialog header="ინვენტარის მიღება" *ngIf="inventorDialogShow" [(visible)]="inventorDialogShow" [modal]="true" [responsive]="true" [style]="{width: '1200px', minWidth: '200px'}" [minY]="500"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
   <div style="width: 100%;height: 500px;" *ngIf="!frustrate">
     <div class="ui-g ui-fluid">
@@ -220,21 +270,21 @@
           <table style="width: 100%; border-collapse: collapse" >
             <tr >
               <td colspan="2" style="padding: 0px;line-height: 20px;margin: 0px;" *ngIf="!newInventor.consumption">შტრიხკოდი</td>
-              <td style="padding: 0px; line-height: 20px;margin: 0px;" >რაოდ</td>
-              <td *ngIf="newInventor.consumption" style="padding: 0px;line-height: 20px;margin: 0px;" > შ.რაოდ</td>
+              <td style="padding: 0px; line-height: 20px;margin: 0px;" > რაოდენობა</td>
+              <td *ngIf="newInventor.consumption" style="padding: 0px;line-height: 20px;margin: 0px;" >ერთ. რაოდენობა</td>
             </tr>
             <tr >
               <td *ngIf="!newInventor.consumption" width="35px">
-                <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedBarcode')?'1px solid red': '' }" [autoWidth]="true" [options]="barcodes"  placeholder="RS" optionLabel="name" [(ngModel)]="newInventor.selectedBarcode"  [showClear]="true" (ngModelChange)="getLastCode()" ></p-dropdown>
+                <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedBarcode')?'1px solid red': '' }" [autoWidth]="true" [options]="barcodes"   placeholder="RS"  optionLabel="name" [(ngModel)]="newInventor.selectedBarcode"  [showClear]="true" (ngModelChange)="getLastCode()" ></p-dropdown>
               </td>
               <td *ngIf="!newInventor.consumption">
-                <input type="text" [ngClass]="{ 'red':if_error(formErrors,'barCode')?'1px solid red': '' }"  pInputText placeholder="შტრიხკოდი" style="width: 100%; height: 33px;" [(ngModel)]="newInventor.barCode"  >
+                <input type="text"  pInputText placeholder="შტრიხკოდი" style="width: 100%; height: 33px;" [(ngModel)]="newInventor.barCode"  >
               </td>
               <td>
-                <input type="text" pInputText placeholder="რაოდ" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.amount"  [ngClass]="{ 'red':if_error(formErrors,'amount')?'1px solid red': '' }">
+                <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.amount"  [ngClass]="{ 'red':if_error(formErrors,'amount')?'1px solid red': '' }">
               </td>
               <td *ngIf="newInventor.consumption">
-                <input type="text" pInputText placeholder="შ.რაოდ" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.packageAmount" [ngClass]="{ 'red':if_error(formErrors,'packageAmount')?'1px solid red': '' }">
+                <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.packageAmount" [ngClass]="{ 'red':if_error(formErrors,'packageAmount')?'1px solid red': '' }">
               </td>
             </tr>
           </table>
@@ -261,7 +311,10 @@
           <p>დასახელება</p>
 
             <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"  [suggestions]="filteredInventors" (completeMethod)="filterInventorsByName($event)" field="name" [size]="30"
-                             placeholder="დასახელება" [minLength]="1" [(ngModel)]="newInventor.fullname" [forceSelection]="true" (onSelect)="selectedName()"></p-autoComplete>
+                             placeholder="დასახელება" [minLength]="1" [(ngModel)]="newInventor.fullname" (onSelect)="selectedName()">
+
+
+            </p-autoComplete>
 
         </div>
         <div class="ui-g-4">
@@ -401,9 +454,10 @@
   </div>
   <p-footer>
     <span class="lastCode">ბოლო შტრიხკოდი: {{newInventor.fullBarCode}}</span>
-    <button type="button" pButton icon="pi pi-save" *ngIf="frustrate" (click)="saveNewInventor()" label="შენახვა" ></button>
-    <button type="button" pButton icon="pi pi-save" *ngIf="!frustrate" (click)="frustrateInventor()" label="ჩაშლა" ></button>
+    <button type="button" pButton icon="pi pi-save" *ngIf="frustrate && inventorOperation=='new'" (click)="saveNewInventor()" label="შენახვა" ></button>
+    <button type="button" pButton icon="pi pi-save" *ngIf="inventorOperation=='edit'" (click)="editNewInventor()" label="შენახვა" ></button>
+    <button type="button" pButton icon="pi pi-save" *ngIf="!frustrate && inventorOperation=='new'" (click)="frustrateInventor()" label="ჩაშლა" ></button>
     <button type="button" pButton icon="pi pi-close" *ngIf="frustrate" (click)="frustrate=false" label="დაბრუნება" class="ui-button-secondary"></button>
-    <button type="button" pButton icon="pi pi-close" (click)="cartDialogShow=false" label="დახურვა" class="ui-button-secondary"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="inventorDialogShow=false" label="დახურვა" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>
