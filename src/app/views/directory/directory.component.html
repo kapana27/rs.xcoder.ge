@@ -1,20 +1,112 @@
 <p-tabMenu [model]="mainTabs"   [activeItem]="activeItem" ></p-tabMenu>
 <br>
-<p-tabMenu [model]="subTabs" [activeItem]="subTabs[0]"></p-tabMenu>
-<br>
+<p-tabView *ngIf="activeItem['type']==='structura'" (onChange)="handleChange($event)">
+  <p-tabPanel [header]="item.label" *ngFor="let item of subTabs; let i = index" [selected]="i == 0"  >
+    <p-table [value]="lists">
+      <ng-template pTemplate="header">
+        <tr>
+          <th width="100">id</th>
+          <th>დასახელება</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-list>
+        <tr>
+          <td>{{list.id}}</td>
+          <td>{{list.name}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-tabPanel>
+</p-tabView>
 <div *ngIf="activeItem['type']==='table'">
-  <p-table [value]="cars">
+  <p-table [value]="data">
     <ng-template pTemplate="header">
       <tr>
         <th width="100">id</th>
         <th>დასახელება</th>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-car>
+    <ng-template pTemplate="body" let-d>
       <tr>
-        <td>{{car.vin}}</td>
-        <td>{{car.year}}</td>
+        <td>{{d.id}}</td>
+        <td>{{d.name}}</td>
       </tr>
     </ng-template>
   </p-table>
+</div>
+<div class="row" *ngIf="activeItem['type']==='group'">
+  <div class="col-md-12">
+    <p-treeTable [value]="groups">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>დასახელება</th>
+          <th>სახარჯი</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowNode let-rowData>
+        <tr [ttRow]="rowNode">
+          <td>
+            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+            {{ rowData['node']['text'] }}
+          </td>
+          <td>
+            <p-checkbox disabled [(ngModel)]="rowData['node']['spend']" binary="true"></p-checkbox>
+          </td>
+        </tr>
+      </ng-template>
+    </p-treeTable>
+  </div>
+</div>
+<div class="row" *ngIf="activeItem['type']==='unit'">
+  <div class="col-md-12">
+    <p-treeTable [value]="units">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>დასახელება</th>
+          <th>მშობელი ერთეული</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowNode let-rowData>
+        <tr [ttRow]="rowNode">
+          <td>
+            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+            {{ rowData['node']['text'] }}
+          </td>
+          <td>
+            {{ rowData['node']['parent_name'] }}</td>
+        </tr>
+      </ng-template>
+    </p-treeTable>
+  </div>
+</div>
+<div class="row" *ngIf="activeItem['type']==='employees'">
+  <div class="col-sm-2">
+    <app-tree [ItemGroup]="ItemGroup" (selected)="selectedNode($event)"></app-tree>
+  </div>
+  <div class="col-sm-10">
+    <p-table [value]="employees">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>დეპარტამენტი</th>
+          <th>როლი</th>
+          <th>Email</th>
+          <th>სახელი</th>
+          <th>გვარი</th>
+          <th>მობილური</th>
+          <th>პირადობა</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-emp>
+        <tr>
+          <td>{{emp['department']['name']}}</td>
+          <td>{{emp['position']['name']}}</td>
+          <td>{{emp['email']}}</td>
+          <td>{{emp['firstname']}}</td>
+          <td>{{emp['lastname']}}</td>
+          <td>{{emp['mobile']}}</td>
+          <td>{{emp['pid']}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </div>

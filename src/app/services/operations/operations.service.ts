@@ -103,4 +103,6 @@ export class OperationsService {
   editInvetor(formData){
     return this.Request.Post(Config.inventory.post.update,formData);
   }
+
+
 }

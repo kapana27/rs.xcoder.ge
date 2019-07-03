@@ -42,7 +42,12 @@ export  const Config = {
         supplier: '/api/secured/List/Supplier/Filter',
         model: '/api/secured/List/Model/Filter',
         stock:'/api/secured/stock/Select',
-        rooms: '/api/secured/Item/Building/Rooms'
+        rooms: '/api/secured/Item/Building/Rooms',
+        structuralUnits: '/api/secured/StructuralUnit/Levels/Select',
+        list: '/api/secured/List/Select',
+        StructuralUnitTree:'/api/secured/StructuralUnit/Select?node=root',
+        staffByDepartment: '/api/secured/Staff/Select',
+        measureUnitTree: '/api/secured/MeasureUnit/Select'
       },
       post:{
         lastBarCode: '/api/secured/List/BarCode/Get/LastCode',

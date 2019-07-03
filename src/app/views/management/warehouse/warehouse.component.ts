@@ -12,21 +12,14 @@ import {Inventory} from "../../../models/inventory";
 import {TransferToSection} from "../../../models/transfer-to-section";
 import {InventorTransfer} from "../../../models/inventorTransfer";
 import {ValidatorService} from "../../../services/validator/validator.service";
+import {TreeNode} from "../../../models/tree-node";
 
 interface Default{
   id?: number,
   name?: string
   isDefault?: boolean
 }
-interface TreeNode{
-  "id"?: string,
-  "text"?: string,
-  "expanded"?: boolean,
-  "leaf"?: boolean,
-  "selectable"?: number,
-  "spend"?: number,
-  "children"?: TreeNode[]
-}
+
 interface Data {
   TotalCount: number
   data: Item[]
