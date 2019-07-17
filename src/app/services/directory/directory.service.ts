@@ -30,4 +30,17 @@ export class DirectoryService {
   getMeasureUnitTree(){
     return this.Request.Get(Config.List.get.measureUnitTree+"?node=root");
   }
+  getStructuralUnitLevelGrid(str){
+    return this.Request.Post(Config.List.get.StructuralUnitLevelGrid+str+"page=1&start=0&limit=1000")
+  }
+
+  postList(type,params){
+    return this.Request.Post(Config.dictionary.post.list[type]+"?"+params,{});
+  }
+  deleteList(params){
+    return this.Request.Post(Config.dictionary.post.delete+"?"+params,{});
+  }
+  postMainList(type,action, params){
+    return this.Request.Post(Config.dictionary.post[type][action]+"?"+params,{});
+  }
 }

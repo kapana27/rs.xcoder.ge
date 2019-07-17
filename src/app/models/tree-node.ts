@@ -1,4 +1,5 @@
 export  interface TreeNode{
+  data?: any,
   "id"?: string,
     "text"?: string,
     "expanded"?: boolean,

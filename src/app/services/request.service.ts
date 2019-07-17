@@ -20,7 +20,9 @@ export class RequestService {
                 resolve(response)
             }*/
         })
-        .catch()
+        .catch(reason => {
+          alert('დაფიქსირდა შეცდომა')
+        })
     });
   }
   GetWitoutStatus(uri){
@@ -31,7 +33,9 @@ export class RequestService {
         .then(response=>{
             resolve(response)
         })
-        .catch()
+        .catch(reason => {
+          alert('დაფიქსირდა შეცდომა')
+        })
     });
   }
   Post(uri,params ={}){
@@ -42,7 +46,9 @@ export class RequestService {
         .then(response=>{
             resolve(response)
         })
-        .catch()
+        .catch(reason => {
+          reject(reason)
+        })
     })
   }
 }

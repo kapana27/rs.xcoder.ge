@@ -7,7 +7,6 @@ export  const Config = {
         in: '/api/secured/Item/Section/In/Select',
         out: '/api/secured/Item/Section/Out/Select',
         list: '/api/secured/Item/Select',
-
       }
     }
   },
@@ -39,7 +38,7 @@ export  const Config = {
         barcode: '/api/secured/List/BarCode/Select',
         ItemGroup: '/api/secured/ItemGroup/Select',
         marker: '/api/secured/List/Maker/Filter',
-        supplier: '/api/secured/List/Supplier/Filter',
+        supplier: '/api/secured/Supplier/Filter',
         model: '/api/secured/List/Model/Filter',
         stock:'/api/secured/stock/Select',
         rooms: '/api/secured/Item/Building/Rooms',
@@ -47,12 +46,14 @@ export  const Config = {
         list: '/api/secured/List/Select',
         StructuralUnitTree:'/api/secured/StructuralUnit/Select?node=root',
         staffByDepartment: '/api/secured/Staff/Select',
-        measureUnitTree: '/api/secured/MeasureUnit/Select'
+        measureUnitTree: '/api/secured/MeasureUnit/Select',
+        StructuralUnitLevel: '/api/secured/StructuralUnitLevel/List',
+        StructuralUnitLevelGrid: '/api/secured/StructuralUnit/Select/Grid',
       },
       post:{
         lastBarCode: '/api/secured/List/BarCode/Get/LastCode',
         marker:'/api/secured/List/Maker/Insert',
-        supplier:'/api/secured/List/Supplier/Insert',
+        supplier:'/api/secured/Supplier/Insert',
         model:'/api/secured/List/Model/Insert',
         freeCodes: '/api/secured/List/BarCode/Get/FreeCodes',
         property: '/api/secured/Staff/Filter/ByStock',
@@ -87,6 +88,43 @@ export  const Config = {
       NotApprove: '/api/secured/Item/Inbox/NotApprove',
       Approve: '/api/secured/Item/Inbox/Approve'
     }
+  },
+  dictionary:{
+      post:{
+        stock: '/api/secured/stock/Insert',
+        list: {
+          new: '/api/secured/List/Insert',
+          edit: '/api/secured/List/Update'
+        },
+        ItemType:{
+           new: '/api/secured/ItemType/Insert' ,
+           edit: '/api/secured/ItemType/Update' ,
+           delete: '/api/secured/ItemType/Delete' ,
+        },
+        ItemStatus:{
+          new: '/api/secured/ItemStatus/Insert' ,
+          edit: '/api/secured/ItemStatus/Update' ,
+          delete: '/api/secured/ItemStatus/Delete' ,
+        },
+        Stock:{
+          new: '/api/secured/stock/Insert' ,
+          edit: '/api/secured/stock/Update' ,
+          delete: '/api/secured/stock/Delete' ,
+        },
+        MeasureUnit:{
+          new: '/api/secured/MeasureUnit/Insert' ,
+          edit: '/api/secured/MeasureUnit/Update' ,
+          delete: '/api/secured/MeasureUnit/Delete' ,
+        },
+        ItemGroup:{
+          new: '/api/secured/ItemGroup/Insert' ,
+          edit: '/api/secured/ItemGroup/Update' ,
+          delete: '/api/secured/ItemGroup/Delete' ,
+        },
+
+        delete: '/api/secured/List/Delete'
+      },
+      get:{}
   }
 
 };

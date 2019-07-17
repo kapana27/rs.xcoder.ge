@@ -1,33 +1,107 @@
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+
 <p-tabMenu [model]="mainTabs"   [activeItem]="activeItem" ></p-tabMenu>
 <br>
 <p-tabView *ngIf="activeItem['type']==='structura'" (onChange)="handleChange($event)">
+  <div class="action-button">
+    <button pButton type="button"  class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="item({ action: 'new',type:'sub'})"></button>
+    <button pButton type="button"  class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="item({action: 'edit', type:'sub'})"></button>
+    <button pButton type="button"  class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="deleteItem()"></button>
+  </div>
   <p-tabPanel [header]="item.label" *ngFor="let item of subTabs; let i = index" [selected]="i == 0"  >
-    <p-table [value]="lists">
-      <ng-template pTemplate="header">
-        <tr>
-          <th width="100">id</th>
-          <th>დასახელება</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-list>
-        <tr>
-          <td>{{list.id}}</td>
-          <td>{{list.name}}</td>
-        </tr>
-      </ng-template>
-    </p-table>
+     <div *ngIf="item.id !== 'employees'">
+       <p-table [value]="lists" *ngIf="item.id !== 'structuralUnit'" selectionMode="single" (onRowSelect)="onRowSelect($event)" >
+         <ng-template pTemplate="header">
+           <tr>
+             <th width="100">id</th>
+             <th>დასახელება</th>
+           </tr>
+         </ng-template>
+         <ng-template pTemplate="body" let-list >
+           <tr [pSelectableRow]="list">
+             <td>{{list.id}}</td>
+             <td>{{list.name}}</td>
+           </tr>
+         </ng-template>
+       </p-table>
+       <p-table #dt [value]="structuralLevelGrid" *ngIf="item.id === 'structuralUnit'">
+         <ng-template pTemplate="header">
+           <tr>
+             <td>
+               <p-dropdown placeholder="ქალაქი" [options]="cities" [style]="{'width':'100%'}"   (onChange)="filter($event, 'type1' )" optionLabel="name" [showClear]="true"></p-dropdown>
+             <td>
+               <p-dropdown placeholder="შენობა" [options]="buildings" [style]="{'width':'100%'}" (onChange)="filter($event, 'type2' )" optionLabel="name" [showClear]="true"></p-dropdown>
+             </td>
+             <td>
+               <p-dropdown placeholder="დეპარტამენტი" [options]="departments" [style]="{'width':'100%'}" (onChange)="filter($event, 'type3' )" optionLabel="name" [showClear]="true"></p-dropdown>
+             </td>
+             <td>
+               <p-dropdown placeholder="სამმართველო" [options]="divisions" [style]="{'width':'100%'}" (onChange)="filter($event, 'type4' )" optionLabel="name" [showClear]="true"></p-dropdown>
+             </td>
+             <td>
+               <p-dropdown placeholder="სექცია" [options]="sections" [style]="{'width':'100%'}" (onChange)="filter($event, 'type5' )" optionLabel="name" [showClear]="true"></p-dropdown>
+             </td>
+           </tr>
+         </ng-template>
+         <ng-template pTemplate="body" let-list>
+           <tr>
+             <td>{{list['type1']['name']}}</td>
+             <td>{{list['type2']['name']}}</td>
+             <td>{{list['type3']['name']}}</td>
+             <td>{{list['type4']['name']}}</td>
+             <td>{{list['type5']['name']}}</td>
+           </tr>
+         </ng-template>
+       </p-table>
+     </div>
+    <div class="row" *ngIf="item.id === 'employees'">
+      <div class="col-sm-2">
+        <app-tree [ItemGroup]="ItemGroup" (selected)="selectedNode($event)"></app-tree>
+      </div>
+      <div class="col-sm-10">
+        <p-table [value]="employees">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>დეპარტამენტი</th>
+              <th>როლი</th>
+              <th>Email</th>
+              <th>სახელი</th>
+              <th>გვარი</th>
+              <th>მობილური</th>
+              <th>პირადობა</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-emp>
+            <tr>
+              <td>{{emp['department']['name']}}</td>
+              <td>{{emp['position']['name']}}</td>
+              <td>{{emp['email']}}</td>
+              <td>{{emp['firstname']}}</td>
+              <td>{{emp['lastname']}}</td>
+              <td>{{emp['mobile']}}</td>
+              <td>{{emp['pid']}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
   </p-tabPanel>
 </p-tabView>
 <div *ngIf="activeItem['type']==='table'">
-  <p-table [value]="data">
-    <ng-template pTemplate="header">
+  <div class="action-button" style="    margin-bottom: 10px;">
+    <button pButton type="button"  class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="item({ action: 'new', type:'main'})"></button>
+    <button pButton type="button"  class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="item({action: 'edit', type:'main'})"></button>
+    <button pButton type="button"  class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="deleteItem()"></button>
+  </div>
+  <p-table [value]="data" (onRowSelect)="onRowSelect($event)" selectionMode="single">
+    <ng-template pTemplate="header" >
       <tr>
         <th width="100">id</th>
         <th>დასახელება</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-d>
-      <tr>
+      <tr [pSelectableRow]="d"  >
         <td>{{d.id}}</td>
         <td>{{d.name}}</td>
       </tr>
@@ -36,21 +110,32 @@
 </div>
 <div class="row" *ngIf="activeItem['type']==='group'">
   <div class="col-md-12">
-    <p-treeTable [value]="groups">
+    <div class="action-button" style="    margin-bottom: 10px;">
+      <button pButton type="button" label="დამატება"  class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="itemGroup({ action: 'new', type: 'ItemGroup',data: null})"></button>
+    </div>
+    <p-treeTable [value]="groups" selectionMode="single"  >
       <ng-template pTemplate="header">
         <tr>
           <th>დასახელება</th>
           <th>სახარჯი</th>
+          <th width="200"></th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rowNode let-rowData>
-        <tr [ttRow]="rowNode">
+        <tr [ttRow]="rowNode"  >
           <td>
-            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+            <p-treeTableToggler [rowNode]="rowNode" ></p-treeTableToggler>
             {{ rowData['node']['text'] }}
           </td>
           <td>
             <p-checkbox disabled [(ngModel)]="rowData['node']['spend']" binary="true"></p-checkbox>
+          </td>
+          <td>
+            <div class="action-button" style="    margin-bottom: 10px;">
+              <button pButton type="button" class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="itemGroup({ action: 'new', type: 'ItemGroup',data: rowData['node']})"></button>
+              <button pButton type="button"  class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="itemGroup({action: 'edit', type: 'ItemGroup',data: rowData['node']})"></button>
+              <button pButton type="button"  class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="itemGroup({action: 'delete', type: 'ItemGroup',data: rowData['node']})"></button>
+            </div>
           </td>
         </tr>
       </ng-template>
@@ -59,54 +144,63 @@
 </div>
 <div class="row" *ngIf="activeItem['type']==='unit'">
   <div class="col-md-12">
-    <p-treeTable [value]="units">
+    <div class="action-button" style="    margin-bottom: 10px;">
+    <button pButton type="button" label="დამატება"  class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="itemGroup({ action: 'new', type: 'MeasureUnit',data: null})"></button>
+    </div>
+    <p-treeTable [value]="units"  dataKey="name">
       <ng-template pTemplate="header">
         <tr>
           <th>დასახელება</th>
           <th>მშობელი ერთეული</th>
+          <th width="200"></th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-rowNode let-rowData>
-        <tr [ttRow]="rowNode">
+      <ng-template pTemplate="body" let-rowData >
+        <tr  [ttSelectableRow]="rowData">
           <td>
-            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-            {{ rowData['node']['text'] }}
+            <p-treeTableToggler [rowNode]="rowData"></p-treeTableToggler>
+            {{rowData['node']['text'] }}
           </td>
           <td>
             {{ rowData['node']['parent_name'] }}</td>
+          <td>
+            <div class="action-button" style="    margin-bottom: 10px;">
+              <button pButton type="button" class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="itemGroup({ action: 'new', type: 'MeasureUnit',data: rowData['node']})"></button>
+              <button pButton type="button"  class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="itemGroup({action: 'edit', type: 'MeasureUnit',data: rowData['node']})"></button>
+              <button pButton type="button"  class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="itemGroup({action: 'delete', type: 'MeasureUnit',data: rowData['node']})"></button>
+            </div>
+          </td>
         </tr>
       </ng-template>
     </p-treeTable>
+    {{selectedNode1}}
   </div>
 </div>
-<div class="row" *ngIf="activeItem['type']==='employees'">
-  <div class="col-sm-2">
-    <app-tree [ItemGroup]="ItemGroup" (selected)="selectedNode($event)"></app-tree>
+
+
+<p-dialog *ngIf="newItem.dialog" header="დასახელება" [(visible)]="newItem.dialog" [modal]="true" [responsive]="true" [style]="{width: '350px', minWidth: '200px'}" [minY]="70"
+          [maximizable]="true" [baseZIndex]="10000">
+  <div>
+    <label for="id">დასახელება</label>
+    <input type="text" id="id" pInputText [(ngModel)]="newItem.value" style="width: 100%;"/>
+
   </div>
-  <div class="col-sm-10">
-    <p-table [value]="employees">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>დეპარტამენტი</th>
-          <th>როლი</th>
-          <th>Email</th>
-          <th>სახელი</th>
-          <th>გვარი</th>
-          <th>მობილური</th>
-          <th>პირადობა</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-emp>
-        <tr>
-          <td>{{emp['department']['name']}}</td>
-          <td>{{emp['position']['name']}}</td>
-          <td>{{emp['email']}}</td>
-          <td>{{emp['firstname']}}</td>
-          <td>{{emp['lastname']}}</td>
-          <td>{{emp['mobile']}}</td>
-          <td>{{emp['pid']}}</td>
-        </tr>
-      </ng-template>
-    </p-table>
+  <div *ngIf="newItem.type ==='MeasureUnit' && newItem.data !== null && newItem.data['parent_name'] !=='' && newItem.data['value']>0 " >
+    <label for="id1">ერთეული</label>
+    <input type="number" id="id1" pInputText [(ngModel)]="newItem.measure_value" style="width: 100%;"/>
   </div>
-</div>
+    <div class="row" style="margin-right:0px;" *ngIf="newItem.type==='ItemGroup'">
+      <div class="col-md-12">
+        <p-checkbox  label="არჩევითი" value="elective" [(ngModel)]="newItem.elective" ></p-checkbox>
+      </div>
+      <div class="col-md-12">
+        <p-checkbox  label="სახარჯი" value="consumption" [(ngModel)]="newItem.consumption" ></p-checkbox>
+      </div>
+    </div>
+
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="saveItem()" label="შენახვა"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="newItem.dialog=false" label="გაუქმება" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+

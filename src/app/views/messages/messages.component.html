@@ -22,7 +22,7 @@
       </ng-template>
       <ng-template pTemplate="body" let-d>
 
-        <tr [pSelectableRow]="d">
+        <tr [pSelectableRow]="d" [ngClass]="{ 'gray': (params.approved===0 && d['newOne']===1)}">
           <td>{{d['id']}}</td>
           <td>{{d['operationType']}}</td>
           <td>{{d['date']}}</td>

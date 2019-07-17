@@ -50,7 +50,7 @@ import {TableModule} from "primeng/table";
 import { CartComponent } from './components/cart/cart.component';
 import {
   CheckboxModule,
-  ConfirmDialogModule,
+  ConfirmDialogModule, DialogModule,
   PaginatorModule,
   TabMenuModule,
   TabViewModule,
@@ -84,6 +84,7 @@ import {ComponentsModule} from "./components/components.module";
     ComponentsModule,
     TreeTableModule,
     CheckboxModule,
+    DialogModule,
   ],
   declarations: [
     AppComponent,

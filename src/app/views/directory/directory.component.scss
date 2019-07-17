@@ -1,0 +1,43 @@
+/deep/ app-directory{
+  p-table{
+    input{
+      width: 100%;
+    }
+
+  }
+
+  button, p-tabmenu ul li a {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-family: 'lbet-mt',sans-serif !important;
+    font-size: 13px !important;
+  }
+  p-tabView .ui-tabview {position: relative;}
+  p-tabView .action-button {
+    position: absolute;
+    right: 4px;
+    top: 8px;
+  }
+  .action-button{
+    button{
+      margin-left: 20px;
+    }
+  }
+
+  div[role="dialog"] {
+    .ui-dialog-title {
+      font-family: 'lbet-mt',sans-serif !important;
+    }
+    p {
+      font-family: 'lbet-st',sans-serif !important;
+    }
+    ul[role="tablist"] li a {font-family: 'lbet-mt',sans-serif !important;}
+  }
+  ul[role="tablist"] li .ui-tabview-title {font-family: 'lbet-mt',sans-serif !important; font-weight: normal;}
+  table thead th {
+    font-family: 'lbet-nus',sans-serif !important;
+  }
+
+}
+

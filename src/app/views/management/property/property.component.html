@@ -4,8 +4,8 @@
     <p-tabMenu [model]="items" [activeItem]="items[0]" ></p-tabMenu>
   </div>
   <div class="col-m-12 col-lg-7">
-    <button (click)="showDialog()" *ngIf="!distributed" pButton type="button" label="ინვენტარის საწყობში დაბრუნება" class="ui-button-raised" style="position: absolute; right: 400px"></button> &nbsp;&nbsp;
-    <button (click)="inventoryToBuildingDialog()" *ngIf="!distributed" pButton type="button" label="ინვენტარის მოძრაობა შენობებს შორის" class="ui-button-raised"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
+    <button (click)="showDialog()" *ngIf="!distributed" pButton type="button" label="ინვ. საწყობში დაბრუნება" class="ui-button-raised" style="position: absolute; right: 400px"></button> &nbsp;&nbsp;
+    <button (click)="inventoryToBuildingDialog()" *ngIf="!distributed" pButton type="button" label="ინვ. მოძრაობა შენობებს შორის" class="ui-button-raised"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
     <button (click)="personDialog()" *ngIf="distributed" pButton type="button" label="განპიროვნება" class="ui-button-raised"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
     <span style="position: absolute;right: 37px;margin-top: 3px;color: #007ad9; cursor: pointer;">
     <fa-icon [icon]="faCartPlus"  (click)="cartDialog()" size="2x"  ></fa-icon>
@@ -14,7 +14,7 @@
   </div>
 </div>
 <br>
-<div class="row">
+<div class="row" *ngIf="inOut ==='out'">
   <ag-grid-angular
     #agGrid
     style="width: 100%;height: calc(100vh - 135px);"
@@ -39,6 +39,66 @@
     [pivotPanelShow]="true"
     (gridReady)="onGridReady($event)"
     (cellClicked)="cart($event)"
+    [gridOptions]="gridOptions"
+    [getContextMenuItems]="getContextMenuItems"
+  ></ag-grid-angular>
+</div>
+<div class="row" *ngIf="inOut ==='in'">
+  <ag-grid-angular
+    #agGrid
+    style="width: 100%;height: calc(100vh - 135px);"
+    id="myGrid"
+    class="ag-theme-balham"
+    [columnDefs]="columnDefs1"
+    [floatingFilter]="true"
+    [debug]="true"
+    [rowClassRules]="getRowStyle"
+    [defaultColDef]="defaultColDef"
+    [rowSelection]="rowSelection"
+    [rowDeselection]="true"
+    [rowModelType]="rowModelType"
+    [paginationPageSize]="paginationPageSize"
+    [cacheOverflowSize]="cacheOverflowSize"
+    [maxConcurrentDatasourceRequests]="maxConcurrentDatasourceRequests"
+    [infiniteInitialRowCount]="infiniteInitialRowCount"
+    [maxBlocksInCache]="maxBlocksInCache"
+    [getRowNodeId]="getRowNodeId"
+    [components]="components"
+    [rowData]="rowData"
+    [pivotPanelShow]="true"
+    (gridReady)="onGridReady($event)"
+    (cellClicked)="cart($event)"
+    [gridOptions]="gridOptions"
+    [getContextMenuItems]="getContextMenuItems"
+  ></ag-grid-angular>
+</div>
+<div class="row" *ngIf="inOut ==='v2'">
+  <ag-grid-angular
+    #agGrid
+    style="width: 100%;height: calc(100vh - 135px);"
+    id="myGrid"
+    class="ag-theme-balham"
+    [columnDefs]="columnDefs1"
+    [floatingFilter]="true"
+    [debug]="true"
+    [rowClassRules]="getRowStyle"
+    [defaultColDef]="defaultColDef"
+    [rowSelection]="rowSelection"
+    [rowDeselection]="true"
+    [rowModelType]="rowModelType"
+    [paginationPageSize]="paginationPageSize"
+    [cacheOverflowSize]="cacheOverflowSize"
+    [maxConcurrentDatasourceRequests]="maxConcurrentDatasourceRequests"
+    [infiniteInitialRowCount]="infiniteInitialRowCount"
+    [maxBlocksInCache]="maxBlocksInCache"
+    [getRowNodeId]="getRowNodeId"
+    [components]="components"
+    [rowData]="rowData"
+    [pivotPanelShow]="true"
+    (gridReady)="onGridReady($event)"
+    (cellClicked)="cart($event)"
+    [gridOptions]="gridOptions"
+    [getContextMenuItems]="getContextMenuItems"
   ></ag-grid-angular>
 </div>
 <p-dialog header="ინვენტარის საწყობში დაბრუნება" *ngIf="display" [(visible)]="display" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500"
@@ -51,7 +111,7 @@
       <div class="ui-g-12 ui-md-8">
         <div class="ui-g-12 ui-md-6">
           <p>თარიღი</p>
-          <p-calendar [(ngModel)]="inventorReturnModel.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+          <p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="inventorReturnModel.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
         </div>
         <div class="ui-g-12 ui-md-6">
           <p>სექცია</p>
@@ -108,7 +168,7 @@
           <div class="ui-g-12 ui-md-8">
             <div class="ui-g-12 ui-md-6">
               <p>თარიღი</p>
-              <p-calendar [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+              <p-calendar [minDate]="minDate"  dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
             </div>
 
             <div class="ui-g-12 ui-md-6">
@@ -126,8 +186,8 @@
 
             <div class="ui-g-12 ui-md-6">
               <p>მომთხოვნი პიროვნება</p>
-              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
-                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true"  [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
+              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedRequestPerson"
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true"  [ngClass]="{ 'red':if_error(formErrors,'selectedRequestPerson')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -161,13 +221,24 @@
           <div class="ui-g-12 ui-md-8">
             <div class="ui-g-12 ui-md-6">
               <p>თარიღი</p>
-              <p-calendar [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+              <p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
             </div>
-
+            <div class="ui-g-12 ui-md-6">
+              <p>ფროფერთი</p>
+              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                <ng-template let-brand pTemplate="item">
+                  <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                    <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                    <div style="font-size:12px;">{{brand['position']}}</div>
+                  </div>
+                </ng-template>
+              </p-autoComplete>
+            </div>
             <div class="ui-g-12 ui-md-6">
               <p>პიროვნება</p>
-              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                              (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
+                              (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -189,24 +260,16 @@
                 </ng-template>
               </p-autoComplete>
             </div>
-            <div class="ui-g-12 ui-md-6">
-              <p>მომთხოვნი პიროვნება</p>
-              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
-                              [minLength]="1" placeholder=""   field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
-                <ng-template let-brand pTemplate="item">
-                  <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
-                    <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
-                    <div style="font-size:12px;">{{brand['position']}}</div>
-                  </div>
-                </ng-template>
-              </p-autoComplete>
+            <div class="ui-g-12 ui-md-4">
+              <p>კომენტარი</p>
+              <textarea pInputTextarea placeholder="შენიშვნა" rows="1" [(ngModel)]="inventorTransfer.note"></textarea>
             </div>
           </div>
           <div class="ui-g-12 ui-md-4">
             <div class="ui-g-12 ui-md-12">
-              <p>ტრანსპორტ. პასხ. პირი:</p>
-              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedCarrier"
-                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }">
+              <p>მომთხოვნი პიროვნება</p>
+              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedRequestPerson"
+                              [minLength]="1" placeholder=""   field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedRequestPerson')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -219,10 +282,7 @@
               <p>სექცია</p>
               <p-dropdown [disabled]="!inventorTransfer.selectedProperty" [options]="stockList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="inventorTransfer.selectedSection" [ngClass]="{ 'red':if_error(formErrors,'selectedSection')?'1px solid red': '' }" ></p-dropdown>
             </div>
-            <div class="ui-g-12 ui-md-12">
-              <p>კომენტარი</p>
-              <textarea pInputTextarea placeholder="შენიშვნა" rows="1" [(ngModel)]="inventorTransfer.note"></textarea>
-            </div>
+
           </div>
         </div>
       </p-tabPanel>
@@ -248,7 +308,7 @@
           <div class="ui-g-12 ui-md-8">
             <div class="ui-g-12 ui-md-6">
               <p>თარიღი</p>
-              <p-calendar [(ngModel)]="forPerson.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+              <p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="forPerson.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
             </div>
             <div class="ui-g-12 ui-md-6">
               <p>პიროვნება</p>

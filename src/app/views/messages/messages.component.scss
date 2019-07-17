@@ -5,4 +5,14 @@
   table thead th {
     font-family: 'lbet-nus',sans-serif !important;
   }
+  .gray{
+    background-color: rgba(255, 0, 0, 0.04) !important;
+  }
+  p-table{
+    .ui-table-wrapper {
+      height: calc(100vh - 150px) !important;
+      overflow: auto !important;
+      background-color: #f4f4f4;
+    }
+  }
 }

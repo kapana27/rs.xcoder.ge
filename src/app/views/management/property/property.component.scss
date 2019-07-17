@@ -4,6 +4,9 @@
        // table-layout: auto !important;
       }
     }
+   div[col-id='cartId']{
+     outline: 0 !important;
+   }
    .loading-text {
      display: block;
      background-color: #f1f1f1;
@@ -53,7 +56,9 @@
    .ag-red{
      background: rgba(255, 0, 0, 0.4196078431372549) !important;
    }
-
+   .ag-gray{
+     background: rgba(255, 167, 0, 0.419608) !important;
+   }
    .cursor{
      cursor: pointer;
    }

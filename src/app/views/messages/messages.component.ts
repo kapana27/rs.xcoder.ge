@@ -84,8 +84,12 @@ export class MessagesComponent implements OnInit {
 
         this.selectedTotalRecord = response['totalCount'];
         this.selectedData = response['data'].map(v => {
+          v['item']['maker'] = v['item']['maker'] !== undefined? v['item']['maker']: { name: ""};
+          v['item']['model'] = v['item']['model'] !== undefined? v['item']['model']: { name: ""};
+          v['item']['price'] = v['item']['price'] !== undefined? v['item']['price']: "";
+          v['item']['name'] = v['item']['name'] !== undefined? v['item']['name']: "";
           // tslint:disable-next-line:max-line-length
-          v['item']['fullBarcode'] = v['item']['barCodeType']['value'] + new Array(v['item']['barCodeType']['length'] - (v['item']['barcode'].toString().length - 1)).join('0').slice((v['item']['barCodeType']['length'] - (v['item']['barcode'].toString().length - 1) || 2) * -1) + v['item']['barcode'];
+          v['item']['fullBarcode'] = v['item']['fullBarcode'] !== undefined? v['item']['barCodeType']['value'] + new Array(v['item']['barCodeType']['length'] - (v['item']['barcode'].toString().length - 1)).join('0').slice((v['item']['barCodeType']['length'] - (v['item']['barcode'].toString().length - 1) || 2) * -1) + v['item']['barcode']: "";
           return v;
         });
       }

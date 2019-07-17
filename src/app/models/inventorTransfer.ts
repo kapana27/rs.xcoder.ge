@@ -19,5 +19,5 @@ export interface InventorTransfer {
   addon?: number,
   roomId?: number,
   receiverPerson?: number
-
+  selectedRequestPerson?:number
 }

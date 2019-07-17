@@ -1,4 +1,5 @@
 export interface Default {
   id: number,
-  name: string
+  name: string,
+  generatedName?:string
 }

@@ -1,11 +1,19 @@
 /deep/ app-warehouse{
 
+  .invred_box p, .invred_box table {
+    white-space:nowrap;
+  }
+
   button, p-tabmenu ul li a {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     font-family: 'lbet-mt',sans-serif !important;
     font-size: 13px !important;
+  }
+
+  div[col-id='cartId']{
+    outline: 0 !important;
   }
 
   div[role="dialog"] {
@@ -74,6 +82,7 @@
     &.red{
       border:1px solid red;
     }
+    outline: 0;
   }
 
   ag-grid-angular div[role="row"] div:nth-child(2) {
@@ -91,8 +100,32 @@
   .ag-red{
     background: rgba(255, 0, 0, 0.4196078431372549) !important;
   }
+  .ag-gray{
+    background: rgba(255, 167, 0, 0.419608) !important;
+  }
   .cursor{
     cursor: pointer;
+  }
+  p-dialog{
+    input{
+      width: 100%;
+    }
+  }
+  .generator-table{
+    td {
+      &:nth-child(8){
+        input{
+          width: calc(100% - 10px)
+        }
+      }
+
+    }
+  }
+  .err{
+    background-color: rgba(255, 0, 0, 0.23);
+  }
+  .success{
+    background-color: rgba(0, 255, 0, 0.15);
   }
 }
 

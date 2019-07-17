@@ -8,6 +8,7 @@ export interface Inventor {
   entryDate?: string,
   name?: string,
   fullname?: any,
+  selectedName?: any;
   selectedMaker?: Default,
   maker?: number,
   selectedModel?: Default,

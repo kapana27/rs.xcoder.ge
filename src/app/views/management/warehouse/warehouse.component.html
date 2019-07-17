@@ -3,12 +3,13 @@
   <div class="col-m-12 col-lg-2">
     <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
   </div>
-  <div class="col-m-12 col-lg-4">
-    <button pButton icon="pi pi-plus" label="ინვენტარის მიღება" class="ui-button-success" (click)="inventorDialog()"></button> &nbsp; &nbsp;
-    <button pButton icon="pi pi-pencil" label="რედაქტირება" class="ui-button-raised" (click)="inventorEditDialog()"></button>
+  <div class="col-m-12 col-lg-5">
+    <button pButton icon="pi pi-plus" label="ინვ. მიღება" class="ui-button-success" (click)="inventorDialog()"></button> &nbsp; &nbsp;
+    <button pButton icon="pi pi-pencil" label="რედაქტირება" class="ui-button-raised" (click)="inventorEditDialog()"></button>&nbsp;&nbsp;&nbsp;
+    <button pButton icon="pi pi-search" label="ძებნა" class="ui-button-warning" (click)="inventorSearch()"></button>
   </div>
-  <div class="col-m-12 col-lg-6">
-    <button (click)="inventoryToBuildingDialog()" pButton type="button" label="ინვენტარის გაცემა" class="ui-button-raised" style="position: absolute; right: 350px"></button> &nbsp;&nbsp;
+  <div class="col-m-12 col-lg-5">
+    <button (click)="inventoryToBuildingDialog()" pButton type="button" label="ინვ. გაცემა" class="ui-button-danger" style="position: absolute; right: 350px"></button> &nbsp;&nbsp;
     <button (click)="showDialog()" pButton type="button" label="ინვ. მოძრაობა სექციებს შორის" class="ui-button-raised"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
     <span style="position: absolute;right: 37px;margin-top: 3px;color: #007ad9; cursor: pointer;">
       <fa-icon [icon]="faCartPlus"  (click)="cartDialog()" size="2x"  ></fa-icon>
@@ -23,6 +24,7 @@
     style="width: 100%;height: calc(100vh - 135px);"
     id="myGrid"
     class="ag-theme-balham"
+
     [columnDefs]="columnDefs"
     [floatingFilter]="true"
     [debug]="true"
@@ -40,9 +42,12 @@
     [components]="components"
     [rowData]="rowData"
     [pivotPanelShow]="true"
-    (gridReady)="onGridReady($event)"
-    (cellClicked)="cart($event)"
     (rowSelected)="selectCell($event)"
+    (cellClicked)="cart($event)"
+    [gridOptions]="gridOptions"
+    [getContextMenuItems]="getContextMenuItems"
+    (rowClicked)='onRowClicked($event)'
+    (gridReady)="onGridReady($event)"
   ></ag-grid-angular>
 </div>
 
@@ -51,14 +56,14 @@
 <p-dialog header="ინვენტარის მოძრაობა სექციებს შორის" *ngIf="display" [(visible)]="display" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
   <div style="width: 100%;height: 500px;" *ngIf="transferToSectionInvoiceGenerator">
-    <app-generator [transferToSection]="transferToSection" ></app-generator>
+    <app-generator  (onChangeAddon)="changeAddon($event)" [transferToSection]="transferToSection" ></app-generator>
   </div>
   <div style="width: 100%;height: 500px;" *ngIf="!transferToSectionInvoiceGenerator">
     <div class="ui-g ui-fluid">
       <div class="ui-g-12 ui-md-8">
         <div class="ui-g-12 ui-md-6">
           <p>თარიღი</p>
-          <p-calendar [(ngModel)]="transferToSection.Datetime" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+          <p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="transferToSection.Datetime" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
         </div>
         <div class="ui-g-12 ui-md-6">
           <p>სექცია</p>
@@ -117,7 +122,7 @@
             <div class="ui-g-12 ui-md-8">
               <div class="ui-g-12 ui-md-6">
                 <p>თარიღი</p>
-                <p-calendar [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+                <p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
               </div>
 
               <div class="ui-g-12 ui-md-6">
@@ -170,13 +175,12 @@
             <div class="ui-g-12 ui-md-8">
               <div class="ui-g-12 ui-md-6">
                 <p>თარიღი</p>
-                <p-calendar [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+                <p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
               </div>
-
               <div class="ui-g-12 ui-md-6">
-                <p>პიროვნება</p>
+                <p>ფროფერთი</p>
                 <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                                (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                                [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
                   <ng-template let-brand pTemplate="item">
                     <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                       <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -186,6 +190,11 @@
                 </p-autoComplete>
               </div>
 
+
+              <div class="ui-g-12 ui-md-6">
+                <p>სექცია</p>
+                <p-dropdown [disabled]="!inventorTransfer.toWhomSection" [options]="roomsList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="inventorTransfer.selectedSection" [ngClass]="{ 'red':if_error(formErrors,'selectedSection')?'1px solid red': '' }" ></p-dropdown>
+              </div>
               <div class="ui-g-12 ui-md-6">
                 <p>ტრანსპორტ. პასხ. პირი:</p>
                 <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedCarrier"
@@ -199,9 +208,28 @@
                 </p-autoComplete>
               </div>
               <div class="ui-g-12 ui-md-6">
-                <p>მომთხოვნი პიროვნება</p>
+                <p>კომენტარი</p>
+                <textarea pInputTextarea placeholder="შენიშვნა" rows="1" [(ngModel)]="inventorTransfer.note"></textarea>
+              </div>
+
+            </div>
+            <div class="ui-g-12 ui-md-4">
+              <div class="ui-g-12 ui-md-12">
+                <p>პიროვნება</p>
                 <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
-                                [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
+                                (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
+                  <ng-template let-brand pTemplate="item">
+                    <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                      <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                      <div style="font-size:12px;">{{brand['position']}}</div>
+                    </div>
+                  </ng-template>
+                </p-autoComplete>
+              </div>
+              <div class="ui-g-12 ui-md-12">
+                <p>მომთხოვნი პიროვნება</p>
+                <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedRequestPerson"
+                                [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedRequestPerson')?'1px solid red': '' }">
                   <ng-template let-brand pTemplate="item">
                     <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                       <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -211,17 +239,6 @@
                 </p-autoComplete>
               </div>
 
-            </div>
-            <div class="ui-g-12 ui-md-4">
-
-              <div class="ui-g-12 ui-md-12">
-                <p>სექცია</p>
-                <p-dropdown [disabled]="!inventorTransfer.toWhomSection" [options]="roomsList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="inventorTransfer.selectedSection" [ngClass]="{ 'red':if_error(formErrors,'selectedSection')?'1px solid red': '' }" ></p-dropdown>
-              </div>
-              <div class="ui-g-12 ui-md-12">
-                <p>კომენტარი</p>
-                <textarea pInputTextarea placeholder="შენიშვნა" rows="1" [(ngModel)]="inventorTransfer.note"></textarea>
-              </div>
             </div>
           </div>
         </p-tabPanel>
@@ -236,12 +253,24 @@
   </p-footer>
 </p-dialog>
 
-<p-dialog header="ჩანაწერის დამატება" *ngIf="newRecordDialogShow" [(visible)]="newRecordDialogShow" [modal]="true" [responsive]="true" [style]="{width: '350px', minWidth: '200px'}" [minY]="70"
-          [maximizable]="true" [baseZIndex]="10000">
-  <input id="input" type="text" size="30" pInputText [(ngModel)]="newItem.value">
+<p-dialog header="ჩანაწერის დამატება" *ngIf="newRecordDialogShow" [(visible)]="newRecordDialogShow" [modal]="true" [responsive]="true" [style]="{width: '400px', minWidth: '250px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+  <div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-12" *ngIf="newItem.selected ==='supplier'">
+      <p>აირჩიეთ მიმწოდებლის ტიპი</p>
+      <p-dropdown [options]="[{label: 'შპს', value: '1'},{label: 'ინდმეწარმე', value: '2'},{label: 'ფიზიკური პირი', value: '3'},{label: 'სააქციო საზოგადოება', value: '4'}]" [(ngModel)]="newItem.type" editable="true" placeholder="აირჩიეთ ტიპი"></p-dropdown>
+    </div>
+    <div class="ui-g-12 ui-md-12" *ngIf="newItem.selected ==='supplier'">
+      <p>{{  (newItem.type==='2' || newItem.type==='3')? 'პირადი ნომერი' : 'საიდენტიფიკაციო'}}</p>
+      <input id="input2" type="text" size="30" pInputText [(ngModel)]="newItem.identification">
+    </div>
+    <div class="ui-g-12 ui-md-12">
+      <p>{{(newItem.type==='2' || newItem.type==='3')? 'სახელი და გვარი': 'დასახელება'}}</p>
+      <input id="input3" type="text" size="30" pInputText [(ngModel)]="newItem.value">
+    </div>
+  </div>
   <p-footer>
-    <button type="button" pButton icon="pi pi-check" (click)="saveNewRecord()" label="Yes"></button>
-    <button type="button" pButton icon="pi pi-close" (click)="newRecordDialogShow=false" label="No" class="ui-button-secondary"></button>
+    <button type="button" pButton icon="pi pi-check" (click)="saveNewRecord()" label="დამატება"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="newRecordDialogShow=false" label="გათიშვა" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>
 
@@ -259,156 +288,156 @@
 
 <p-dialog header="ინვენტარის მიღება" *ngIf="inventorDialogShow" [(visible)]="inventorDialogShow" [modal]="true" [responsive]="true" [style]="{width: '1200px', minWidth: '200px'}" [minY]="500"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
-  <div style="width: 100%;height: 500px;" *ngIf="!frustrate">
-    <div class="ui-g ui-fluid">
-      <div class="ui-g-12 ui-md-2" >
-        <p>მიღების თარიღი</p>
-        <p-calendar [(ngModel)]="newInventor.date" [showIcon]="true"  [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
-      </div>
-      <div class="ui-g-12 ui-md-4">
-        <div class="ui-inputgroup">
-          <table style="width: 100%; border-collapse: collapse" >
-            <tr >
-              <td colspan="2" style="padding: 0px;line-height: 20px;margin: 0px;" *ngIf="!newInventor.consumption">შტრიხკოდი</td>
-              <td style="padding: 0px; line-height: 20px;margin: 0px;" > რაოდენობა</td>
-              <!--td *ngIf="newInventor.consumption" style="padding: 0px;line-height: 20px;margin: 0px;" >ერთ. რაოდენობა</td-->
-            </tr>
-            <tr >
-              <td *ngIf="!newInventor.consumption" width="35px">
-                <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedBarcode')?'1px solid red': '' }" [autoWidth]="true" [options]="barcodes"   placeholder="RS"  optionLabel="name" [(ngModel)]="newInventor.selectedBarcode"  [showClear]="true" (ngModelChange)="getLastCode()" ></p-dropdown>
-              </td>
-              <td *ngIf="!newInventor.consumption">
-                <input type="text"  pInputText placeholder="შტრიხკოდი" style="width: 100%; height: 33px;" [(ngModel)]="newInventor.barCode"  >
-              </td>
-              <td>
-                <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.amount"  [ngClass]="{ 'red':if_error(formErrors,'amount')?'1px solid red': '' }">
-              </td>
-              <!--td *ngIf="newInventor.consumption">
-                <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.packageAmount" [ngClass]="{ 'red':if_error(formErrors,'packageAmount')?'1px solid red': '' }">
-              </td-->
-            </tr>
-          </table>
-        </div>
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>განზომილების ერთეული</p>
-        <div class="ui-inputgroup" >
-            <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedMeasureUnitName')?'1px solid red': '' }" [autoWidth]="true" class="measureUnits" [options]="measureUnits"  placeholder="ერთეული" optionLabel="name" [(ngModel)]="newInventor.selectedMeasureUnitName"  [showClear]="true" ></p-dropdown>
-        </div>
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>საქონლის ჯგუფი</p>
-        <div class="ui-inputgroup">
-          <input type="text" [ngClass]="{ 'red':if_error(formErrors,'itemGroupName')?'1px solid red': '' }" pInputText placeholder="საქონლის ჯგუფი" disabled [(ngModel)]="newInventor.itemGroupName" style="width: 100%" [ngClass]="{ 'red':errors.group?'1px solid red': '' }" >
-          <button (click)="itemGroupDialog()" pButton type="button" label="..."></button>
-        </div>
+  <div class="row" style="text-align: center" *ngIf="addon !== undefined">
+    <div class="col-md-12" style="text-align: center" *ngIf="frustrate">
+      <h3>საწყობის შემოსავლის ელ. ზედდებული  № {{ addon['Left'] }} - {{ addon['Right'] }}</h3>
+    </div>
+  </div>
+  <div  style="width: 100%;height: 500px;" *ngIf="!frustrate && (inventorOperation==='edit' || inventorOperation ==='new')">
+  <div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-2" >
+      <p>მიღების თარიღი</p>
+      <p-calendar [(ngModel)]="newInventor.date" dateFormat="dd-mm-yy" [showIcon]="true"  [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+    </div>
+    <div class="ui-g-12 ui-md-4">
+      <div class="ui-inputgroup">
+        <table style="width: 100%; border-collapse: collapse" >
+          <tr >
+            <td colspan="2" style="padding: 0px;line-height: 20px;margin: 0px;" *ngIf="!newInventor.consumption">შტრიხკოდი</td>
+            <td style="padding: 0px; line-height: 20px;margin: 0px;" > რაოდენობა</td>
+            <!--td *ngIf="newInventor.consumption" style="padding: 0px;line-height: 20px;margin: 0px;" >ერთ. რაოდენობა</td-->
+          </tr>
+          <tr >
+            <td *ngIf="!newInventor.consumption" width="35px">
+              <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedBarcode')?'1px solid red': '' }" [autoWidth]="true" [options]="barcodes"   placeholder="RS"  optionLabel="name" [(ngModel)]="newInventor.selectedBarcode"  [showClear]="true" (ngModelChange)="getLastCode()" ></p-dropdown>
+            </td>
+            <td *ngIf="!newInventor.consumption">
+              <input type="text"  pInputText placeholder="შტრიხკოდი" style="width: 100%; height: 33px;" [(ngModel)]="newInventor.barCode"  >
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.amount"  [ngClass]="{ 'red':if_error(formErrors,'amount')?'1px solid red': '' }">
+            </td>
+            <!--td *ngIf="newInventor.consumption">
+              <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.packageAmount" [ngClass]="{ 'red':if_error(formErrors,'packageAmount')?'1px solid red': '' }">
+            </td-->
+          </tr>
+        </table>
       </div>
     </div>
+    <div class="ui-g-12 ui-md-3" >
+      <p>განზომილების ერთეული</p>
+      <div class="ui-inputgroup" >
+        <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedMeasureUnitName')?'1px solid red': '' }" [autoWidth]="true" class="measureUnits" [options]="measureUnits"  placeholder="ერთეული" optionLabel="name" [(ngModel)]="newInventor.selectedMeasureUnitName"  [showClear]="true" ></p-dropdown>
+      </div>
+    </div>
+    <div class="ui-g-12 ui-md-3" >
+      <p>საქონლის ჯგუფი</p>
+      <div class="ui-inputgroup">
+        <input type="text" [ngClass]="{ 'red':if_error(formErrors,'itemGroupName')?'1px solid red': '' }" pInputText placeholder="საქონლის ჯგუფი" disabled [(ngModel)]="newInventor.itemGroupName" style="width: 100%" [ngClass]="{ 'red':errors.group?'1px solid red': '' }" >
+        <button (click)="itemGroupDialog()" pButton type="button" label="..."></button>
+      </div>
+    </div>
+  </div>
+  <div class="ui-g">
+    <div class="ui-g-8 ui-g-nopad">
+      <div class="ui-g-4" >
+        <p>დასახელება</p>
 
-    <div class="ui-g">
-      <div class="ui-g-8 ui-g-nopad">
-        <div class="ui-g-4" >
-          <p>დასახელება</p>
+        <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"   field="name" [size]="30"
+                          placeholder="დასახელება" [minLength]="1"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" >
+        </p-autoComplete>
 
-            <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"  [suggestions]="filteredInventors" (completeMethod)="filterInventorsByName($event)" field="name" [size]="30"
-                             placeholder="დასახელება" [minLength]="1" [(ngModel)]="newInventor.fullname" (onSelect)="selectedName()">
-
-
-            </p-autoComplete>
-
-        </div>
-        <div class="ui-g-4">
-          <p>ქარხნული ნომერი</p>
-          <input type="text" pInputText style="width:100%;height: 35px;" [(ngModel)]="newInventor.factoryNumber" [ngClass]="{ 'red':if_error(formErrors,'factoryNumber')?'1px solid red': '' }"/>
-        </div>
-        <div class="ui-g-4">
-          <p>ინვენტარის ტიპი</p>
-          <p-dropdown [options]="itemTypes"  [ngClass]="{ 'red':if_error(formErrors,'selectedItemType')?'1px solid red': '' }" placeholder="ტიპი" optionLabel="name" [showClear]="true" [(ngModel)]="newInventor.selectedItemType" ></p-dropdown>
-        </div>
-        <div class="ui-g-4">
-          <p>მარკა</p>
-          <table>
-            <tr>
-              <td>
-                <p-autoComplete [suggestions]="ItemData" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" (completeMethod)="filterItemSingle($event,'marker')" field="name" type="marker" [size]="30"
-                                placeholder="მარკა" [minLength]="1" [(ngModel)]="newInventor.selectedMaker"></p-autoComplete>
-              </td>
-              <td>
-                <p-button icon="pi pi-plus" (click)="newRecordDialog('marker')"></p-button>
-              </td>
-            </tr>
-          </table>
-        </div>
-        <div class="ui-g-4">
-          <p>მიმწოდებელი</p>
-          <table>
-            <tr>
-              <td>
-                <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData" (completeMethod)="filterItemSingle($event, 'supplier')" field="name" [size]="30"
-                                placeholder="მიმწოდებელი" [minLength]="1" [(ngModel)]="newInventor.selectedSupplier"></p-autoComplete>
-              </td>
-              <td>
-                <p-button icon="pi pi-plus" (click)="newRecordDialog('supplier')"></p-button>
-              </td>
-            </tr>
-          </table>
-
-
-        </div>
-        <div class="ui-g-4">
-          <p>ინვენტარის სტატუსი</p>
-          <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedItemStatus')?'1px solid red': '' }" [options]="itemStatus"  placeholder="სტატუსი" optionLabel="name" [showClear]="true" [(ngModel)]="newInventor.selectedItemStatus"></p-dropdown>
-
-        </div>
-        <div class="ui-g-12">
-          <div class="ui-g-4">
-            <p>მოდელი</p>
-            <table>
-              <tr>
-                <td>
-                  <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedModel')?'1px solid red': '' }" [suggestions]="ItemData" (completeMethod)="filterItemSingle($event, 'model')" field="name" [size]="30"
-                                  placeholder="მოდელი" [minLength]="1" [(ngModel)]="newInventor.selectedModel"></p-autoComplete>
-                </td>
-                <td>
-                  <p-button icon="pi pi-plus" (click)="newRecordDialog('model')"></p-button>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <div class="ui-g-4">
-            <p>სასაქონლო ზედნადები</p>
-            <input type="text" pInputText style="width:100%;height: 35px;"  [(ngModel)]="newInventor.invoice"   [ngClass]="{ 'red':if_error(formErrors,'invoice')?'1px solid red': '' }" />
-          </div>
-          <div class="ui-g-4">
-            <p>ინსპექტირების დასკვნის ნომერი</p>
-            <input type="text" pInputText style="width:100%;height: 35px;" [(ngModel)]="newInventor.inspectionNumber" [ngClass]="{ 'red':if_error(formErrors,'inspectionNumber')?'1px solid red': '' }"/>
-          </div>
-        </div>
-        <div class="ui-g-12">
-          <div class="ui-g-4" >
-            <p>ერთეულის ფასი</p>
-            <p-spinner size="30" step="0.25"   [(ngModel)]="newInventor.price" [ngClass]="{ 'red':if_error(formErrors,'price')?'1px solid red': '' }" ></p-spinner>
-          </div>
-          <div class="ui-g-4">
-            <p>საბუღალტრო ზედდებული</p>
-            <input type="text" pInputText style="width:100%;height: 35px;"   [(ngModel)]="newInventor.invoiceAddon"  [ngClass]="{ 'red':if_error(formErrors,'invoiceAddon')?'1px solid red': '' }" >
-          </div>
-        </div>
-        <div class="ui-g-12">
-          <div class="ui-g-4" >
-            <p>სულ ფასი: {{ newInventor.price * newInventor.amount}}</p>
-          </div>
-
-        </div>
       </div>
       <div class="ui-g-4">
-        <p>შენიშვნა</p>
-        <textarea rows="10" cols="30" pInputTextarea style="width: 100%" [(ngModel)]="newInventor.note"  ></textarea>
+        <p>ქარხნული ნომერი</p>
+        <input type="text" pInputText style="width:100%;height: 35px;" [(ngModel)]="newInventor.factoryNumber" [ngClass]="{ 'red':if_error(formErrors,'factoryNumber')?'1px solid red': '' }"/>
+      </div>
+      <div class="ui-g-4">
+        <p>ინვენტარის ტიპი</p>
+        <p-dropdown [options]="itemTypes"  [ngClass]="{ 'red':if_error(formErrors,'selectedItemType')?'1px solid red': '' }" placeholder="ტიპი" optionLabel="name" [showClear]="true" [(ngModel)]="newInventor.selectedItemType" ></p-dropdown>
+      </div>
+      <div class="ui-g-4">
+        <p>მარკა</p>
+        <table>
+          <tr>
+            <td>
+              <p-autoComplete [suggestions]="ItemData" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" (completeMethod)="filterItemSingle($event,'marker')" field="name" type="marker" [size]="30"
+                              placeholder="მარკა" [minLength]="1" [(ngModel)]="newInventor.selectedMaker"></p-autoComplete>
+            </td>
+            <td>
+              <p-button icon="pi pi-plus" (click)="newRecordDialog('marker', newInventor.selectedMaker)"></p-button>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="ui-g-4">
+        <p>მიმწოდებელი</p>
+        <table>
+          <tr>
+            <td>
+              <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData"  field="generatedName" [size]="30"
+                               placeholder="მიმწოდებელი" [minLength]="1" [(ngModel)]="newInventor.selectedSupplier" (ngModelChange)="onKeyUpSupplier($event)"></p-autoComplete>
+            </td>
+            <td>
+              <p-button icon="pi pi-plus" (click)="newRecordDialog('supplier', newInventor.selectedSupplier)"></p-button>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="ui-g-4">
+        <p>ინვენტარის სტატუსი</p>
+        <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedItemStatus')?'1px solid red': '' }" [options]="itemStatus"  placeholder="სტატუსი" optionLabel="name" [showClear]="true" [(ngModel)]="newInventor.selectedItemStatus"></p-dropdown>
+
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <p>მოდელი</p>
+          <table>
+            <tr>
+              <td>
+                <p-autoComplete [disabled]="!newInventor.selectedMaker"  [ngClass]="{ 'red':if_error(formErrors,'selectedModel')?'1px solid red': '' }" [suggestions]="ItemData" (completeMethod)="filterItemSingle($event, 'model')" field="name" [size]="30"
+                                placeholder="მოდელი" [minLength]="1" [(ngModel)]="newInventor.selectedModel"></p-autoComplete>
+              </td>
+              <td>
+                <p-button icon="pi pi-plus" (click)="newRecordDialog('model', newInventor.selectedModel)"></p-button>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="ui-g-4">
+          <p>სასაქონლო ზედნადები</p>
+          <input type="text" pInputText style="width:100%;height: 35px;"  [(ngModel)]="newInventor.invoice"   [ngClass]="{ 'red':if_error(formErrors,'invoice')?'1px solid red': '' }" />
+        </div>
+        <div class="ui-g-4">
+          <p>ინსპექტირების დასკვნის ნომერი</p>
+          <input type="text" pInputText style="width:100%;height: 35px;" [(ngModel)]="newInventor.inspectionNumber" [ngClass]="{ 'red':if_error(formErrors,'inspectionNumber')?'1px solid red': '' }"/>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4" >
+          <p>ერთეულის ფასი</p>
+          <p-spinner size="30" step="0.25"   [(ngModel)]="newInventor.price" [ngClass]="{ 'red':if_error(formErrors,'price')?'1px solid red': '' }" ></p-spinner>
+        </div>
+        <div class="ui-g-4" *ngIf="1===2">
+          <p>საბუღალტრო ზედდებული</p>
+          <input type="text" pInputText style="width:100%;height: 35px;"   [(ngModel)]="newInventor.invoiceAddon"  [ngClass]="{ 'red':if_error(formErrors,'invoiceAddon')?'1px solid red': '' }" >
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4" >
+          <p>სულ ფასი: {{ newInventor.price * newInventor.amount}}</p>
+        </div>
+
       </div>
     </div>
-  </div >
+    <div class="ui-g-4">
+      <p>შენიშვნა</p>
+      <textarea rows="10" cols="30" pInputTextarea style="width: 100%" [(ngModel)]="newInventor.note"  ></textarea>
+    </div>
+  </div>
+</div >
   <div style="width: 100%;height: 500px;" *ngIf="frustrate">
-      <table style="border-collapse: collapse; width: 100%" class="table">
+      <table style="border-collapse: collapse;" class="table generator-table" cellpadding="5">
           <thead>
             <tr>
               <th>თარიღი</th>
@@ -417,7 +446,7 @@
               <th>მოდელი</th>
               <th>ფასი</th>
               <th>რაოდენობა</th>
-              <th>განზ.ერთ</th>
+              <th [width]="200">განზ.ერთ</th>
               <th>შტრიხკოდი</th>
               <th>ქარხ#</th>
               <th>ჯგუფი</th>
@@ -438,7 +467,7 @@
             <td>{{newInventor.price}}</td>
             <td>{{newInventor.showAmount}}</td>
             <td>{{newInventor.measureUnitName}}</td>
-            <td>{{c.value}}<input type="text" [(ngModel)]="c.barCodeVisualValue" class="input"></td>
+            <td>{{c.value}}<input type="text" [(ngModel)]="c.barCodeVisualValue" class="input border-0"></td>
             <td><input type="text" [(ngModel)]="c.factoryNumber" class="input"></td>
             <td>{{newInventor.itemGroupName}}</td>
             <td>{{newInventor.selectedItemType.name}}</td>
@@ -450,12 +479,148 @@
           </tr>
           </tbody>
       </table>
-
   </div>
+
+  <div class="invred_box" *ngIf="inventorOperation=='multiple'" style="min-height: 400px">
+    <table cellspacing="5" cellpadding="5">
+      <tr *ngFor="let cdata of cartMultipleItemsData" [ngClass]="{'err': cdata['status'] === false,'success': cdata['status'] ===true, '': cdata['status'] === null}">
+        <td style="min-width: 250px">
+          <p>მიღების თარიღი</p>
+          <p-calendar [(ngModel)]="cdata['entryDate']" dateFormat="dd-mm-yy" [showIcon]="true"  [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+        </td>
+        <td style="min-width: 400px">
+
+            <table style="width: 100%; border-collapse: collapse" >
+              <tr >
+                <td colspan="2" style="padding: 0px;line-height: 20px;margin: 0px;" *ngIf="!cdata['consumption']">შტრიხკოდი</td>
+                <td style="padding: 0px; line-height: 20px;margin: 0px;" > რაოდენობა</td>
+                <!--td *ngIf="newInventor.consumption" style="padding: 0px;line-height: 20px;margin: 0px;" >ერთ. რაოდენობა</td-->
+              </tr>
+              <tr >
+                <td *ngIf="!cdata['consumption']" width="30%">
+                  <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedBarcode')?'1px solid red': '' }" [autoWidth]="true" [options]="barcodes"   placeholder="RS"  optionLabel="name" [(ngModel)]="cdata.selectedBarcode"  [showClear]="true" (ngModelChange)="getLastCode()" ></p-dropdown>
+                </td>
+                <td *ngIf="!cdata['consumption']" width="30%">
+                  <input type="text"  pInputText placeholder="შტრიხკოდი" style="width: 100%; height: 33px;" [(ngModel)]="cdata['barCode']"  >
+                </td>
+                <td width="30%">
+                  <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="cdata['amount']"  [ngClass]="{ 'red':if_error(formErrors,'amount')?'1px solid red': '' }">
+                </td>
+                <!--td *ngIf="newInventor.consumption">
+                  <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.packageAmount" [ngClass]="{ 'red':if_error(formErrors,'packageAmount')?'1px solid red': '' }">
+                </td-->
+              </tr>
+            </table>
+
+        </td>
+        <td>
+          <p>განზომილების ერთეული</p>
+          <div class="ui-inputgroup" >
+            <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedMeasureUnitName')?'1px solid red': '' }" [autoWidth]="true" class="measureUnits" [options]="measureUnits"  placeholder="ერთეული" optionLabel="name" [(ngModel)]="cdata['selectedMeasureUnitName']"  [showClear]="true" ></p-dropdown>
+          </div>
+        </td>
+        <td style="min-width: 250px">
+          <p>საქონლის ჯგუფი</p>
+          <div class="ui-inputgroup">
+            <input type="text" [ngClass]="{ 'red':if_error(formErrors,'itemGroupName')?'1px solid red': '' }" pInputText placeholder="საქონლის ჯგუფი" disabled [(ngModel)]="cdata['itemGroupName']" style="width: 100%" [ngClass]="{ 'red':errors.group?'1px solid red': '' }" >
+            <button (click)="itemGroupDialog()" pButton type="button" label="..."></button>
+          </div>
+        </td>
+        <td style="min-width: 250px">
+          <p>დასახელება</p>
+          <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="cdata['fullname']"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"   field="name" [size]="30"
+                            placeholder="დასახელება" [minLength]="1"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" >
+          </p-autoComplete>
+        </td>
+        <td>
+          <p>ქარხნული ნომერი</p>
+          <input type="text" pInputText style="width:100%;height: 35px;" [(ngModel)]="cdata['factoryNumber']" [ngClass]="{ 'red':if_error(formErrors,'factoryNumber')?'1px solid red': '' }"/>
+        </td>
+        <td>
+          <p>ინვენტარის ტიპი</p>
+          <p-dropdown [options]="itemTypes"  [ngClass]="{ 'red':if_error(formErrors,'selectedItemType')?'1px solid red': '' }" placeholder="ტიპი" optionLabel="name" [showClear]="true" [(ngModel)]="cdata['selectedItemType']" ></p-dropdown>
+
+        </td>
+        <td style="min-width: 250px">
+          <p>მარკა</p>
+          <table>
+            <tr>
+              <td>
+                <p-autoComplete [suggestions]="ItemData" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" (completeMethod)="filterItemSingle($event,'marker')" field="name" type="marker" [size]="30"
+                                placeholder="მარკა" [minLength]="1" [(ngModel)]="newInventor.selectedMaker"></p-autoComplete>
+              </td>
+              <td>
+                <p-button icon="pi pi-plus" (click)="newRecordDialog('marker', newInventor.selectedMaker)"></p-button>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td style="min-width: 250px">
+          <p>მიმწოდებელი</p>
+          <table>
+            <tr>
+              <td>
+                <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData"  field="generatedName" [size]="30"
+                                 placeholder="მიმწოდებელი" [minLength]="1" [(ngModel)]="cdata['selectedSupplier']" (ngModelChange)="onKeyUpSupplier($event)"></p-autoComplete>
+              </td>
+              <td>
+                <p-button icon="pi pi-plus" (click)="newRecordDialog('supplier', cdata['selectedSupplier'])"></p-button>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td>
+          <p>ინვენტარის სტატუსი</p>
+          <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedItemStatus')?'1px solid red': '' }" [options]="itemStatus"  placeholder="სტატუსი" optionLabel="name" [showClear]="true" [(ngModel)]="cdata.selectedItemStatus"></p-dropdown>
+
+        </td>
+        <td style="min-width: 250px">
+          <p>მოდელი</p>
+          <table>
+            <tr>
+              <td>
+                <p-autoComplete [disabled]="!cdata['selectedMaker']"  [ngClass]="{ 'red':if_error(formErrors,'selectedModel')?'1px solid red': '' }" [suggestions]="ItemData" (completeMethod)="filterItemSingle($event, 'model')" field="name" [size]="30"
+                                placeholder="მოდელი" [minLength]="1" [(ngModel)]="newInventor.selectedModel"></p-autoComplete>
+              </td>
+              <td>
+                <p-button icon="pi pi-plus" (click)="newRecordDialog('model', cdata['selectedModel'])"></p-button>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td>
+          <p>სასაქონლო ზედნადები</p>
+          <input type="text" pInputText style="width:100%;height: 35px;"  [(ngModel)]="cdata['invoice']"   [ngClass]="{ 'red':if_error(formErrors,'invoice')?'1px solid red': '' }" />
+
+        </td>
+        <td>
+          <p>ინსპექტირების დასკვნის ნომერი</p>
+          <input type="text" pInputText style="width:100%;height: 35px;" [(ngModel)]="cdata['inspectionNumber']" [ngClass]="{ 'red':if_error(formErrors,'inspectionNumber')?'1px solid red': '' }"/>
+
+        </td>
+        <td>
+          <p>ერთეულის ფასი</p>
+          <p-spinner size="30" step="0.25"   [(ngModel)]="cdata['price']" [ngClass]="{ 'red':if_error(formErrors,'price')?'1px solid red': '' }" ></p-spinner>
+
+        </td>
+        <td>
+          <p>საბუღალტრო ზედდებული</p>
+          <input type="text" pInputText style="width:100%;height: 35px;"   [(ngModel)]="cdata['invoiceAddon']"  [ngClass]="{ 'red':if_error(formErrors,'invoiceAddon')?'1px solid red': '' }" >
+
+        </td>
+        <td style="min-width: 250px">
+          <p>შენიშვნა</p>
+          <textarea rows="1"  cols="30" pInputTextarea style="width: 100%" [(ngModel)]="cdata['note']"  ></textarea>
+        </td>
+      </tr>
+    </table>
+  </div>
+
   <p-footer>
     <span class="lastCode">ბოლო შტრიხკოდი: {{newInventor.fullBarCode}}</span>
+    <button  type="button" style="position: relative; top:-2px;" (click)="changeLang()"><img src="./assets/img/icons/{{lang}}.png" width="25" alt=""></button>
     <button type="button" pButton icon="pi pi-save" *ngIf="frustrate && inventorOperation=='new'" (click)="saveNewInventor()" label="შენახვა" ></button>
-    <button type="button" pButton icon="pi pi-save" *ngIf="inventorOperation=='edit'" (click)="editNewInventor()" label="შენახვა" ></button>
+    <button type="button" pButton icon="pi pi-save" *ngIf="inventorOperation=='edit' || inventorOperation ==='multiple'" (click)="editNewInventor()" label="შენახვა" ></button>
     <button type="button" pButton icon="pi pi-save" *ngIf="!frustrate && inventorOperation=='new'" (click)="frustrateInventor()" label="ჩაშლა" ></button>
     <button type="button" pButton icon="pi pi-close" *ngIf="frustrate" (click)="frustrate=false" label="დაბრუნება" class="ui-button-secondary"></button>
     <button type="button" pButton icon="pi pi-close" (click)="inventorDialogShow=false" label="დახურვა" class="ui-button-secondary"></button>

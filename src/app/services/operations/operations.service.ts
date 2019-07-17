@@ -16,84 +16,85 @@ export class OperationsService {
     return this.Request.Get(Config.baseURI+Config.operations.property.get[inOut] + '?page=1&start='+index+'&limit='+length );
   }
   getItemTypes(){
-    return this.Request.Get(Config.itemTypes.get.types);
+    return this.Request.Get(Config.baseURI+Config.itemTypes.get.types);
   }
   getListBarcodes(){
-    return this.Request.Get(Config.List.get.barcode);
+    return this.Request.Get(Config.baseURI+Config.List.get.barcode);
   }
   getItemStatus(){
-      return this.Request.Get(Config.itemStatus.get.types+"?page=1&start=0&limit=50");
+      return this.Request.Get(Config.baseURI+Config.itemStatus.get.types+"?page=1&start=0&limit=50");
   }
  getMeasureUnits(){
-      return this.Request.Get(Config.List.get.MeasureUnit);
+      return this.Request.Get(Config.baseURI+Config.List.get.MeasureUnit);
   }
   itemFilterByName(name){
-      return this.Request.Get(Config.List.get.itemFilterByName+'?str='+name);
+      return this.Request.Get(Config.baseURI+Config.List.get.itemFilterByName+'?str='+name);
   }
   getItemData(type,value){
-      return this.Request.Get(Config.List.get[type]+ value);
+      return this.Request.Get(Config.baseURI+Config.List.get[type]+ value);
   }
 
 
   getItemGroup(){
-    return  this.Request.GetWitoutStatus(Config.List.get.ItemGroup+"?node=root");
+    return  this.Request.GetWitoutStatus(Config.baseURI+Config.List.get.ItemGroup+"?node=root");
   }
 
   saveNewItem(newItem, params) {
-        return this.Request.Post(Config.List.post[newItem.selected]+ params,{});
+        return this.Request.Post(Config.baseURI+Config.List.post[newItem.selected]+ params,{});
   }
 
   getLastCode(barcodeType){
-      return this.Request.Post(Config.List.post.lastBarCode+"?barCodeType="+barcodeType,{});
+      return this.Request.Post(Config.baseURI+Config.List.post.lastBarCode+"?barCodeType="+barcodeType,{});
   }
   getFreeCodes(data){
-    return this.Request.Post(Config.List.post.freeCodes+"?barCodeType="+data['barCodeType']+"&count="+data['count']+"&start="+data['start'])
+    return this.Request.Post(Config.baseURI+Config.List.post.freeCodes+"?barCodeType="+data['barCodeType']+"&count="+data['count']+"&start="+data['start'])
   }
 
   saveInventory(formdata){
-    return this.Request.Post(Config.inventory.post.insert,formdata );
+    return this.Request.Post(Config.baseURI+Config.inventory.post.insert,formdata );
   }
 
   putInCart(data){
-    return this.Request.Post(Config.cart.post.put,data);
+    return this.Request.Post(Config.baseURI+Config.cart.post.put,data);
   }
   getCartItems(data){
-      return this.Request.Post(Config.cart.post.getAll, data);
+      return this.Request.Post(Config.baseURI+Config.cart.post.getAll, data);
   }
 
   removeCartItem(formData: FormData) {
 
-    return this.Request.Post(Config.cart.post.remove, formData);
+    return this.Request.Post(Config.baseURI+Config.cart.post.remove, formData);
   }
 
   clearCart(formData) {
-    return this.Request.Post(Config.cart.post.clear, formData);
+    return this.Request.Post(Config.baseURI+Config.cart.post.clear, formData);
   }
 
   getStoks(){
-    return this.Request.Get(Config.List.get.stock);
+    return this.Request.Get(Config.baseURI+Config.List.get.stock);
   }
 
   getPropertyByStock(formData){
-    return this.Request.Post(Config.List.post.property,formData)
+    return this.Request.Post(Config.baseURI+Config.List.post.property,formData)
   }
   getStaffList(query: any) {
-    return this.Request.Post(Config.List.post.staff+"?name="+query, {});
+    return this.Request.Post(Config.baseURI+Config.List.post.staff+"?name="+query, {});
   }
-  getAddonNumber(){
-    return this.Request.Post(Config.List.post.addon,{});
+  getAddonNumber(params:{type:string}){
+
+    return this.Request.Post(Config.baseURI+Config.List.post.addon+'?type='+params.type,{});
   }
 
   generaTeTransferToSection(formData,type='invoice'){
-    return this.Request.Post(Config.List.post[type], formData)
+    return this.Request.Post(Config.baseURI+Config.List.post[type], formData)
   }
 
   generateReturnInvetorInvoice(formData){
-    return this.Request.Post(Config.List.post.return, formData)
+    return this.Request.Post(Config.baseURI+Config.List.post.return, formData)
   }
   generateTransferToPerson(formData,type){
     console.log(type);
-    return this.Request.Post(Config.transfer.post[type],formData);
+    return this.Request.Post(Config.baseURI+Config.transfer.post[type],formData);
   }
 
   getRoomsByPerson(id){

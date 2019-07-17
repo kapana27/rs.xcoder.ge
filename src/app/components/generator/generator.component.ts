@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {TransferToSection} from "../../models/transfer-to-section";
 
 @Component({
@@ -8,10 +8,15 @@ import {TransferToSection} from "../../models/transfer-to-section";
 })
 export class GeneratorComponent implements OnInit {
   @Input() transferToSection: TransferToSection ={};
+  @Output() onChangeAddon: EventEmitter<any> = new EventEmitter();
 
   constructor() { }
 
   ngOnInit() {
   }
 
+  change() {
+    console.log(this.transferToSection);
+    this.onChangeAddon.emit({addon: this.transferToSection.addon['Right']})
+  }
 }

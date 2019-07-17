@@ -12,7 +12,7 @@
       <ng-template pTemplate="body" let-d>
         <tr>
           <td>{{d["name"]}}</td>
-          <td>{{d["barcode"]}}</td>
+          <td>{{(d['spend']===1)? '': d['barcode']}}</td>
           <td><input type="text" [(ngModel)]="d['count']" [ngClass]="{ 'red': d['count'] *1>(d['amount'] *1 -d['tmpAmount'] * 1) || d['count']<1 }" style="width: 100%" (ngModelChange)="check(d)" ></td>
           <td>{{d["amount"] *1 -d["tmpAmount"] * 1}}</td>
         </tr>
