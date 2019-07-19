@@ -11,7 +11,7 @@ import {PanelModule} from "primeng/panel";
 import {
   AutoCompleteModule,
   ButtonModule,
-  CalendarModule, CheckboxModule, ConfirmDialogModule,
+  CalendarModule, CheckboxModule, ChipsModule, ConfirmDialogModule,
   DialogModule,
   DropdownModule,
   InputTextareaModule, SpinnerModule,
@@ -45,7 +45,8 @@ import {ComponentsModule} from "../../components/components.module";
     TreeModule,
     AgGridModule.withComponents([]),
     ComponentsModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    ChipsModule
   ]
 })
 export class ManagementModule { }

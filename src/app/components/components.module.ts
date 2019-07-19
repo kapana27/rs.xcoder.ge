@@ -8,21 +8,25 @@ import {CartButtonComponent} from "./cart-button/cart-button.component";
 import {FormsModule} from "@angular/forms";
 import { TreeComponent } from './tree/tree.component';
 import {TreeModule} from "primeng/tree";
+import { TreeTableComponent } from './tree-table/tree-table.component';
+import {TreeTableModule} from "primeng/primeng";
 
 @NgModule({
-  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent],
+  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent],
   imports: [
     CommonModule,
     TableModule,
     ButtonModule,
     FormsModule,
-    TreeModule
+    TreeModule,
+    TreeTableModule
   ],
   exports:[
     CartComponent,
     GeneratorComponent,
     CartButtonComponent,
-    TreeComponent
+    TreeComponent,
+    TreeTableComponent
   ]
 })
 export class ComponentsModule { }

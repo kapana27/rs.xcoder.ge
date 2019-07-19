@@ -1,5 +1,43 @@
 /deep/ app-warehouse{
 
+  .search {
+    background: #dedede;
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    display: flex;
+
+    p-chips {
+      .ui-inputtext {width: 100%}
+    }
+    input {
+      //width: 100% !important;
+    }
+    label {
+      margin: 0;
+
+    }
+    p-calendar input {
+      width: 100px;
+    }
+  }
+
+  .arrow-icon {
+    position: relative;
+    padding-left: 25px;
+    &:before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      height: 100%;
+      width: 30px;
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAPCAQAAABDj1eZAAAA6ElEQVQoz32PvUoDYRBFz5qNWXXBBESjYG8pPoGdhaU2wUJQYiP406TQ2tJCUij4AoK2FiJpxMKnEHwASy12kz0WwUWQ/e5tZuAw9w5S6QMfbIsQgDb89MVFwaZzYtOW2LLtfOnEXXMHLkfessAW9wzZ5pE15FcFXyyRchfzyiwjnimAJ97JSmhInX1y3kKdavbNPQoX76knf7/ruvcPWnVzPI3XU7VffRPx2MybQCyRXa6JGJDRKP9q8MEhHdbZocdKTEKNEdPMUC+hSVImSEiBKVKMPLPwKhSHGHmuXlZDMSAXfJNTqR8OreRCMlA8mAAAAABJRU5ErkJggg==) no-repeat center center;
+    }
+  }
+  .arrow-icon span{
+    position: relative;
+  }
+
   .invred_box p, .invred_box table {
     white-space:nowrap;
   }
@@ -128,4 +166,3 @@
     background-color: rgba(0, 255, 0, 0.15);
   }
 }
-

@@ -68,7 +68,8 @@ export  const Config = {
   inventory:{
     post:{
       insert: "/api/secured/Item/Insert",
-      update: "/api/secured/Item/Update"
+      update: "/api/secured/Item/Update",
+      multiUpdate: "/api/secured/Item/Multi_Update",
     }
   },
   cart:{

@@ -61,7 +61,7 @@ export class DirectoryComponent implements OnInit {
   getMeasureUnits(){
     this.directoryService.getMeasureUnitTree()
       .then(value => {
-        this.units = parseTree(value['children'] );
+        this.units = parseTree([value] );
       }).catch();
   }
 
@@ -120,7 +120,6 @@ export class DirectoryComponent implements OnInit {
 
     this.directoryService.getList(1)
       .then(value => {
-        console.log(value['data']);
         this.cities = value['data'];
       })
     this.directoryService.getList(2)

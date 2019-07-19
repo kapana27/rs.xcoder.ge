@@ -54,6 +54,7 @@ export class WarehouseComponent implements OnInit{
   public getRowNodeId;
   public components;
   public rowData: [];
+  public searchBox: boolean = false;
   public gridOptions:{
     context?: any,
     rowSelection: string,
@@ -1297,7 +1298,9 @@ export class WarehouseComponent implements OnInit{
   selectCell($event: any) {
 
   }
-
+  notNull(value){
+    return (value !== undefined && value !== null);
+  }
   editNewInventor() {
     if(this.inventorOperation ==='edit'){
       let formdata = new FormData();
@@ -1334,7 +1337,62 @@ export class WarehouseComponent implements OnInit{
         })
     }else if(this.inventorOperation ==='multiple'){
 
-      this.cartMultipleItemsData.forEach((value, index)=>{
+      this.newInventor.entryDate = moment(this.newInventor.date).format("DD-MM-YYYY");
+      this.newInventor.name =(typeof this.newInventor.fullname === 'string')?this.newInventor.fullname: this.newInventor.fullname['name'];
+      this.newInventor.itemType = (this.newInventor.selectedItemType!==undefined)?this.newInventor.selectedItemType['id']: null;
+      this.newInventor.maker = (this.newInventor.selectedMaker !==undefined)?this.newInventor.selectedMaker['id']: null;
+      this.newInventor.supplier = (this.newInventor.selectedSupplier !==undefined)?this.newInventor.selectedSupplier['id']: null;
+      this.newInventor.itemStatus = (this.newInventor.selectedItemStatus !== undefined)?this.newInventor.selectedItemStatus['id']: null ;
+      this.newInventor.model = (this.newInventor.selectedModel !== undefined) ?this.newInventor.selectedModel['id'] : null;
+      this.newInventor.measureUnit = (this.newInventor.selectedMeasureUnitName != undefined) ?this.newInventor.selectedMeasureUnitName['id']: null;
+      let inventory: Inventory = {
+        entryDate: this.newInventor.entryDate,
+        name: this.newInventor.name,
+        maker: this.newInventor.maker,
+        model: this.newInventor.model,
+        price: this.newInventor.price,
+        barCodeType: this.newInventor.barCodeType,
+        barCode: this.newInventor.barCode,
+        amount: this.newInventor.amount,
+        itemNumber: this.newInventor.itemNumber,
+        factoryNumber: this.newInventor.factoryNumber,
+        supplier: this.newInventor.supplier,
+        invoice: this.newInventor.invoice,
+        invoiceAddon: this.newInventor.invoiceAddon,
+        measureUnitName: this.newInventor.selectedMeasureUnitName['name'],
+        measureUnit: this.newInventor.measureUnit,
+        itemType: this.newInventor.itemType,
+        itemStatus: this.newInventor.itemStatus,
+        inspectionNumber: this.newInventor.inspectionNumber,
+        itemGroupName: this.newInventor.itemGroupName,
+        itemGroup: this.newInventor.itemGroup,
+        spend: this.newInventor.spend,
+        note: this.newInventor.note,
+        list: this.cartItemsData.map(v=>v.id)
+      };
+      let formdata = new FormData();
+      for(let key in inventory){
+        console.log(key,this.notNull(inventory[key]));
+        if(key==='list' && this.notNull(inventory[key])){
+          formdata.append(key,inventory[key].toString())
+        }else if(this.notNull(inventory[key])){
+          formdata.append(key,inventory[key])
+        }
+      }
+      this.operation.editInvetorMultiple(formdata)
+        .then(response=>{
+          if(response['status']==200){
+            this.inventorDialogShow = false;
+            this.onGridReady(this.eventData);
+            this.tmpData = this.newInventor;
+            alert("ოპერაცია წარმატებით დასრულდა");
+          }
+        })
+        .catch(response => {
+          this.error("შეცდომა",response['error'])
+        })
+
+      /*this.cartMultipleItemsData.forEach((value, index)=>{
         let formdata = new FormData();
         for(let key in value){
           if(value[key] !==null && value[key] !== undefined){
@@ -1360,10 +1418,11 @@ export class WarehouseComponent implements OnInit{
             this.cartMultipleItemsData[index]['status']=false;
 
           })
-      })
+      })*/
 
     }
   }
+
 
 
   onKeyUp($event: any) {
@@ -1419,7 +1478,11 @@ export class WarehouseComponent implements OnInit{
   }
 
   inventorSearch() {
+    this.searchBox = true;
+  }
 
+  CloseInventorSearch() {
+    this.searchBox = false;
   }
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {

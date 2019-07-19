@@ -14,4 +14,8 @@ app-sidebar, app-header, app-warehouse, app-property, p-tabmenu, ul[role="tablis
   user-select: none;
 }
 
+app-sidebar-nav-link a {
+  font-size: 0.770rem;
+}
+
 // width: calc(100% - 10px);

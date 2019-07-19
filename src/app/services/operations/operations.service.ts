@@ -104,6 +104,8 @@ export class OperationsService {
   editInvetor(formData){
     return this.Request.Post(Config.inventory.post.update,formData);
   }
-
+  editInvetorMultiple(formData){
+    return this.Request.Post(Config.inventory.post.multiUpdate,formData);
+  }
 
 }
