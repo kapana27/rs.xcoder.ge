@@ -89,6 +89,16 @@
         <p-calendar dateFormat="dd-mm-yy" [showIcon]="true" placeholder="მდე"></p-calendar>
       </div>
     </div>
+    <div class="col-m-6 col-lg-6" style="max-width: 320px">
+      <label>შტრიხკოდი: დან-მდე</label>
+      <div style="display: flex">
+        <div style="flex: 0.4">
+          <p-dropdown placeholder="RS"  optionLabel="name"></p-dropdown>
+        </div>
+        <input type="text"  pInputText placeholder="დან" style="width: 120px;"  >
+        <input type="text"  pInputText placeholder="მდე" style="width: 120px;"  >
+      </div>
+    </div>
     <div  style="min-width:350px; max-width: 100%; padding-right: 20px; padding-top: 21px; flex: 1;">
       <div style="float: right">
         <button pButton icon="pi pi-search" label="ძებნა" class="ui-button-warning"></button>

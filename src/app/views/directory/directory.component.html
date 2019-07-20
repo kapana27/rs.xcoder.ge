@@ -10,21 +10,21 @@
   </div>
   <p-tabPanel [header]="item.label" *ngFor="let item of subTabs; let i = index" [selected]="i == 0"  >
      <div *ngIf="item.id !== 'employees'">
-       <p-table [value]="lists" *ngIf="item.id !== 'structuralUnit'" selectionMode="single" (onRowSelect)="onRowSelect($event)" >
+       <p-table [value]="lists" *ngIf="item.id !== 'structuralUnit'"   selectionMode="single" (onRowSelect)="onRowSelect($event)" >
          <ng-template pTemplate="header">
            <tr>
              <th width="100">id</th>
              <th>დასახელება</th>
            </tr>
          </ng-template>
-         <ng-template pTemplate="body" let-list >
-           <tr [pSelectableRow]="list">
-             <td>{{list.id}}</td>
-             <td>{{list.name}}</td>
+         <ng-template pTemplate="body" let-rowData >
+           <tr [pSelectableRow]="rowData" >
+             <td>{{rowData.id}}</td>
+             <td>{{rowData.name}}</td>
            </tr>
          </ng-template>
        </p-table>
-       <p-table #dt [value]="structuralLevelGrid" *ngIf="item.id === 'structuralUnit'">
+       <p-table #dt [value]="structuralLevelGrid" selectionMode="single" (onRowSelect)="onRowSelect($event)"  *ngIf="item.id === 'structuralUnit'">
          <ng-template pTemplate="header">
            <tr>
              <td>
@@ -44,7 +44,7 @@
            </tr>
          </ng-template>
          <ng-template pTemplate="body" let-list>
-           <tr>
+           <tr [pSelectableRow]="list">
              <td>{{list['type1']['name']}}</td>
              <td>{{list['type2']['name']}}</td>
              <td>{{list['type3']['name']}}</td>
@@ -111,32 +111,45 @@
 <div class="row" *ngIf="activeItem['type']==='group'">
   <div class="col-md-12">
     <div class="action-button" style="    margin-bottom: 10px;">
-      <button pButton type="button" label="დამატება"  class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="itemGroup({ action: 'new', type: 'ItemGroup',data: null})"></button>
+      <button pButton type="button" class="ui-button-success" icon="pi pi-plus" label="დამატება" pTooltip="დამატება" tooltipPosition="top" (click)="itemGroup({ action: 'new', type: 'ItemGroup',data: selectedGroup.data})"></button>
+      <button pButton type="button"  class="ui-button-info" icon="pi pi-pencil" label="რედაქტირება" pTooltip="რედაქტირება" tooltipPosition="top" (click)="itemGroup({action: 'edit', type: 'ItemGroup',data: selectedGroup.data})"></button>
+      <button pButton type="button"  class="ui-button-danger" icon="pi pi-trash" label="წაშლა" pTooltip="წაშლა" tooltipPosition="top" (click)="itemGroup({action: 'delete', type: 'ItemGroup',data: selectedGroup.data})"></button>
     </div>
-    <p-treeTable [value]="groups" selectionMode="single"  >
+    <p-treeTable [value]="groups" selectionMode="single"  (onNodeSelect)="onSelectGroup($event)" >
       <ng-template pTemplate="header">
         <tr>
           <th>დასახელება</th>
           <th>სახარჯი</th>
-          <th width="200"></th>
+          <th>არჩევითი</th>
+          <th>ავტომობილები და სპეც. ტექნიკა</th>
+          <th>მკაცრი აღრიცხვის დოკუმენტი</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-rowNode let-rowData>
-        <tr [ttRow]="rowNode"  >
+      <ng-template pTemplate="body"  let-rowNode let-rowData="rowData" >
+        <tr [ttRow]="rowNode"  [ttSelectableRow]="rowNode" >
           <td>
             <p-treeTableToggler [rowNode]="rowNode" ></p-treeTableToggler>
-            {{ rowData['node']['text'] }}
+            {{ rowData['name'] }}
           </td>
           <td>
-            <p-checkbox disabled [(ngModel)]="rowData['node']['spend']" binary="true"></p-checkbox>
+            <p-checkbox disabled [(ngModel)]="rowData['spend']" binary="true"></p-checkbox>
           </td>
           <td>
+            <p-checkbox disabled [(ngModel)]="rowData['selectable']" binary="true"></p-checkbox>
+          </td>
+          <td>
+            <p-checkbox disabled [(ngModel)]="rowData['isCar']" binary="true"></p-checkbox>
+          </td>
+          <td>
+            <p-checkbox disabled [(ngModel)]="rowData['isStrict']" binary="true"></p-checkbox>
+          </td>
+          <!--td>
             <div class="action-button" style="    margin-bottom: 10px;">
               <button pButton type="button" class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="itemGroup({ action: 'new', type: 'ItemGroup',data: rowData['node']})"></button>
               <button pButton type="button"  class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="itemGroup({action: 'edit', type: 'ItemGroup',data: rowData['node']})"></button>
               <button pButton type="button"  class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="itemGroup({action: 'delete', type: 'ItemGroup',data: rowData['node']})"></button>
             </div>
-          </td>
+          </td-->
         </tr>
       </ng-template>
     </p-treeTable>
@@ -144,36 +157,39 @@
 </div>
 <div class="row" *ngIf="activeItem['type']==='unit'">
   <div class="col-md-12">
-    <div class="action-button" style="    margin-bottom: 10px;">
+    <!--div class="action-button" style="    margin-bottom: 10px;">
     <button pButton type="button" label="დამატება"  class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="itemGroup({ action: 'new', type: 'MeasureUnit',data: null})"></button>
+    </div-->
+    <div class="action-button" style="    margin-bottom: 10px;">
+      <button pButton type="button" class="ui-button-success" icon="pi pi-plus" label="დამატება" (click)="itemGroup({ action: 'new', type: 'MeasureUnit',data: selectedGroup.data})"></button>
+      <button pButton type="button"  class="ui-button-info" icon="pi pi-pencil" label="რედაქტირება" (click)="itemGroup({action: 'edit', type: 'MeasureUnit',data: selectedGroup.data})"></button>
+      <button pButton type="button"  class="ui-button-danger" icon="pi pi-trash" label="წაშლა" (click)="itemGroup({action: 'delete', type: 'MeasureUnit',data: selectedGroup.data})"></button>
     </div>
-    <p-treeTable [value]="units"  dataKey="name">
+    <p-treeTable [value]="units"  selectionMode="single"  (onNodeSelect)="onSelectGroup($event)">
       <ng-template pTemplate="header">
         <tr>
           <th>დასახელება</th>
           <th>მშობელი ერთეული</th>
-          <th width="200"></th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-rowData >
-        <tr  [ttSelectableRow]="rowData">
+      <ng-template pTemplate="body" let-rowNode let-rowData="rowData" >
+        <tr  [ttRow]="rowNode"  [ttSelectableRow]="rowNode"  >
           <td>
-            <p-treeTableToggler [rowNode]="rowData"></p-treeTableToggler>
-            {{rowData['node']['text'] }}
+            <p-treeTableToggler [rowNode]="rowNode" ></p-treeTableToggler>
+            {{rowData['name'] }}
           </td>
           <td>
-            {{ rowData['node']['parent_name'] }}</td>
-          <td>
+            {{ rowData['parent_name'] }}</td>
+          <!--td>
             <div class="action-button" style="    margin-bottom: 10px;">
               <button pButton type="button" class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="itemGroup({ action: 'new', type: 'MeasureUnit',data: rowData['node']})"></button>
               <button pButton type="button"  class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="itemGroup({action: 'edit', type: 'MeasureUnit',data: rowData['node']})"></button>
               <button pButton type="button"  class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="itemGroup({action: 'delete', type: 'MeasureUnit',data: rowData['node']})"></button>
             </div>
-          </td>
+          </td-->
         </tr>
       </ng-template>
     </p-treeTable>
-    {{selectedNode1}}
   </div>
 </div>
 
@@ -185,7 +201,7 @@
     <input type="text" id="id" pInputText [(ngModel)]="newItem.value" style="width: 100%;"/>
 
   </div>
-  <div *ngIf="newItem.type ==='MeasureUnit' && newItem.data !== null && newItem.data['parent_name'] !=='' && newItem.data['value']>0 " >
+  <div *ngIf="newItem.type ==='MeasureUnit'  && newItem.data !== undefined && newItem.data['parent_name'] !=='' && (newItem.data['measureValue']>0 || newItem.action === 'new' ) " >
     <label for="id1">ერთეული</label>
     <input type="number" id="id1" pInputText [(ngModel)]="newItem.measure_value" style="width: 100%;"/>
   </div>
@@ -196,6 +212,12 @@
       <div class="col-md-12">
         <p-checkbox  label="სახარჯი" value="consumption" [(ngModel)]="newItem.consumption" ></p-checkbox>
       </div>
+      <div class="col-md-12">
+        <p-checkbox  label="ავტომობილები და სპეც. ტექნიკა" value="isCar" [(ngModel)]="newItem.isCar" ></p-checkbox>
+      </div>
+      <div class="col-md-12">
+        <p-checkbox  label="მკაცრი აღრიცხვის დოკუმენტი" value="isStrict" [(ngModel)]="newItem.isStrict" ></p-checkbox>
+      </div>
     </div>
 
   <p-footer>
@@ -204,3 +226,78 @@
   </p-footer>
 </p-dialog>
 
+<p-dialog *ngIf="newItem.structuralUnitDialog" header="დასახელება" [(visible)]="newItem.structuralUnitDialog" [modal]="true" [responsive]="true" [style]="{width: '500px', minWidth: '200px'}" [minY]="400"
+          [maximizable]="true" [baseZIndex]="10000">
+  <div style="width: 100%; height: 300px;">
+    <p >ქალაქი</p>
+    <table style="width: 100%">
+      <tr>
+        <td width="90%">
+          <p-autoComplete class="autocomplete" [(ngModel)]="newStructuralUnit.selectedCity"  [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'cities')" field="name" [size]="30"
+                          placeholder="ქალაქი" [minLength]="1" [dropdown]="true"></p-autoComplete>
+        </td>
+        <td>
+          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" ></button>
+        </td>
+      </tr>
+    </table>
+
+    <p>შენობა</p>
+    <table style="width: 100%">
+      <tr>
+        <td width="90%">
+          <p-autoComplete class="autocomplete" [(ngModel)]="newStructuralUnit.selectedBuilding" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'building')" field="name" [size]="30"
+                          placeholder="შენობა" [minLength]="1" [dropdown]="true"></p-autoComplete>
+        </td>
+        <td>
+          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" ></button>
+        </td>
+      </tr>
+    </table>
+
+    <p>დეპარტამენტი</p>
+    <table style="width: 100%">
+      <tr>
+        <td width="90%">
+          <p-autoComplete class="autocomplete" [(ngModel)]="newStructuralUnit.selectedDepartment" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'department')" field="name" [size]="30"
+                          placeholder="დეპარტამენტი" [minLength]="1" [dropdown]="true"></p-autoComplete>
+        </td>
+        <td>
+          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" ></button>
+        </td>
+      </tr>
+    </table>
+
+
+    <p>სამმართველო</p>
+    <table style="width: 100%">
+      <tr>
+        <td width="90%">
+          <p-autoComplete class="autocomplete" [(ngModel)]="newStructuralUnit.selectedDivision" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'division')" field="name" [size]="30"
+                          placeholder="სამმართველო" [minLength]="1" [dropdown]="true"></p-autoComplete>
+        </td>
+        <td>
+          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" ></button>
+        </td>
+      </tr>
+    </table>
+
+    <p>სექცია</p>
+    <table style="width: 100%">
+      <tr>
+        <td width="90%">
+          <p-autoComplete class="autocomplete" [(ngModel)]="newStructuralUnit.selectedSection" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'section')" field="name" [size]="30"
+                          placeholder="სექცია" [minLength]="1" [dropdown]="true"></p-autoComplete>
+        </td>
+        <td>
+          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" ></button>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="saveStructuralUnit()" label="შენახვა"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="newItem.structuralUnitDialog=false" label="გაუქმება" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>

@@ -31,14 +31,26 @@ export class DirectoryComponent implements OnInit {
   groups: TreeNode[] = [];
   structuralLevelGrid: Array<any> = [];
   cities: Default[] = [];
+  filteredCities: Default[] = [];
   buildings: Default[] = [];
   departments: Default[] = [];
   divisions: Default[] = [];
   sections: Default[] = [];
   filterData: Array<any> = [];
   nameDialog: boolean = false;
+  selectedGroup: TreeNode ={};
+  newStructuralUnit: {
+    selectedCity?: any;
+    selectedBuilding?: any;
+    selectedDepartment?: any;
+    selectedDivision?:any;
+    selectedSection?: any;
+  } ={}
   newItem: {
+    structuralUnitDialog?: boolean,
+    parent_name?: any,
     measure_value?: number,
+    measureValue?: number,
     main?: any;
     sub?: any;
     type?:string;
@@ -48,27 +60,43 @@ export class DirectoryComponent implements OnInit {
     selectedItem?: any,
     elective?: Array<any>,
     consumption?: Array<any>,
-    data?: any
+    data?: any,
+    isCar?:  Array<any>,
+    isStrict?:  Array<any>,
   } = {
     value: '',
     dialog: false,
     elective: [],
-    consumption: []
+    consumption: [],
+    isCar:[],
+    isStrict:[]
   };
   selectedNode1: TreeNode;
   constructor(private directoryService: DirectoryService, private operation: OperationsService,private confirmationService: ConfirmationService) { }
 
   getMeasureUnits(){
     this.directoryService.getMeasureUnitTree()
-      .then(value => {
-        this.units = parseTree([value] );
+      .then(response => {
+        this.units =[
+          {
+            expanded: true,
+            data: { id:0, name:"root"},
+            children: response['data']
+          }
+        ];
       }).catch();
   }
 
   getItemGroup(){
     this.operation.getItemGroup()
       .then(response=>{
-        this.groups = parseTree(response['children']);
+        this.groups = [
+          {
+            expanded: true,
+            data: { id:0, name:"root"},
+            children:response['data']
+          }
+        ];
       })
       .catch();
   }
@@ -240,19 +268,25 @@ export class DirectoryComponent implements OnInit {
   }
 
   item(param: { action: string, type: string }) {
+
+      this.newItem.type = param.type;
+      this.newItem.action = param.action;
+      this.newItem.main= this.activeItem;
+      this.newItem.sub= this.activeSubItem;
+      if(this.newItem.sub['type'] === "structuralUnit"){
+            this.newItem.structuralUnitDialog =true;
+          return ;
+      }
     if(param.action==='edit' && this.newItem.selectedItem !== undefined){
       this.newItem.dialog = true;
     }else if (param.action==='new') {
       this.newItem.dialog = true;
     }
-      this.newItem.type = param.type;
-      this.newItem.action = param.action;
-      this.newItem.main= this.activeItem;
-      this.newItem.sub= this.activeSubItem;
+
+      console.log(this.newItem)
   }
 
   saveItem() {
-
       if(this.newItem.type === 'MeasureUnit'){
         this.saveUnit();
         return;
@@ -282,10 +316,14 @@ export class DirectoryComponent implements OnInit {
       }
 
   }
-
+  onSelectGroup($event){
+    this.selectedGroup = $event['node'];
+    console.log($event);
+  }
   onRowSelect($event: any) {
     this.newItem.selectedItem = $event['data'];
     this.newItem.value = this.newItem.selectedItem['name'];
+    console.log(this.newItem);
   }
 
   deleteItem() {
@@ -326,11 +364,19 @@ export class DirectoryComponent implements OnInit {
   }
 
   itemGroup(param: {action: string; type: string; data: any; }) {
-
+    if(param.action === 'new'){
+      this.newItem = {
+        value: '',
+        dialog: false,
+        elective: [],
+        consumption: [],
+        isCar:[],
+        isStrict:[]
+      };
+    }
     this.newItem.type = param.type;
     this.newItem.action = param.action;
-    this.newItem.data = param.data;
-    this.newItem.dialog =(this.newItem.action !== 'delete');
+    this.newItem.data = (typeof param.data === "object" && Object.entries(param.data).length===0)? undefined: param.data;
     this.newItem.consumption =[];
     this.newItem.elective =[];
     this.newItem.value ="";
@@ -338,19 +384,26 @@ export class DirectoryComponent implements OnInit {
     if(this.newItem.action ==='delete'){
         this.deleteUnitItem();
     }else if(this.newItem.action==='edit'){
-      if(this.newItem.type==='ItemGroup'){
-        this.newItem.elective = (this.newItem.data['selectable'] ===1) ? ['elective'] : [];
-        this.newItem.consumption =  (this.newItem.data['spend'] ===1) ? ['consumption'] : [];
+      if(this.newItem.data ===undefined){
+        return;
       }
-        this.newItem.value = this.newItem.data['text'];
-        this.newItem.measure_value = (this.newItem.data !== null && this.newItem.data['parent_name'] !=='' && this.newItem.data['value']>0)? this.newItem.data['value']: null;
+      if(this.newItem.type==='ItemGroup'){
+          this.newItem.elective = (this.newItem.data['selectable'] ===1) ? ['elective'] : [];
+          this.newItem.consumption =  (this.newItem.data['spend'] ===1) ? ['consumption'] : [];
+      }
+        this.newItem.value = this.newItem.data['name'];
+        this.newItem.measure_value = (this.newItem.data !== undefined && this.newItem.data['parent_name'] !=='' && this.newItem.data['measureValue']>0)? this.newItem.data['measureValue']: null;
+    }else{
+      this.newItem.measure_value = (this.newItem.data !== undefined && this.newItem.data['parent_name'] !=='' && this.newItem.data['measureValue']>0)? this.newItem.data['measureValue']: null;
     }
+    this.newItem.dialog =(this.newItem.action !== 'delete');
   }
 
   private saveUnit() {
-    const parent = (this.newItem.data === null)? 0: this.newItem.data['id'];
-    const measure_value =(this.newItem.data === null) ? "": "&measure_value="+ this.newItem.measure_value;
-    const editMeasureValue =(this.newItem.data !== null && this.newItem.data['parent_name'] !=='' && this.newItem.data['value']>0) ? "&measure_value="+this.newItem.measure_value: "" ;
+    console.log(this.newItem,(this.newItem.data === undefined));
+    const parent = (this.newItem.data === undefined)? 0: this.newItem.data['id'];
+    const measure_value =(this.newItem.data === undefined && this.newItem.measure_value === undefined ) ? "": "&measure_value="+ this.newItem.measure_value;
+    const editMeasureValue =(this.newItem.data !== undefined && this.newItem.data['parent_name'] !=='' && this.newItem.data['measureValue']>0) ? "&measure_value="+this.newItem.measureValue: "" ;
     const params = (this.newItem.action ==='new')? "parent="+parent+"&name="+this.newItem.value+measure_value: "name="+this.newItem.value+editMeasureValue+"&id="+this.newItem.data['id'];
 
 
@@ -364,9 +417,10 @@ export class DirectoryComponent implements OnInit {
       .catch()
   }
   saveItemGroup() {
+    console.log(this.newItem);
       const id = "&id="+((this.newItem.action ==='edit')? this.newItem.data['id']: null );
-      const parent = "&parent="+((this.newItem.data === null)? 0: this.newItem.data['id']);
-      const params ="name="+this.newItem.value+"&spend="+((this.newItem.elective.length===0)? 0: 1) +"&selectable="+((this.newItem.consumption.length===0)? 0: 1) + parent+id;
+      const parent = (this.newItem.action !=='edit')?"&parent="+((this.newItem.data === undefined)? 0: this.newItem.data['id']):"";
+      const params ="name="+this.newItem.value+"&selectable="+((this.newItem.elective.length===0)? 0: 1) +"&spend="+((this.newItem.consumption.length===0)? 0: 1)+"&isCar="+((this.newItem.isCar.length===0)? 0: 1)+"&isStrict="+((this.newItem.isStrict.length===0)? 0: 1) + parent+id;
 
       this.directoryService.postMainList(this.newItem.type,this.newItem.action , params)
         .then(response=>{
@@ -381,6 +435,7 @@ export class DirectoryComponent implements OnInit {
 
 
   deleteUnitItem() {
+    console.log(this.newItem);
       this.confirmationService.confirm({
         message: 'დარწმუნებული ხართ, რომ გსურთ წაშლა?',
         accept: () => {
@@ -392,6 +447,46 @@ export class DirectoryComponent implements OnInit {
               .catch()
         }
       });
+  }
+  saveStructuralUnit() {
+  }
+  filterSuggestions($event: any, field: string) {
+    console.log($event);
+    switch (field) {
+      case 'cities':
+          this.filteredCities = ($event['query'].length >0)?this.cities.filter(value => {
+            return value['name'].indexOf($event['query'])>-1
+          }) : this.cities;
+          return;
+        break;
+      case 'building':
+        this.filteredCities = ($event['query'].length >0)?this.buildings.filter(value => {
+          return value['name'].indexOf($event['query'])>-1
+        }) : this.buildings;
+        return;
+        break;
+      case 'department':
+        this.filteredCities = ($event['query'].length >0)?this.departments.filter(value => {
+          return value['name'].indexOf($event['query'])>-1
+        }) : this.departments;
+        return;
+      break;
+      case 'division':
+          this.filteredCities = ($event['query'].length >0)?this.divisions.filter(value => {
+            return value['name'].indexOf($event['query'])>-1
+          }) : this.divisions;
+          return;
+      break;
+      case 'section':
+        this.filteredCities = ($event['query'].length >0)?this.sections.filter(value => {
+          return value['name'].indexOf($event['query'])>-1
+        }) : this.sections;
+        return;
+        break;
+      default:
+        break;
+    }
+    return   this.filteredCities = [];
   }
 }
 function parseTree(data: TreeNode[]): Array<TreeNode> {

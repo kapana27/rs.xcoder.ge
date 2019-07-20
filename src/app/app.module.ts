@@ -49,6 +49,7 @@ import {AgGridModule} from "ag-grid-angular";
 import {TableModule} from "primeng/table";
 import { CartComponent } from './components/cart/cart.component';
 import {
+  AutoCompleteModule,
   CheckboxModule,
   ConfirmDialogModule, DialogModule,
   PaginatorModule,
@@ -85,6 +86,7 @@ import {ComponentsModule} from "./components/components.module";
     TreeTableModule,
     CheckboxModule,
     DialogModule,
+    AutoCompleteModule,
   ],
   declarations: [
     AppComponent,

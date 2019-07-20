@@ -38,6 +38,19 @@
   table thead th {
     font-family: 'lbet-nus',sans-serif !important;
   }
-
+  .ui-dialog-content{
+    overflow: hidden !important;
+  }
+  .autocomplete {
+    span{
+      width: 100%;
+    }
+    input{
+      width: 90%;
+    }
+  }
+  p-dialog .ui-dialog[role="dialog"], p-dialog .ui-dialog-content {
+    overflow: visible !important;
+  }
 }
 
