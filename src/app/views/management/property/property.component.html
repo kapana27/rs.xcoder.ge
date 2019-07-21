@@ -144,6 +144,8 @@
   </div>
   <p-footer>
     <app-cart-button (removeCartItem)="removeCartItem()"></app-cart-button>
+    <button style="position: absolute; left: 230px" pButton type="button" icon="pi pi-file" label="ფაილები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
+
     <button type="button" pButton icon="pi pi-check"  *ngIf="!inventorReturnModel.inventarReturnGenerator"(click)="generateInventarReturn()" label="ზედდებულის გენერაცია"></button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="inventorReturnModel.inventarReturnGenerator" (click)="activateInventarReturn()" label="ზედდებულის გააქტიურება"></button>
     <button type="button" pButton icon="pi pi-close" (click)="display=false" label="დახურვა" class="ui-button-secondary"></button>
@@ -292,6 +294,7 @@
   </div>
   <p-footer>
     <app-cart-button (removeCartItem)="removeCartItem()"></app-cart-button>
+    <button style="position: absolute; left: 230px" pButton type="button" icon="pi pi-file" label="ფაილები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="!inventorTransfer.generator" (click)="generaTeInventorTransfer()" label="ზედდებულის გენერაცია"></button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="inventorTransfer.generator"  (click)="activeInventorTransfer()" label="ზედდებულის გააქტიურება"></button>
     <button type="button" pButton icon="pi pi-close" (click)="inventoryToBuildingDialogShow=false" label="დახურვა" class="ui-button-secondary"></button>
@@ -337,8 +340,16 @@
   </div>
   <p-footer>
     <app-cart-button (removeCartItem)="removeCartItem()"></app-cart-button>
+    <button style="position: absolute; left: 230px" pButton type="button" icon="pi pi-file" label="ფაილები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
+
     <button type="button" pButton icon="pi pi-check"  *ngIf="!forPerson.generator" (click)="generateForPersonInvoice()" label="ზედდებულის გენერაცია"></button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="forPerson.generator"  (click)="activeForPersonTransferInvoice()" label="ზედდებულის გააქტიურება"></button>
     <button type="button" pButton icon="pi pi-close" (click)="personDialogShow=false" label="დახურვა" class="ui-button-secondary"></button>
   </p-footer>
+</p-dialog>
+
+<p-dialog header="ფაილების მიმაგრება" *ngIf="filesDialog" [(visible)]="filesDialog" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+  <div style="width: 100%;min-height: 250px;">
+    <app-file-uploader (onFiles)="uploadedFiles($event)" [files]="uploadFiles"></app-file-uploader>
+  </div>
 </p-dialog>

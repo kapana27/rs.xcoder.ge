@@ -43,4 +43,34 @@ export class DirectoryService {
   postMainList(type,action, params){
     return this.Request.Post(Config.dictionary.post[type][action]+"?"+params,{});
   }
+
+  getRoles(){
+      return this.Request.Get(Config.List.get.roles);
+  }
+  getPositions (){
+    return this.Request.Get(Config.List.get.positions+"?start=0&limit=1000");
+  }
+
+  getCities() {
+      return this.Request.Get(Config.List.get.cities);
+  }
+
+  getBuildings(id: any) {
+    return this.Request.Get(Config.List.get.building+"?cityId="+id);
+  }
+
+  newEmployee(formData: FormData, action) {
+    if(action==='edit'){
+      return this.Request.Post(Config.List.post.updateEmployee, formData);
+    }
+    return this.Request.Post(Config.List.post.employee, formData);
+  }
+
+  getEmployee(id: any) {
+      return this.Request.Get(Config.List.get.employee+"?id="+id);
+  }
+
+  deleteEmployee(id: any) {
+    return this.Request.Get(Config.List.get.deleteEmployee+"?id="+id);
+  }
 }

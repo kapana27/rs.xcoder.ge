@@ -49,6 +49,13 @@ export  const Config = {
         measureUnitTree: '/api/secured/MeasureUnit/Select',
         StructuralUnitLevel: '/api/secured/StructuralUnitLevel/List',
         StructuralUnitLevelGrid: '/api/secured/StructuralUnit/Select/Grid',
+        roles: '/api/secured/Staff/Roles',
+        cities: '/api/secured/StructuralUnit/City/Select',
+        building: '/api/secured/StructuralUnit/City/Building/Select',
+        positions: '/api/secured/List/Position/Select',
+        employee: '/api/secured/Staff/Select_Edit',
+        deleteEmployee: '/api/secured/Staff/Delete',
+        deleteFile: '/api/secured/Document/Delete'
       },
       post:{
         lastBarCode: '/api/secured/List/BarCode/Get/LastCode',
@@ -62,7 +69,10 @@ export  const Config = {
         addon: '/api/secured/Item/Addon',
         invoice: '/api/secured/Item/Stock/Change',
         return: '/api/secured/Item/Stock/Return',
-        section: '/api/secured/Item/Section/Transfer'
+        section: '/api/secured/Item/Section/Transfer',
+        structuralUnit: '/api/secured/StructuralUnit/Insert/Row',
+        employee: '/api/secured/Staff/Insert',
+        updateEmployee: '/api/secured/Staff/Update',
       }
   },
   inventory:{
@@ -122,7 +132,11 @@ export  const Config = {
           edit: '/api/secured/ItemGroup/Update' ,
           delete: '/api/secured/ItemGroup/Delete' ,
         },
-
+        StructuralUnit:{
+          new: '/api/secured/StructuralUnit/Insert/Row' ,
+          edit: '/api/secured/StructuralUnit/Update/Row' ,
+          delete: '/api/secured/StructuralUnit/Delete/Row' ,
+        },
         delete: '/api/secured/List/Delete'
       },
       get:{}

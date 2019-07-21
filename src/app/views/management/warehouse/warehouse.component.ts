@@ -13,7 +13,6 @@ import {TransferToSection} from "../../../models/transfer-to-section";
 import {InventorTransfer} from "../../../models/inventorTransfer";
 import {ValidatorService} from "../../../services/validator/validator.service";
 import {TreeNode} from "../../../models/tree-node";
-import {lang} from "moment";
 
 interface Default{
   id?: number,
@@ -137,6 +136,8 @@ export class WarehouseComponent implements OnInit{
     Left?: string,
     Right?: string
   };
+  filesDialog: boolean = false;
+  uploadFiles: Array<any> = [];
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService,  private confirmationService: ConfirmationService) {
     this.gridOptions = {
       context:{
@@ -542,6 +543,7 @@ export class WarehouseComponent implements OnInit{
     this.activeItem = this.items[0];
   }
   inventoryToBuildingDialog(){
+    this.uploadFiles = [];
     this.inventoryToBuildingDialogShow = true;
     this.inventorTransfer={
       date: new Date(),
@@ -566,6 +568,7 @@ export class WarehouseComponent implements OnInit{
     }
   }
   showDialog() {
+    this.uploadFiles = [];
     this.transferToSection ={
       Datetime: new Date()
     };
@@ -595,7 +598,7 @@ export class WarehouseComponent implements OnInit{
   }
   inventorDialog(){
     this.inventorOperation='new';
-
+    this.uploadFiles =[];
     this.inventorDialogShow=true;
     this.frustrate = false;
     this.newInventor={
@@ -605,7 +608,8 @@ export class WarehouseComponent implements OnInit{
         name:""
       },
       price:0,
-      amount:0
+      amount:0,
+      selectedMeasureUnitName: { id: 3, name: 'ცალი'}
     };
     this.operation.getItemTypes()
       .then(response=>{
@@ -872,10 +876,12 @@ export class WarehouseComponent implements OnInit{
             serialNumber:value.factoryNumber,
             amount:this.newInventor.showAmount
           }
-      })
+      }),
+      files: this.uploadFiles.map(value => value["id"])
     };
     let formdata = new FormData();
     for(let key in inventory){
+      console.log(inventory[key]);
 
       if(inventory[key] !==null && inventory[key] !== undefined){
         if(key=='list'){
@@ -887,6 +893,7 @@ export class WarehouseComponent implements OnInit{
 
     }
     this.operation.saveInventory((formdata))
+
       .then(response=>{
          if(response['status']==200){
            this.newInventor = {
@@ -1105,6 +1112,7 @@ export class WarehouseComponent implements OnInit{
       this.transferToSection.list = this.cartItemsData.map(value => {
         return {itemId:value["id"],amount:value["count"]}
       });
+      this.transferToSection.files=this.uploadFiles.map(value => value['id']).toString()
       this.operation.getAddonNumber({type:'Stock/Change'})
         .then(response=>{
           if(response['status'] ===200){
@@ -1224,8 +1232,7 @@ export class WarehouseComponent implements OnInit{
             this.inventorTransfer.list = this.cartItemsData.map(value => {
               return {itemId:value["id"],amount:value["count"]}
             });
-
-            console.log(this.inventorTransfer);
+             this.inventorTransfer.files = this.uploadFiles.map(value => value["id"]).toString()
           }else{
             this.error("შეცდომა",response['error'])
           }
@@ -1483,6 +1490,11 @@ export class WarehouseComponent implements OnInit{
 
   CloseInventorSearch() {
     this.searchBox = false;
+  }
+
+
+  uploadedFiles($event: any) {
+      this.uploadFiles=$event;
   }
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {

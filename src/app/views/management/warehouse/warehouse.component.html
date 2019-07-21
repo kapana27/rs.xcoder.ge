@@ -1,31 +1,47 @@
 
-
 <p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
-<div class="row" >
-  <div class="col-m-12 col-lg-2">
+<div class="actionButton">
+  <div class="buttonBox" style="width: 150px;">
     <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
   </div>
-  <div class="col-m-12 col-lg-6">
+  <div class="buttonBox">
     <button pButton icon="pi pi-plus"  label="მიღება" class="ui-button-success" (click)="inventorDialog()"></button> &nbsp; &nbsp;
     <button pButton icon="pi pi-pencil" label="რედაქტირება" class="ui-button-raised" (click)="inventorEditDialog()"></button>&nbsp;&nbsp;&nbsp;
     <button pButton icon="pi pi-search" label="ძებნა" class="ui-button-warning" (click)="inventorSearch()" *ngIf="searchBox !== true"></button>
   </div>
-  <div class="col-m-12 col-lg-4">
-    <button (click)="inventoryToBuildingDialog()" pButton type="button" label="გაცემა" icon="pi pi-arrow-up" class="ui-button-danger" style="position: absolute; right: 260px"></button> &nbsp;&nbsp;
-    <button (click)="showDialog()" pButton type="button" label="მოძრაობა A-B" class="ui-button-raised arrow-icon"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
-    <span style="position: absolute;right: 37px;margin-top: 3px;color: #007ad9; cursor: pointer;">
+  <div class="buttonBox">
+    <button (click)="inventoryToBuildingDialog()" pButton type="button" label="გაცემა" icon="pi pi-arrow-up" class="ui-button-danger"></button> &nbsp;&nbsp;
+    <button (click)="showDialog()" pButton type="button" label="მოძრაობა A-B" class="ui-button-raised arrow-icon"></button>&nbsp;&nbsp;
+    <span class="cart">
       <fa-icon [icon]="faCartPlus"  (click)="cartDialog()" size="2x"  ></fa-icon>
       {{this.cartItems.length}}
     </span>
   </div>
 </div>
-<br>
-
 <div class="search" *ngIf="this.searchBox === true">
   <div class="row">
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
       <label>დასახელება:</label>
       <p-chips></p-chips>
+    </div>
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>მარკა:</label>
+      <div>
+        <p-autoComplete  field="name" [size]="30" placeholder="მარკა" [minLength]="1"></p-autoComplete>
+      </div>
+    </div>
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>მოდელი:</label>
+      <div>
+        <p-autoComplete  field="name" [size]="30" placeholder="მოდელი" [minLength]="1"></p-autoComplete>
+      </div>
+    </div>
+    <div class="col-m-12 col-lg-6" style="max-width: 280px">
+      <label>ფასი: დან-მდე</label>
+      <div>
+        <p-spinner size="7" placeholder="დან" style="width: 150px"></p-spinner>
+        <p-spinner size="7" placeholder="მდე"></p-spinner>
+      </div>
     </div>
     <div class="col-m-12 col-lg-3" style="max-width: 230px">
       <label>განზომილების ერთეული:</label>
@@ -35,12 +51,7 @@
       <label>ჯგუფი:</label>
       <p-chips></p-chips>
     </div>
-    <div class="col-m-12 col-lg-3" style="max-width: 200px">
-      <label>მარკა:</label>
-      <div>
-        <p-autoComplete  field="name" [size]="30" placeholder="მარკა" [minLength]="1"></p-autoComplete>
-      </div>
-    </div>
+
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
       <label>ერთეული:</label>
       <p-chips></p-chips>
@@ -57,12 +68,7 @@
         <p-autoComplete  field="name" [size]="30" placeholder="ტიპი" [minLength]="1"></p-autoComplete>
       </div>
     </div>
-    <div class="col-m-12 col-lg-3" style="max-width: 200px">
-      <label>მოდელი:</label>
-      <div>
-        <p-autoComplete  field="name" [size]="30" placeholder="მოდელი" [minLength]="1"></p-autoComplete>
-      </div>
-    </div>
+
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
       <label>ქარხნული ნომერი:</label>
       <div>
@@ -75,13 +81,7 @@
         <p-autoComplete  field="name" [size]="30" placeholder="მწარმოებელი" [minLength]="1"></p-autoComplete>
       </div>
     </div>
-    <div class="col-m-12 col-lg-6" style="max-width: 280px">
-      <label>ფასი: დან-მდე</label>
-      <div>
-        <p-spinner size="7" placeholder="დან" style="width: 150px"></p-spinner>
-        <p-spinner size="7" placeholder="მდე"></p-spinner>
-      </div>
-    </div>
+
     <div class="col-m-6 col-lg-6" style="max-width: 320px">
       <label>თარიღი: დან-მდე</label>
       <div>
@@ -109,6 +109,7 @@
   </div>
 
 </div>
+
 
 <div class="row">
   <ag-grid-angular
@@ -142,8 +143,6 @@
     (gridReady)="onGridReady($event)"
   ></ag-grid-angular>
 </div>
-
-
 
 <p-dialog header="ინვენტარის მოძრაობა სექციებს შორის" *ngIf="display" [(visible)]="display" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
@@ -187,6 +186,7 @@
     </div>
   </div>
   <p-footer>
+    <button style="position: absolute; left: 230px" pButton type="button" icon="pi pi-file" label="ფაილები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
     <app-cart-button (removeCartItem)="removeCartItem()" ></app-cart-button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="!transferToSectionInvoiceGenerator"(click)="generaTeTransferToSection()" label="ზედდებულის გენერაცია"></button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="transferToSectionInvoiceGenerator" (click)="activeTransferToSection()" label="ზედდებულის გააქტიურება"></button>
@@ -338,6 +338,7 @@
     <app-cart [data]="cartItemsData" (checker)="checker($event)"></app-cart>
   </div>
   <p-footer>
+    <button style="position: absolute; left: 230px" pButton type="button" icon="pi pi-file" label="ფაილები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
     <app-cart-button (removeCartItem)="removeCartItem()"></app-cart-button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="!inventorTransfer.generator" (click)="generaTeInventorTransfer()" label="ზედდებულის გენერაცია"></button>
     <button type="button" pButton icon="pi pi-check"  *ngIf="inventorTransfer.generator"  (click)="activeInventorTransfer()" label="ზედდებულის გააქტიურება"></button>
@@ -692,6 +693,7 @@
 
   <p-footer>
     <span class="lastCode">ბოლო შტრიხკოდი: {{newInventor.fullBarCode}}</span>
+    <button style="position: relative; right: 50px" pButton type="button" icon="pi pi-file" label="ფაილები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
     <button  type="button" style="position: relative; top:-2px;" (click)="changeLang()"><img src="./assets/img/icons/{{lang}}.png" width="25" alt=""></button>
     <button type="button" pButton icon="pi pi-save" *ngIf="frustrate && inventorOperation=='new'" (click)="saveNewInventor()" label="შენახვა" ></button>
     <button type="button" pButton icon="pi pi-save" *ngIf="inventorOperation=='edit' || inventorOperation ==='multiple'" (click)="editNewInventor()" label="დამახსოვრება" ></button>
@@ -699,4 +701,10 @@
     <button type="button" pButton icon="pi pi-close" *ngIf="frustrate" (click)="frustrate=false" label="დაბრუნება" class="ui-button-secondary"></button>
     <button type="button" pButton icon="pi pi-close" (click)="inventorDialogShow=false" label="დახურვა" class="ui-button-secondary"></button>
   </p-footer>
+</p-dialog>
+
+<p-dialog header="ფაილების მიმაგრება" *ngIf="filesDialog" [(visible)]="filesDialog" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+  <div style="width: 100%;min-height: 250px;">
+      <app-file-uploader (onFiles)="uploadedFiles($event)" [files]="uploadFiles"></app-file-uploader>
+  </div>
 </p-dialog>

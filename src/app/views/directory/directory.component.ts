@@ -3,6 +3,7 @@ import {ConfirmationService, MenuItem} from "primeng/api";
 import {DirectoryService} from "../../services/directory/directory.service";
 import {Default} from "../../models/default";
 import {OperationsService} from "../../services/operations/operations.service";
+import {ValidatorService} from "../../services/validator/validator.service";
 export interface TreeNode {
   data?: any;
   children?: TreeNode[];
@@ -39,6 +40,10 @@ export class DirectoryComponent implements OnInit {
   filterData: Array<any> = [];
   nameDialog: boolean = false;
   selectedGroup: TreeNode ={};
+  formErrors: Array<string> = [];
+  selectedEmployeeNode: TreeNode;
+  employeeCities: Array<any> = [];
+  employeeBuildings: Array<any> = [];
   newStructuralUnit: {
     selectedCity?: any;
     selectedBuilding?: any;
@@ -72,7 +77,41 @@ export class DirectoryComponent implements OnInit {
     isStrict:[]
   };
   selectedNode1: TreeNode;
-  constructor(private directoryService: DirectoryService, private operation: OperationsService,private confirmationService: ConfirmationService) { }
+  structuralUnit: {
+    dialog?: boolean,
+    value?: any,
+    type?: any
+  } = {
+    dialog: false
+  };
+  selectedEmployee: any;
+  newEmployee: {
+    type?: string;
+    action?: string;
+    id?: number;
+    position?: any;
+    dialog?: boolean;
+    role?: {role: string, name: string};
+    fname?: string;
+    lname?:string;
+    email?: string;
+    mobile?: string;
+    pin?: string;
+    city?: any;
+    building?: any;
+    list?: Array<any>,
+    department?: any
+  } = {
+    role:{role:"", name:""},
+    list: []
+  };
+  roles: Array<{role: string, name: string}> =[];
+  positions: Array<{id: string, name: string}> =[];
+  constructor(private directoryService: DirectoryService, private operation: OperationsService,private confirmationService: ConfirmationService, private validator: ValidatorService) {
+    this.activeSubItem={
+      id: ''
+    };
+  }
 
   getMeasureUnits(){
     this.directoryService.getMeasureUnitTree()
@@ -105,7 +144,6 @@ export class DirectoryComponent implements OnInit {
     this.getMeasureUnits();
     this.getStructuralUnitGrid('?');
     this.getItemGroup();
-
     this.directoryService.getStructuralUnitTree()
         .then(value => {
           this.ItemGroup = parseTree(value['children'] );
@@ -166,7 +204,10 @@ export class DirectoryComponent implements OnInit {
       .then(value => {
         this.sections = value['data'];
       })
-
+    this.directoryService.getList(6)
+      .then(value => {
+        this.sections = value['data'];
+      })
 
   }
   getMainList(type){
@@ -210,12 +251,14 @@ export class DirectoryComponent implements OnInit {
           this.subTabs.push({
           label: value['data'][i],
           type: i,
+
           id: i,
           icon: 'fa fa-fw fa-bar-chart'
         });
+
         this.subTabs.push({
           label: 'სტრუქტურული ერთეული',
-          type: 'structuralUnit',
+          type: 'StructuralUnit',
           id: 'structuralUnit',
           icon: 'fa fa-fw fa-bar-chart'
         });
@@ -241,12 +284,17 @@ export class DirectoryComponent implements OnInit {
     this.activeSubItem = this.subTabs[$event['index']];
     this.getList(this.selectType);
   }
-  selectedNode($event: any) {
-    this.directoryService.getEmployees($event['id'])
+  getEmployees(){
+    this.directoryService.getEmployees(this.selectedEmployeeNode['id'])
       .then(value => {
-           this.employees = value['data'];
+        this.employees = value['data'];
       })
       .catch()
+  }
+  selectedNode($event: any) {
+    this.selectedEmployeeNode = $event;
+    this.newEmployee.department = $event;
+    this.getEmployees();
   }
   filter($event: Event, field: any) {
       if($event['value'] === null){
@@ -273,8 +321,22 @@ export class DirectoryComponent implements OnInit {
       this.newItem.action = param.action;
       this.newItem.main= this.activeItem;
       this.newItem.sub= this.activeSubItem;
-      if(this.newItem.sub['type'] === "structuralUnit"){
+
+      if(this.newItem.sub['type'] === "StructuralUnit"){
+            this.newStructuralUnit ={};
             this.newItem.structuralUnitDialog =true;
+            if(param.action ==='edit'){
+              this.newStructuralUnit = {
+                selectedCity: { id: this.newItem.selectedItem['type1']['id'], name: this.newItem.selectedItem['type1']['name']},
+                selectedBuilding: { id: this.newItem.selectedItem['type2']['id'], name: this.newItem.selectedItem['type2']['name']},
+                selectedDepartment: { id: this.newItem.selectedItem['type3']['id'], name: this.newItem.selectedItem['type3']['name']},
+                selectedDivision: { id: this.newItem.selectedItem['type4']['id'], name: this.newItem.selectedItem['type4']['name']},
+                selectedSection: { id: this.newItem.selectedItem['type5']['id'], name: this.newItem.selectedItem['type5']['name']},
+              }
+            }else{
+              this.newStructuralUnit = {}
+            }
+
           return ;
       }
     if(param.action==='edit' && this.newItem.selectedItem !== undefined){
@@ -306,6 +368,7 @@ export class DirectoryComponent implements OnInit {
           })
           .catch()
       }else{
+
         this.directoryService.postMainList(this.newItem.main['id'],this.newItem.action,params)
           .then(response=>{
             this.getMainList(this.newItem.main['id']);
@@ -323,14 +386,18 @@ export class DirectoryComponent implements OnInit {
   onRowSelect($event: any) {
     this.newItem.selectedItem = $event['data'];
     this.newItem.value = this.newItem.selectedItem['name'];
-    console.log(this.newItem);
   }
 
   deleteItem() {
     this.newItem.action = 'delete';
     this.newItem.main= this.activeItem;
     this.newItem.sub= this.activeSubItem;
+    if(this.newItem.sub['type']==="StructuralUnit"){
+      this.newItem.main['id']=this.newItem.sub['type'];
+    }
+    console.log(this.newItem);
     if(this.newItem.selectedItem !==undefined && this.newItem.selectedItem !== null){
+
       this.confirmationService.confirm({
         message: 'დარწმუნებული ხართ, რომ გსურთ წაშლა?',
         accept: () => {
@@ -342,11 +409,19 @@ export class DirectoryComponent implements OnInit {
               })
               .catch()
           }else {
+
             this.directoryService.postMainList(this.newItem.main['id'],this.newItem.action,"id="+this.newItem.selectedItem['id'])
               .then(response=>{
-                this.getMainList(this.newItem.main['id']);
+
+                if(this.newItem.sub['type']==="StructuralUnit"){
+                  this.getStructuralUnitGrid('?');
+                }else{
+                  this.getMainList(this.newItem.main['id']);
+                }
               })
-              .catch()
+              .catch(reason => {
+                alert("წაშლა შეუძლებელია")
+              })
           }
 
         }
@@ -448,7 +523,40 @@ export class DirectoryComponent implements OnInit {
         }
       });
   }
+  if_error(data: Array<string>, field: string){
+    return data.indexOf(field) >-1;
+  }
+
   saveStructuralUnit() {
+    console.log(this.newStructuralUnit);
+    let filter = [
+      'selectedCity',
+      'selectedBuilding',
+      'selectedDepartment',
+      'selectedDivision',
+      'selectedSection'
+    ];
+
+    this.formErrors =this.validator.checkObject(this.newStructuralUnit,filter);
+    if(this.formErrors.length === 0) {
+        let params = "";
+        let i =1;
+        filter.forEach(value => {
+          params+=(("type"+i)+"="+this.newStructuralUnit[value]['id']+"&");
+          i++;
+        });
+        if(this.newItem.action ==='edit'){
+          params+=("id="+this.newItem.selectedItem['id']);
+        }
+
+        this.directoryService.postMainList('StructuralUnit', this.newItem.action,params)
+          .then(response=>{
+            this.getStructuralUnitGrid('?');
+            this.newItem.structuralUnitDialog=false;
+          }).catch(reason => {
+            alert("დაფიქსირდა შეცდომა");
+        })
+    }
   }
   filterSuggestions($event: any, field: string) {
     console.log($event);
@@ -487,6 +595,201 @@ export class DirectoryComponent implements OnInit {
         break;
     }
     return   this.filteredCities = [];
+  }
+
+  addNewItem(number: number, value: any) {
+     this.structuralUnit.dialog =true
+      this.structuralUnit.value = value;
+     this.structuralUnit.type=number;
+     console.log(this.structuralUnit);
+  }
+
+  saveStructuralUnitItem() {
+    const params = "parent=0&type="+this.structuralUnit.type+"&name="+this.structuralUnit.value;
+      this.directoryService.postMainList('list','new',params)
+        .then(response=>{
+          this.getMainList(this.structuralUnit.type);
+           this.structuralUnit.dialog=false;
+           this.structuralUnit.value="";
+          switch (this.structuralUnit.type) {
+            case 1:
+              this.newStructuralUnit.selectedCity=response['data'];
+              break;
+            case 2:
+              this.newStructuralUnit.selectedBuilding=response['data'];
+              break;
+            case 3:
+              this.newStructuralUnit.selectedDepartment=response['data'];
+              break;
+            case 4:
+              this.newStructuralUnit.selectedDivision=response['data'];
+              break;
+            case 5:
+              this.newStructuralUnit.selectedSection=response['data'];
+              break;
+            default: break;
+          }
+           this.structuralUnit.type=null;
+        })
+        .catch()
+  }
+
+  getPositionAndRoles(){
+    this.directoryService.getRoles()
+      .then(response=>{
+        this.roles = response['data'].map(v=>{
+          return {role: v['role'], name: v['name']};
+        })
+      })
+      .catch()
+
+    this.directoryService.getPositions()
+      .then(response=>{
+        this.positions = response['data'];
+      })
+      .catch()
+  }
+  employee(param: { action: string; type: string }) {
+
+    if(param.action ==="edit" && this.selectedEmployee !== null){
+
+      this.directoryService.getEmployee(this.selectedEmployee['id'])
+        .then(response=>{
+          this.newEmployee={
+            action: param.action,
+            type: param.type,
+            dialog: true,
+            email: response['data']['email'],
+            id:response['data']['id'],
+            fname:response['data']['firstname'],
+            lname:response['data']['lastname'],
+            mobile:response['data']['mobile'],
+            pin:response['data']['pid'],
+            position:response['data']['position'],
+            department: { id: response['data']['department']['id'] },
+            role: { role: response['data']['role']['role'], name: response['data']['role']['name']},
+            list: (response['data']['staffBuildings'].length > 0)? response['data']['staffBuildings'].map(v=>{
+                return {
+                  city:{ id: v['id'], name: v['parentName']},
+                  building:{ id: v['buildingId'], name: v['name']}
+                }
+            }): []
+          }
+          this.getCities();
+        })
+        .catch()
+
+    }else {
+      this.newEmployee['action'] = param.action;
+      this.newEmployee['type'] = param.type;
+
+      if(this.selectedEmployeeNode ===undefined || this.selectedEmployeeNode['selectable'] !==1){
+          return;
+        }
+      this.newEmployee.dialog=true;
+    }
+    this.getPositionAndRoles();
+    console.log(this.selectedEmployee);
+  }
+
+  deleteEmployee() {
+    this.confirmationService.confirm({
+      message: 'დარწმუნებული ხართ, რომ გსურთ წაშლა?',
+      accept: () => {
+        this.directoryService.deleteEmployee(this.selectedEmployee['id'])
+          .then(response=>{
+            this.getEmployees();
+            this.selectedEmployee =null;
+          })
+          .catch(()=>{
+            alert("დაფიქსირდა შეცდომა")
+          })
+      }
+    });
+
+  }
+
+  getCities() {
+    if( this.newEmployee.role['role'] === "ROLE_PLACE" ){
+      this.directoryService.getCities()
+        .then(value => {
+          this.employeeCities = value['data'];
+        })
+        .catch()
+    }
+  }
+
+  getBuildings() {
+      this.directoryService.getBuildings(this.newEmployee.city['id'])
+        .then(value => {
+          this.employeeBuildings = value['data'];
+        })
+        .catch()
+  }
+
+  addCityByRole() {
+      if(this.newEmployee.building && this.newEmployee.city){
+        if(this.newEmployee.list.map(value => value['building']['id']).indexOf(this.newEmployee.building['id'])===-1){
+          this.newEmployee.list.push({
+            city:{ id: this.newEmployee.city['id'], name: this.newEmployee.city['name']},
+            building:{ id: this.newEmployee.building['id'], name: this.newEmployee.building['name']}
+          })
+        }
+      }
+  }
+  notNull(value){
+    return (value !== undefined && value !== null);
+  }
+  saveNewEmployee() {
+    let filter = [
+      'fname'
+    ];
+    this.formErrors =this.validator.checkObject(this.newEmployee,filter);
+    if(this.formErrors.length === 0) {
+        let formData = new FormData();
+        if(this.notNull(this.newEmployee.id)){
+          formData.append("id", this.newEmployee.id.toString())
+        }
+        if(this.notNull(this.newEmployee.department)){
+          formData.append("department", this.newEmployee.department['id'].toString())
+        }
+        if(this.notNull(this.newEmployee.fname)){
+          formData.append("firstname", this.newEmployee.fname.toString())
+        }
+        if(this.notNull(this.newEmployee.lname)){
+          formData.append("lastname", this.newEmployee.lname.toString())
+        }
+        if(this.notNull(this.newEmployee.email)){
+          formData.append("email", this.newEmployee.email.toString())
+        }
+        if(this.notNull(this.newEmployee.mobile)){
+          formData.append("mobile", this.newEmployee.mobile.toString())
+        }
+        if(this.notNull(this.newEmployee.pin)){
+          formData.append("pid", this.newEmployee.pin.toString())
+        }
+        if(this.notNull(this.newEmployee.role)){
+          formData.append("role", this.newEmployee.role['role'].toString())
+        }
+        if(this.notNull(this.newEmployee.position)){
+          formData.append("position", this.newEmployee.position['id'])
+        }
+        if(this.notNull(this.newEmployee.list)){
+          formData.append("buildings", this.newEmployee.list.map(value => value['building']['id']).toString())
+        }
+
+          this.directoryService.newEmployee(formData, this.newEmployee.action)
+            .then(response=>{
+              this.newEmployee ={
+                dialog: false,
+                role:{role:"", name:""},
+                list: []
+              }
+              this.getEmployees();
+            })
+            .catch()
+
+    }
   }
 }
 function parseTree(data: TreeNode[]): Array<TreeNode> {

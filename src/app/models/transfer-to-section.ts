@@ -16,4 +16,5 @@ export interface TransferToSection {
   information?: string;
   fromDetails?: Default;
   toWhomStockDetails?:any;
+  files?: any;
 }

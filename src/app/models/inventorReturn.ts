@@ -15,4 +15,5 @@ export interface InventorReturn {
   list?: Array<any>;
   toWhomStock?: number;
   toStock?: number;
+  files?: any;
 }

@@ -21,5 +21,6 @@ export interface Inventory {
   itemGroup?: number,
   spend?: number,
   note?: string,
-  list?: Array<{barCode: string,serialNumber:string,amount: number}>
+  list?: Array<{barCode: string,serialNumber:string,amount: number}>,
+  files?: Array<number>
 }

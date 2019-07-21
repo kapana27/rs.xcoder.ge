@@ -83,8 +83,10 @@ export class PropertyComponent implements OnInit {
     context?: any
   };
   private sectionFields: any;
-
+  uploadFiles: Array<any> = [];
   minDate: Date = new Date();
+  filesDialog: boolean = false;
+
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService) {
     this.inOut = 'out';
     this.gridOptions = {
@@ -569,6 +571,10 @@ export class PropertyComponent implements OnInit {
       })
     });
   }*/
+
+  uploadedFiles($event: any) {
+    this.uploadFiles=$event;
+  }
   cart($event: any) {
     try {
 
@@ -803,6 +809,7 @@ export class PropertyComponent implements OnInit {
   }
 
   inventoryToBuildingDialog() {
+    this.uploadFiles = [];
     this.inventoryToBuildingDialogShow = true;
     this.inventorTransfer = {
       date: new Date(),
@@ -815,6 +822,7 @@ export class PropertyComponent implements OnInit {
   }
 
   showDialog() {
+    this.uploadFiles = [];
     this.inventorReturnModel = {
       inventarReturnGenerator: false,
       date: new Date()
@@ -823,6 +831,7 @@ export class PropertyComponent implements OnInit {
     this.checkMinDate();
   }
   personDialog() {
+    this.uploadFiles = [];
     this.personDialogShow = true;
     this.forPerson = {
       date: new Date(),
@@ -871,6 +880,7 @@ export class PropertyComponent implements OnInit {
             this.inventorReturnModel.list = this.cartItemsData.map(v => {
               return {itemId: v["id"], amount: v["count"]}
             });
+            this.inventorReturnModel.files = this.uploadFiles.map(value => value['id']).toString();
 
           }else{
             this.error("შეცდომა",response['error'])
@@ -985,11 +995,11 @@ export class PropertyComponent implements OnInit {
               }
               return value;
             });
-            console.log(this.inventorTransfer)
-
             this.inventorTransfer.list = this.cartItemsData.map(value => {
               return {itemId: value["id"], amount: value["count"]}
             });
+            this.inventorTransfer.files = this.uploadFiles.map(value => value['id']).toString();
+
             this.inventorTransfer.addon = response["data"];
             this.inventorTransfer.generator = true;
             this.inventorTransfer.requestPerson = this.inventorTransfer.selectedRequestPerson["id"];
@@ -999,9 +1009,6 @@ export class PropertyComponent implements OnInit {
             this.inventorTransfer.toWhomSection = this.inventorTransfer.selectedProperty["id"];
             this.inventorTransfer.trDate = moment(this.inventorTransfer.date).format("DD-MM-YYYY");
             this.inventorTransfer.receiverPerson = this.inventorTransfer.selectedPerson["id"];
-
-
-
           }
 
         })
@@ -1060,6 +1067,10 @@ export class PropertyComponent implements OnInit {
 
   generateForPersonInvoice(){
     let filter = ['date', 'selectedPerson', 'selectedRoom'];
+    if(this.cartItemsData.length===0){
+      alert("კალათა ცარიელია");
+      return;
+    }
     this.formErrors = this.validator.checkObject(this.forPerson, filter);
     if (this.formErrors.length === 0 && this.dataChecker) {
         this.operation.getAddonNumber({type:'Person/Transfer'})
@@ -1079,6 +1090,7 @@ export class PropertyComponent implements OnInit {
               this.forPerson.list = this.cartItemsData.map(value => {
                 return {itemId: value["id"], amount: value["count"]}
               });
+              this.forPerson.files = this.uploadFiles.map(value => value['id']).toString()
               this.forPerson.listData = this.cartItemsData;
 
             }else{

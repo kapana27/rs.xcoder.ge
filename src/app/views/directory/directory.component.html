@@ -1,12 +1,16 @@
 <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
-
 <p-tabMenu [model]="mainTabs"   [activeItem]="activeItem" ></p-tabMenu>
 <br>
 <p-tabView *ngIf="activeItem['type']==='structura'" (onChange)="handleChange($event)">
-  <div class="action-button">
+  <div class="action-button" *ngIf="activeSubItem['id']!=='employees'">
     <button pButton type="button"  class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="item({ action: 'new',type:'sub'})"></button>
     <button pButton type="button"  class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="item({action: 'edit', type:'sub'})"></button>
     <button pButton type="button"  class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="deleteItem()"></button>
+  </div>
+  <div class="action-button" *ngIf="activeSubItem['id']==='employees'">
+    <button pButton type="button"   class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="employee({ action: 'new',type:'sub'})"></button>
+    <button pButton type="button"   class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="employee({action: 'edit', type:'sub'})"></button>
+    <button pButton type="button"   class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="deleteEmployee()"></button>
   </div>
   <p-tabPanel [header]="item.label" *ngFor="let item of subTabs; let i = index" [selected]="i == 0"  >
      <div *ngIf="item.id !== 'employees'">
@@ -59,7 +63,7 @@
         <app-tree [ItemGroup]="ItemGroup" (selected)="selectedNode($event)"></app-tree>
       </div>
       <div class="col-sm-10">
-        <p-table [value]="employees">
+        <p-table [value]="employees" selectionMode="single"  [(selection)]="selectedEmployee">
           <ng-template pTemplate="header">
             <tr>
               <th>დეპარტამენტი</th>
@@ -72,7 +76,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-emp>
-            <tr>
+            <tr [pSelectableRow]="emp">
               <td>{{emp['department']['name']}}</td>
               <td>{{emp['position']['name']}}</td>
               <td>{{emp['email']}}</td>
@@ -192,8 +196,6 @@
     </p-treeTable>
   </div>
 </div>
-
-
 <p-dialog *ngIf="newItem.dialog" header="დასახელება" [(visible)]="newItem.dialog" [modal]="true" [responsive]="true" [style]="{width: '350px', minWidth: '200px'}" [minY]="70"
           [maximizable]="true" [baseZIndex]="10000">
   <div>
@@ -225,7 +227,6 @@
     <button type="button" pButton icon="pi pi-close" (click)="newItem.dialog=false" label="გაუქმება" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>
-
 <p-dialog *ngIf="newItem.structuralUnitDialog" header="დასახელება" [(visible)]="newItem.structuralUnitDialog" [modal]="true" [responsive]="true" [style]="{width: '500px', minWidth: '200px'}" [minY]="400"
           [maximizable]="true" [baseZIndex]="10000">
   <div style="width: 100%; height: 300px;">
@@ -233,24 +234,25 @@
     <table style="width: 100%">
       <tr>
         <td width="90%">
-          <p-autoComplete class="autocomplete" [(ngModel)]="newStructuralUnit.selectedCity"  [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'cities')" field="name" [size]="30"
-                          placeholder="ქალაქი" [minLength]="1" [dropdown]="true"></p-autoComplete>
+          <p-autoComplete [ngClass]="{ 'red':if_error(formErrors,'selectedCity')?'1px solid red': '' }" class="autocomplete" [(ngModel)]="newStructuralUnit.selectedCity"  [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'cities')" field="name" [size]="30"
+                          placeholder="ქალაქი" [minLength]="1" [dropdown]="true" ></p-autoComplete>
         </td>
         <td>
-          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" ></button>
+          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="addNewItem(1,newStructuralUnit.selectedCity)"></button>
         </td>
       </tr>
+
     </table>
 
     <p>შენობა</p>
     <table style="width: 100%">
       <tr>
         <td width="90%">
-          <p-autoComplete class="autocomplete" [(ngModel)]="newStructuralUnit.selectedBuilding" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'building')" field="name" [size]="30"
+          <p-autoComplete [ngClass]="{ 'red':if_error(formErrors,'selectedBuilding')?'1px solid red': '' }" class="autocomplete" [(ngModel)]="newStructuralUnit.selectedBuilding" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'building')" field="name" [size]="30"
                           placeholder="შენობა" [minLength]="1" [dropdown]="true"></p-autoComplete>
         </td>
         <td>
-          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" ></button>
+          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="addNewItem(2,newStructuralUnit.selectedBuilding)"></button>
         </td>
       </tr>
     </table>
@@ -259,11 +261,11 @@
     <table style="width: 100%">
       <tr>
         <td width="90%">
-          <p-autoComplete class="autocomplete" [(ngModel)]="newStructuralUnit.selectedDepartment" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'department')" field="name" [size]="30"
+          <p-autoComplete [ngClass]="{ 'red':if_error(formErrors,'selectedDepartment')?'1px solid red': '' }" class="autocomplete" [(ngModel)]="newStructuralUnit.selectedDepartment" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'department')" field="name" [size]="30"
                           placeholder="დეპარტამენტი" [minLength]="1" [dropdown]="true"></p-autoComplete>
         </td>
         <td>
-          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" ></button>
+          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="addNewItem(3,newStructuralUnit.selectedDepartment)"></button>
         </td>
       </tr>
     </table>
@@ -273,11 +275,11 @@
     <table style="width: 100%">
       <tr>
         <td width="90%">
-          <p-autoComplete class="autocomplete" [(ngModel)]="newStructuralUnit.selectedDivision" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'division')" field="name" [size]="30"
+          <p-autoComplete [ngClass]="{ 'red':if_error(formErrors,'selectedDivision')?'1px solid red': '' }" class="autocomplete" [(ngModel)]="newStructuralUnit.selectedDivision" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'division')" field="name" [size]="30"
                           placeholder="სამმართველო" [minLength]="1" [dropdown]="true"></p-autoComplete>
         </td>
         <td>
-          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" ></button>
+          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="addNewItem(4,newStructuralUnit.selectedDivision)"></button>
         </td>
       </tr>
     </table>
@@ -286,18 +288,111 @@
     <table style="width: 100%">
       <tr>
         <td width="90%">
-          <p-autoComplete class="autocomplete" [(ngModel)]="newStructuralUnit.selectedSection" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'section')" field="name" [size]="30"
+          <p-autoComplete [ngClass]="{ 'red':if_error(formErrors,'selectedSection')?'1px solid red': '' }" class="autocomplete" [(ngModel)]="newStructuralUnit.selectedSection" [suggestions]="filteredCities" (completeMethod)="filterSuggestions($event,'section')" field="name" [size]="30"
                           placeholder="სექცია" [minLength]="1" [dropdown]="true"></p-autoComplete>
         </td>
         <td>
-          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" ></button>
+          <button pButton type="button"  class="ui-button-info" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="addNewItem(5,newStructuralUnit.selectedSection)"></button>
         </td>
       </tr>
     </table>
-
   </div>
   <p-footer>
     <button type="button" pButton icon="pi pi-check" (click)="saveStructuralUnit()" label="შენახვა"></button>
     <button type="button" pButton icon="pi pi-close" (click)="newItem.structuralUnitDialog=false" label="გაუქმება" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>
+<p-dialog *ngIf="structuralUnit.dialog" header="დასახელება" [(visible)]="structuralUnit.dialog" [modal]="true" [responsive]="true" [style]="{width: '350px', minWidth: '200px'}" [minY]="70"
+          [maximizable]="true" [baseZIndex]="10000">
+  <div>
+    <label for="id">დასახელება</label>
+    <input type="text"  pInputText [(ngModel)]="structuralUnit.value" style="width: 100%;"/>
+  </div>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="saveStructuralUnitItem()" label="შენახვა"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="newItem.dialog=false" label="გაუქმება" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog *ngIf="newEmployee.dialog" header="თანამშრომელი" [(visible)]="newEmployee.dialog" [modal]="true" [responsive]="true" [style]="{width: '600px', minWidth: '200px'}" [minY]="70"
+          [maximizable]="true" [baseZIndex]="10000">
+  <div class="row">
+    <div class="col-md-{{newEmployee['role']['role'] ==='ROLE_PLACE'?6 :12}}">
+      <div class="row">
+        <div class="col-md-12">
+          <input type="text" disabled placeholder="განყოფილება" pInputText [(ngModel)]="selectedEmployeeNode['text']" style="width: 100%;"/>
+        </div>
+      </div>
+      <div class="row"  style="margin-top: 5px">
+        <div class="col-md-12">
+          <p-dropdown [options]="roles" [(ngModel)]="newEmployee.role" placeholder="როლი" optionLabel="name" [showClear]="true" (ngModelChange)="getCities()"></p-dropdown>
+        </div>
+      </div>
+      <div class="row"  style="margin-top: 5px">
+        <div class="col-md-12">
+          <p-dropdown [options]="positions" [(ngModel)]="newEmployee.position" placeholder="პოზიცია" optionLabel="name" [showClear]="true" ></p-dropdown>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12" [ngClass]="{ 'red':if_error(formErrors,'fname')?'1px solid red': '' }" >
+          <input type="text" placeholder="სახელი" pInputText [(ngModel)]="newEmployee.fname" style="width: 100%;"/>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12">
+          <input type="text" placeholder="გვარი"  pInputText [(ngModel)]="newEmployee.lname" style="width: 100%;"/>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12">
+          <input type="text" placeholder="ელ.ფოსტა"  pInputText [(ngModel)]="newEmployee.email" style="width: 100%;"/>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12">
+          <input type="text" placeholder="მობილური"  pInputText [(ngModel)]="newEmployee.mobile" style="width: 100%;"/>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12">
+          <input type="text" placeholder="პირადობა"  pInputText [(ngModel)]="newEmployee.pin" style="width: 100%;"/>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-{{newEmployee['role']['role'] ==='ROLE_PLACE'?6:12}}" *ngIf="newEmployee['role']['role'] ==='ROLE_PLACE'">
+      <div class="row"  >
+        <div class="col-md-12">
+          <p-dropdown [options]="employeeCities" [(ngModel)]="newEmployee.city" placeholder="ქალაქი" optionLabel="name" [showClear]="true" (ngModelChange)="getBuildings()"></p-dropdown>
+        </div>
+      </div>
+      <div class="row"  style="margin-top: 5px">
+        <div class="col-md-12">
+          <p-dropdown [options]="employeeBuildings" [(ngModel)]="newEmployee.building" placeholder="შენობა" optionLabel="name" [showClear]="true" ></p-dropdown>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+          <div class="col-md-12">
+            <button pButton type="button" label="დამატება" (click)="addCityByRole()"></button>
+          </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12">
+            <table style="width: 100%">
+
+              <tr *ngFor="let l of newEmployee.list; let i = $index">
+                <td>{{l['city']['name']}}</td>
+                <td>{{l['building']['name']}}</td>
+                <td ><i class="pi pi-times" style="margin-top: 5px" (click)="newEmployee.list.splice(i,1)"></i></td>
+              </tr>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="saveNewEmployee()" label="შენახვა"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="newEmployee.dialog=false" label="გაუქმება" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+

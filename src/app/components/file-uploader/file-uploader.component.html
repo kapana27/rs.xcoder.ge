@@ -1,0 +1,15 @@
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+
+<p-fileUpload name="file" url="/api/secured/Document/Upload" (onUpload)="onUpload($event)"
+
+              multiple="multiple" accept="image/*" maxFileSize="1000000">
+  <ng-template pTemplate="content">
+    <table *ngIf="uploadedFiles.length" style="width: 100%; border-top: 1px solid #5d5d5d">
+        <tr *ngFor="let file of uploadedFiles">
+          <td>{{ file.id }}</td>
+          <td>{{file.filename}}</td>
+          <td><p-button style="float: right" icon="pi pi-times" (click)="onDelete(file)"></p-button></td>
+        </tr>
+    </table>
+  </ng-template>
+</p-fileUpload>

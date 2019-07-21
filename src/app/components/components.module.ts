@@ -9,24 +9,28 @@ import {FormsModule} from "@angular/forms";
 import { TreeComponent } from './tree/tree.component';
 import {TreeModule} from "primeng/tree";
 import { TreeTableComponent } from './tree-table/tree-table.component';
-import {TreeTableModule} from "primeng/primeng";
+import {ConfirmDialogModule, FileUploadModule, TreeTableModule} from "primeng/primeng";
+import { FileUploaderComponent } from './file-uploader/file-uploader.component';
 
 @NgModule({
-  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent],
+  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent],
   imports: [
     CommonModule,
     TableModule,
     ButtonModule,
     FormsModule,
     TreeModule,
-    TreeTableModule
+    TreeTableModule,
+    FileUploadModule,
+    ConfirmDialogModule
   ],
   exports:[
     CartComponent,
     GeneratorComponent,
     CartButtonComponent,
     TreeComponent,
-    TreeTableComponent
+    TreeTableComponent,
+    FileUploaderComponent
   ]
 })
 export class ComponentsModule { }

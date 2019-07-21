@@ -52,5 +52,16 @@
   p-dialog .ui-dialog[role="dialog"], p-dialog .ui-dialog-content {
     overflow: visible !important;
   }
+  .red{
+    input{
+      border:1px solid red;
+    }
+    .ui-dropdown{
+      border:1px solid red;
+    }
+  }
+  .ui-dropdown{
+    width: 100%;
+  }
 }
 

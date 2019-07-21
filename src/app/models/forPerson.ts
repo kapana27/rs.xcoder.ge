@@ -13,4 +13,5 @@ export interface ForPerson {
   addon?: number;
   generator?: boolean;
   note?: string;
+  files?: any;
 }
