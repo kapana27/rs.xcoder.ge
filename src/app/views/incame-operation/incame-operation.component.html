@@ -1,41 +1,28 @@
 <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
 
-<p-tabMenu [model]="items1" [activeItem]="items1[params.approved]"></p-tabMenu>
-
-
-
 <div class="row">
   <div class="col-sm-12 col-lg-4 pTable">
     <p-table [value]="data"  selectionMode="single"   (onRowSelect)="rowSelect($event)" [(selection)]="selectedCar3"  dataKey="id">
       <ng-template pTemplate="header">
-        <tr >
-          <th rowspan="2" width="50">№</th>
-          <th colspan="2" style="font-size: 10px;">ელ. ზედდებულის ნომერი</th>
-
-          <th  rowspan="2" width="100">
-          <div *ngIf="selectedParams.id !== 0 && params.approved === 0" style="display: flex; justify-content: space-around; ">
-            <button pButton type="button" icon="pi pi-check" pTooltip="მიღება" tooltipPosition="top"   class="ui-button-success" (click)="confirm(2)"></button>
-            <button pButton type="button" icon="pi  pi-times"  pTooltip="უარყოფა" tooltipPosition="top"   class="ui-button-danger" (click)="confirm(1)"></button>
-          </div>
-          <span *ngIf="selectedParams.id === 0 || params.approved !== 0">თარიღი</span>
-        </th>
-          <th width="50" rowspan="2"></th>
-        </tr>
         <tr>
-          <th style="font-size: 10px;">საწყობიდან გამოსვლის ზედდებული</th>
-          <th style="font-size: 10px;">ქონების მართვის შემოსავლის ზედდებული</th>
+          <th>ზედ. ნომერი</th>
+          <th>ოპერაციის ტიპი</th>
+          <th>
+            <div *ngIf="selectedParams.id !== 0 && params.approved === 0" style="display: flex; justify-content: space-around; ">
+              <button pButton type="button" icon="pi  pi-times"   tooltipPosition="top"  label="გაუქმება"  class="ui-button-danger" (click)="confirm(1)"></button>
+            </div>
+            <span *ngIf="selectedParams.id === 0 || params.approved !== 0">თარიღი</span>
+          </th>
+          <th width="50"></th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-d let-i="rowIndex">
+      <ng-template pTemplate="body" let-d>
 
         <tr [pSelectableRow]="d" [ngClass]="{ 'gray': (params.approved===0 && d['newOne']===1)}">
-          <td>{{i+params.start +1}}</td>
-
           <td>{{d['id']}}</td>
-          <td>{{d['id']}}</td>
+          <td>{{d['operationType']}}</td>
           <td>{{d['date']}}</td>
           <td><i class="pi pi-download"   *ngIf="d['attachment']>0" (click)="download(d)"></i></td>
-
         </tr>
       </ng-template>
     </p-table>
@@ -67,6 +54,4 @@
     <p-paginator [rows]="30" totalRecords="{{selectedTotalRecord}}" (onPageChange)="selectedPaginate($event)"></p-paginator>
   </div>
 </div>
-
-
 <app-attachments *ngIf="attachmentDialog" [files]="attachments" [display]="attachmentDialog"></app-attachments>

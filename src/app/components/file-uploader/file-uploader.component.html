@@ -1,6 +1,6 @@
 <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
 
-<p-fileUpload name="file" url="/api/secured/Document/Upload" (onUpload)="onUpload($event)"
+<p-fileUpload name="file" url="{{prod}}/api/secured/Document/Upload" (onUpload)="onUpload($event)"
 
               multiple="multiple" accept="image/*" maxFileSize="1000000">
   <ng-template pTemplate="content">

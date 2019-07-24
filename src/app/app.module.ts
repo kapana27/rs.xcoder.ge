@@ -59,6 +59,7 @@ import {
   TreeTableModule
 } from "primeng/primeng";
 import {ComponentsModule} from "./components/components.module";
+import { IncameOperationComponent } from './views/incame-operation/incame-operation.component';
 
 @NgModule({
   imports: [
@@ -99,6 +100,7 @@ import {ComponentsModule} from "./components/components.module";
     MessagesComponent,
     DirectoryComponent,
     ReportComponent,
+    IncameOperationComponent,
   ],
   providers: [{
     provide: LocationStrategy,

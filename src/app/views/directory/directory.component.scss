@@ -6,22 +6,44 @@
 
   }
 
+  .colegs p-table th,  .colegs p-table tr td {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 12px;
+  }
+
+.container-fluid {
+    padding: 0 10px !important;
+  }
+
+  p-tabView {
+    .ui-tabview {position: relative;}
+    .action-button {
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    ul[role="tablist"] li .ui-tabview-title {
+      font-family: 'lbet-mt',
+      sans-serif !important;
+      font-weight: normal;
+      font-size: 12px;
+    }
+  }
+
   button, p-tabmenu ul li a {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     font-family: 'lbet-mt',sans-serif !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
   }
-  p-tabView .ui-tabview {position: relative;}
-  p-tabView .action-button {
-    position: absolute;
-    right: 4px;
-    top: 8px;
-  }
+
   .action-button{
     button{
-      margin-left: 20px;
+      margin-left: 10px;
     }
   }
 
@@ -34,7 +56,7 @@
     }
     ul[role="tablist"] li a {font-family: 'lbet-mt',sans-serif !important;}
   }
-  ul[role="tablist"] li .ui-tabview-title {font-family: 'lbet-mt',sans-serif !important; font-weight: normal;}
+
   table thead th {
     font-family: 'lbet-nus',sans-serif !important;
   }

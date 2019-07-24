@@ -1,6 +1,8 @@
 import {Default} from "./default";
 
 export interface Inventor {
+  vin?: any,
+  isCar?: number,
   id?: number,
   selectedMeasureUnitName?: Default;
   date?: Date,

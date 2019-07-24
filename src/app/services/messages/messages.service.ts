@@ -11,6 +11,9 @@ export class MessagesService {
   getMessages(params) {
     return this.Request.Get(Config.massage.get.list + '?approved=' + params['approved'] + '&page=' + params['page'] + '&start=' + params['start'] + '&limit=' + params['limit']);
   }
+  getInbox(params) {
+    return this.Request.Get(Config.massage.get.inbox + '?approved=' + params['approved'] + '&page=' + params['page'] + '&start=' + params['start'] + '&limit=' + params['limit']);
+  }
 
   getSelectedMessages(params) {
     return this.Request.Get(Config.massage.get.selectedList + '?id=' + params['id'] + '&page=' + params['page'] + '&start=' + params['start'] + '&limit=' + params['limit']);

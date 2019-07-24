@@ -15,8 +15,8 @@ import {
   DialogModule,
   DropdownModule,
   InputTextareaModule, SpinnerModule,
-  TabMenuModule, TabViewModule, TreeModule, TriStateCheckboxModule
-} from "primeng/primeng";
+  TabMenuModule, TabViewModule, TreeModule, TreeTableModule, TriStateCheckboxModule
+} from 'primeng/primeng';
 import {DynamicDialogModule} from "primeng/dynamicdialog";
 import {FormsModule} from "@angular/forms";
 import {ComponentsModule} from "../../components/components.module";
@@ -46,7 +46,8 @@ import {ComponentsModule} from "../../components/components.module";
     AgGridModule.withComponents([]),
     ComponentsModule,
     ConfirmDialogModule,
-    ChipsModule
+    ChipsModule,
+    TreeTableModule
   ]
 })
 export class ManagementModule { }

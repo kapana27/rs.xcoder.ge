@@ -58,11 +58,11 @@
          </ng-template>
        </p-table>
      </div>
-    <div class="row" *ngIf="item.id === 'employees'">
-      <div class="col-sm-2">
+    <div class="row colegs" *ngIf="item.id === 'employees'">
+      <div class="col-sm-3">
         <app-tree [ItemGroup]="ItemGroup" (selected)="selectedNode($event)"></app-tree>
       </div>
-      <div class="col-sm-10">
+      <div class="col-sm-9">
         <p-table [value]="employees" selectionMode="single"  [(selection)]="selectedEmployee">
           <ng-template pTemplate="header">
             <tr>

@@ -8,6 +8,7 @@ import {TransferToSection} from "../../models/transfer-to-section";
 })
 export class GeneratorComponent implements OnInit {
   @Input() transferToSection: TransferToSection ={};
+  @Input() name: string;
   @Output() onChangeAddon: EventEmitter<any> = new EventEmitter();
 
   constructor() { }

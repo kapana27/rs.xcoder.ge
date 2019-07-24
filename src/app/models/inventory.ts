@@ -1,4 +1,6 @@
 export interface Inventory {
+  addon?: any,
+  vin?: any,
   entryDate?: string,
   name?: string,
   maker?: number,

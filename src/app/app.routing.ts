@@ -8,6 +8,7 @@ import { RegisterComponent } from './views/register/register.component';
 import {MessagesComponent} from './views/messages/messages.component';
 import {ReportComponent} from './views/report/report.component';
 import {DirectoryComponent} from './views/directory/directory.component';
+import {IncameOperationComponent} from './views/incame-operation/incame-operation.component';
 
 export const routes: Routes = [
   {
@@ -57,6 +58,13 @@ export const routes: Routes = [
         component: MessagesComponent,
         data: {
           title: 'შეტყობინებები'
+        }
+      },
+      {
+        path: 'incomeOperations',
+        component: IncameOperationComponent,
+        data: {
+          title: 'მიღების ოპერაციები'
         }
       },
       {

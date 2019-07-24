@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {MessagesService} from '../../services/messages/messages.service';
 import {ConfirmationService, MenuItem, Message} from 'primeng/api';
+import {OperationsService} from '../../services/operations/operations.service';
 
 @Component({
   selector: 'app-messages',
@@ -9,6 +10,8 @@ import {ConfirmationService, MenuItem, Message} from 'primeng/api';
   providers: [ConfirmationService]
 })
 export class MessagesComponent implements OnInit {
+  attachmentDialog: boolean = false;
+  attachments: Array<any>=[];
   totalRecord: number = 0;
   selectedTotalRecord: number = 0;
   params = {
@@ -30,7 +33,7 @@ export class MessagesComponent implements OnInit {
   selectedCar3: any;
   msgs: Message[] = [];
 
-  constructor(private messageService: MessagesService, private confirmationService: ConfirmationService) { }
+  constructor(private messageService: MessagesService, private confirmationService: ConfirmationService, private operationService: OperationsService) { }
   ngOnInit() {
     this.items1 = [
       {label: 'მისაღები',  command: (event) => {
@@ -135,5 +138,15 @@ export class MessagesComponent implements OnInit {
     }
 
   }
+  download(d) {
+    this.attachmentDialog = false;
 
+    this.operationService.getAllAttachments(d['id'])
+      .then(response=>{
+        this.attachments = response['data'];
+        this.attachmentDialog = true;
+
+      })
+      .catch()
+  }
 }

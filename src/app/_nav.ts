@@ -65,6 +65,11 @@ export const navItems: NavData[] = [
     icon: 'icon-puzzle',
   },
   {
+    name: 'მიღების ოპერაციები',
+    url: '/incomeOperations',
+    icon: 'icon-puzzle',
+  },
+  {
     name: 'რეპორტი',
     url: '/report',
     icon: 'icon-speedometer',

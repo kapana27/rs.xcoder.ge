@@ -33,6 +33,7 @@ export  const Config = {
   },
   List: {
       get:{
+        attachments: '/api/secured/Document/Attachments',
         itemFilterByName: '/api/secured/Item/Filter/ByName',
         MeasureUnit: '/api/secured/MeasureUnit/List',
         barcode: '/api/secured/List/BarCode/Select',
@@ -93,7 +94,8 @@ export  const Config = {
   massage: {
     get: {
       list: '/api/secured/Item/Inbox/Select',
-      selectedList: '/api/secured/Item/Inbox/Detail/Select'
+      selectedList: '/api/secured/Item/Inbox/Detail/Select',
+      inbox: '/api/secured/Item/Inbox/Income'
     },
     post: {
       NotApprove: '/api/secured/Item/Inbox/NotApprove',

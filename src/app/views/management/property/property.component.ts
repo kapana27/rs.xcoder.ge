@@ -1,22 +1,23 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import "ag-grid-enterprise";
-import {OperationsService} from "../../../services/operations/operations.service";
-import {Item} from "../../../models/item";
+import {HttpClient} from '@angular/common/http';
+import 'ag-grid-enterprise';
+import {OperationsService} from '../../../services/operations/operations.service';
+import {Item} from '../../../models/item';
 import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
-import {ConfirmationService, MenuItem, SelectItem} from "primeng/api";
-import {Default} from "../../../models/default";
-import {InventorReturn} from "../../../models/inventorReturn";
-import {ValidatorService} from "../../../services/validator/validator.service";
+import {ConfirmationService, MenuItem, SelectItem} from 'primeng/api';
+import {Default} from '../../../models/default';
+import {InventorReturn} from '../../../models/inventorReturn';
+import {ValidatorService} from '../../../services/validator/validator.service';
 import * as moment from 'moment';
-import {InventorTransfer} from "../../../models/inventorTransfer";
-import {ForPerson} from "../../../models/forPerson";
+import {InventorTransfer} from '../../../models/inventorTransfer';
+import {ForPerson} from '../../../models/forPerson';
+import {RequestService} from '../../../services/request.service';
 interface Data {
-  TotalCount: number
-  data: Item[]
-  status: number
-  success: boolean
-  totalCount: number
+  TotalCount: number;
+  data: Item[];
+  status: number;
+  success: boolean;
+  totalCount: number;
 }
 @Component({
   selector: 'app-property',
@@ -25,13 +26,494 @@ interface Data {
   providers: [ConfirmationService]
 })
 export class PropertyComponent implements OnInit {
+  private lastCode: any = 0;
+
+  prod: any='';
+
+  constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService, private Request: RequestService) {
+    this.prod=this.Request.prod;
+    this.inOut = 'out';
+    this.gridOptions = {
+      context: {
+        thisComponent : this
+      }
+    };
+    this.getCartItems();
+    this.sections = [
+      {label: 'აირჩიეთ სექცია', value: null},
+      {label: 'სექცია1', value: {id: 1, name: 'სექცია1', code: 'NY'}},
+      {label: 'სექცია2', value: {id: 1, name: 'სექცია2', code: 'NY'}}
+    ];
+    this.properties = [
+      {label: 'აირჩიეთ ფროფერთი', value: null},
+      {label: 'ფროფერთი1', value: {id: 1, name: 'ფროფერთი1', code: 'NY'}},
+    ];
+
+
+
+
+    this.columnDefs = [
+      {
+        headerName: '#',
+        field: 'rowId',
+        width: 30,
+        cellRenderer: 'loadingCellRenderer',
+        sortable: false,
+        suppressMenu: false
+      },
+      {
+        headerName: ' ',
+        field: 'cartId',
+        width: 50,
+        cellRenderer: 'cardCellRenderer',
+        sortable: false,
+        suppressMenu: false,
+
+      },
+      {
+        headerName: 'ID',
+        width: 50,
+        field: 'id',
+        cellRenderer: 'loadingCellRenderer',
+        sortable: false,
+        suppressMenu: true
+      },
+      {
+        headerName: 'თარიღი',
+        field: 'trDate',
+        width: 150,
+        filter: 'agDateColumnFilter',
+        filterParams: {
+          comparator: function (filterLocalDateAtMidnight, cellValue) {
+            const dateAsString = cellValue;
+            if (dateAsString == null) { return 0; }
+            const dateParts = dateAsString.split('/');
+            const day = Number(dateParts[2]);
+            const month = Number(dateParts[1]) - 1;
+            const year = Number(dateParts[0]);
+            const cellDate = new Date(day, month, year);
+            // Now that both parameters are Date objects, we can compare
+            if (cellDate < filterLocalDateAtMidnight) {
+              return -1;
+            } else if (cellDate > filterLocalDateAtMidnight) {
+              return 1;
+            } else {
+              return 0;
+            }
+          }
+        }
+      },
+      {
+        headerName: 'დასახელება',
+        field: 'name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {
+          filterOptions: ['equals'],
+          suppressAndOrCondition: true
+        }
+      },
+      {
+        headerName: 'მარკა',
+        field: 'maker.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'მოდელი',
+        field: 'model.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ფასი',
+        field: 'price',
+        width: 90,
+        filter: 'agNumberColumnFilter',
+        filterParams: {
+          filterOptions: ['equals', 'lessThan', 'greaterThan'],
+          suppressAndOrCondition: true
+        }
+      },
+      {
+        headerName: 'რაოდენობა',
+        field: 'amount',
+        width: 90,
+        filter: 'agNumberColumnFilter',
+        filterParams: {
+          filterOptions: ['equals', 'lessThan', 'greaterThan'],
+          suppressAndOrCondition: true
+        }
+      },
+      {
+        headerName: 'განზ, ერთეული',
+        field: 'measureUnit.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'შტრიხკოდი',
+        field: 'barcode',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ქარხ.#',
+        field: 'factoryNumber',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ჯგუფი',
+        field: 'itemGroup.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ტიპი',
+        field: 'itemType.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'სტატუსი',
+        field: 'itemStatus.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'მიმწოდებელი',
+        field: 'supplier.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ზედნადები',
+        field: 'invoice',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ზედდებული',
+        field: 'invoiceAddon',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ინსპ',
+        field: 'inspectionNumber',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      }
+    ];
+
+    this.columnDefs1 = [
+      {
+        headerName: '#',
+        field: 'rowId',
+        width: 30,
+        cellRenderer: 'loadingCellRenderer',
+        sortable: false,
+        suppressMenu: false
+      },
+      {
+        headerName: ' ',
+        field: 'cartId',
+        width: 50,
+        cellRenderer: 'cardCellRenderer',
+        sortable: false,
+        suppressMenu: false,
+
+      },
+      {
+        headerName: 'ID',
+        width: 50,
+        field: 'id',
+        cellRenderer: 'loadingCellRenderer',
+        sortable: false,
+        suppressMenu: true
+      },
+      {
+        headerName: 'თარიღი',
+        field: 'trDate',
+        width: 150,
+        filter: 'agDateColumnFilter',
+        filterParams: {
+          comparator: function (filterLocalDateAtMidnight, cellValue) {
+            const dateAsString = cellValue;
+            if (dateAsString == null) { return 0; }
+            const dateParts = dateAsString.split('/');
+            const day = Number(dateParts[2]);
+            const month = Number(dateParts[1]) - 1;
+            const year = Number(dateParts[0]);
+            const cellDate = new Date(day, month, year);
+            // Now that both parameters are Date objects, we can compare
+            if (cellDate < filterLocalDateAtMidnight) {
+              return -1;
+            } else if (cellDate > filterLocalDateAtMidnight) {
+              return 1;
+            } else {
+              return 0;
+            }
+          }
+        }
+      },
+      {
+        headerName: 'თანამშრომელი',
+        field: 'staff.fullname',
+        sortable: false,
+        suppressMenu: false
+      },
+      {
+        headerName: 'ქალაქი',
+        field: 'section.city.name',
+        sortable: false,
+        suppressMenu: false
+      },
+      {
+        headerName: 'შენობა',
+        field: 'section.building.name',
+        sortable: false,
+        suppressMenu: false
+      },
+      {
+        headerName: 'დეპარტამენტი',
+        field: 'section.department.name',
+        sortable: false,
+        suppressMenu: false
+      },
+      {
+        headerName: 'სამმართველო',
+        field: 'section.division.name',
+        sortable: false,
+        suppressMenu: false
+      },
+      {
+        headerName: 'სექცია',
+        field: 'section.section.name',
+        sortable: false,
+        suppressMenu: false
+      },
+
+      {
+        headerName: 'დასახელება',
+        field: 'name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {
+          filterOptions: ['equals'],
+          suppressAndOrCondition: true
+        }
+      },
+      {
+        headerName: 'მარკა',
+        field: 'maker.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'მოდელი',
+        field: 'model.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ფასი',
+        field: 'price',
+        width: 90,
+        filter: 'agNumberColumnFilter',
+        filterParams: {
+          filterOptions: ['equals', 'lessThan', 'greaterThan'],
+          suppressAndOrCondition: true
+        }
+      },
+      {
+        headerName: 'რაოდენობა',
+        field: 'amount',
+        width: 90,
+        filter: 'agNumberColumnFilter',
+        filterParams: {
+          filterOptions: ['equals', 'lessThan', 'greaterThan'],
+          suppressAndOrCondition: true
+        }
+      },
+      {
+        headerName: 'განზ, ერთეული',
+        field: 'measureUnit.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'შტრიხკოდი',
+        field: 'barcode',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ქარხ.#',
+        field: 'factoryNumber',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ჯგუფი',
+        field: 'itemGroup.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ტიპი',
+        field: 'itemType.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'სტატუსი',
+        field: 'itemStatus.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'მიმწოდებელი',
+        field: 'supplier.name',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ზედნადები',
+        field: 'invoice',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ზედდებული',
+        field: 'invoiceAddon',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      },
+      {
+        headerName: 'ინსპ',
+        field: 'inspectionNumber',
+        width: 150,
+        suppressMenu: true,
+        filter: 'agTextColumnFilter',
+        filterParams: {defaultOption: 'startsWith'}
+      }
+    ];
+
+
+
+    this.defaultColDef = {
+      sortable: true,
+      resizable: true
+    };
+    this.getRowStyle = {
+      'ag-red': function(params) {
+        try {
+          return params['data']['tmpAmount'] > 0;
+        } catch (e) {}
+      },
+      'ag-gray': function(params) {
+        try {
+          return params['data']['tmpAmount'] === 0 && (params['data']['initialAmount'] !== params['data']['amount']);
+        } catch (e) {}
+      }
+    };
+    this.rowSelection = 'single';
+    this.rowModelType = 'infinite';
+    this.paginationPageSize = 100;
+    this.cacheOverflowSize = 2;
+    this.maxConcurrentDatasourceRequests = 2;
+    this.infiniteInitialRowCount = 1;
+    this.maxBlocksInCache = 2;
+    this.getRowNodeId = function (item) {
+      return item.id;
+    };
+    this.components = {
+      loadingCellRenderer: function (params) {
+        if (params.value !== undefined) {
+          return params.value;
+        } else {
+          return '<img src="https://raw.githubusercontent.com/ag-grid/ag-grid/master/packages/ag-grid-docs/src/images/loading.gif" alt="">';
+        }
+      },
+      cardCellRenderer: function (params) {
+          try {
+            if (params['data']['tmpAmount'] === params['data']['amount']) {
+              return  '';
+            }
+          } catch (e) {}
+
+        if (params['data'] !== undefined && params['data']['inCart']) {
+          return ' <button pButton type="button" label="Secondary"  style="padding: 2px; height: 100%" class="ui-button-raised ui-button-secondary"><i class="pi pi-shopping-cart cursor"  style="font-size: 28px;color: #bd0000; margin-top: -4px;"></i></button>';
+        } else {
+          return '<button pButton type="button" label="Secondary" style="padding: 2px; height: 100%"  class="ui-button-raised ui-button-secondary"><i class="pi pi-shopping-cart cursor"  style="font-size: 28px; margin-top: -4px;"></i></button>';
+        }
+      }
+    };
+
+
+    this.operation.getStoks()
+      .then(response => {
+        this.stockList = (response['status'] === 200) ? response['data'] : [];
+      })
+      .catch();
+  }
   eventData: any = null;
   public dataChecker = false;
   public gridApi;
   public gridColumnApi;
   faCartPlus = faCartPlus;
-  public columnDefs : Array<any> = [];
-  public columnDefs1 : Array<any> = [];
+  public columnDefs: Array<any> = [];
+  public columnDefs1: Array<any> = [];
   public defaultColDef;
   public rowSelection;
   public rowModelType;
@@ -79,483 +561,17 @@ export class PropertyComponent implements OnInit {
     roomId: 89
   };
   public getRowStyle;
-  public gridOptions:{
+  public gridOptions: {
     context?: any
   };
   private sectionFields: any;
   uploadFiles: Array<any> = [];
   minDate: Date = new Date();
   filesDialog: boolean = false;
+  dialogName: any =  'ელექტრონული ზედდებული №';
 
-  constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService) {
-    this.inOut = 'out';
-    this.gridOptions = {
-      context:{
-        thisComponent : this
-      }
-    };
-    this.getCartItems();
-    this.sections = [
-      {label: 'აირჩიეთ სექცია', value: null},
-      {label: 'სექცია1', value: {id: 1, name: 'სექცია1', code: 'NY'}},
-      {label: 'სექცია2', value: {id: 1, name: 'სექცია2', code: 'NY'}}
-    ];
-    this.properties = [
-      {label: 'აირჩიეთ ფროფერთი', value: null},
-      {label: 'ფროფერთი1', value: {id: 1, name: 'ფროფერთი1', code: 'NY'}},
-    ];
-
-
-
-
-    this.columnDefs = [
-      {
-        headerName: "#",
-        field: 'rowId',
-        width: 30,
-        cellRenderer: "loadingCellRenderer",
-        sortable: false,
-        suppressMenu: false
-      },
-      {
-        headerName: " ",
-        field: 'cartId',
-        width: 50,
-        cellRenderer: "cardCellRenderer",
-        sortable: false,
-        suppressMenu: false,
-
-      },
-      {
-        headerName: "ID",
-        width: 50,
-        field: 'id',
-        cellRenderer: "loadingCellRenderer",
-        sortable: false,
-        suppressMenu: true
-      },
-      {
-        headerName: "თარიღი",
-        field: "trDate",
-        width: 150,
-        filter: 'agDateColumnFilter',
-        filterParams: {
-          comparator: function (filterLocalDateAtMidnight, cellValue) {
-            const dateAsString = cellValue;
-            if (dateAsString == null) return 0;
-            const dateParts = dateAsString.split("/");
-            const day = Number(dateParts[2]);
-            const month = Number(dateParts[1]) - 1;
-            const year = Number(dateParts[0]);
-            const cellDate = new Date(day, month, year);
-            // Now that both parameters are Date objects, we can compare
-            if (cellDate < filterLocalDateAtMidnight) {
-              return -1;
-            } else if (cellDate > filterLocalDateAtMidnight) {
-              return 1;
-            } else {
-              return 0;
-            }
-          }
-        }
-      },
-      {
-        headerName: "დასახელება",
-        field: "name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {
-          filterOptions: ["equals"],
-          suppressAndOrCondition: true
-        }
-      },
-      {
-        headerName: "მარკა",
-        field: "maker.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "მოდელი",
-        field: "model.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ფასი",
-        field: "price",
-        width: 90,
-        filter: "agNumberColumnFilter",
-        filterParams: {
-          filterOptions: ["equals", "lessThan", "greaterThan"],
-          suppressAndOrCondition: true
-        }
-      },
-      {
-        headerName: "რაოდენობა",
-        field: "amount",
-        width: 90,
-        filter: "agNumberColumnFilter",
-        filterParams: {
-          filterOptions: ["equals", "lessThan", "greaterThan"],
-          suppressAndOrCondition: true
-        }
-      },
-      {
-        headerName: "განზ, ერთეული",
-        field: "measureUnit.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "შტრიხკოდი",
-        field: "barcode",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ქარხ.#",
-        field: "factoryNumber",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ჯგუფი",
-        field: "itemGroup.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ტიპი",
-        field: "itemType.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "სტატუსი",
-        field: "itemStatus.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "მიმწოდებელი",
-        field: "supplier.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ზედნადები",
-        field: "invoice",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ზედდებული",
-        field: "invoiceAddon",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ინსპ",
-        field: "inspectionNumber",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      }
-    ];
-
-    this.columnDefs1= [
-      {
-        headerName: "#",
-        field: 'rowId',
-        width: 30,
-        cellRenderer: "loadingCellRenderer",
-        sortable: false,
-        suppressMenu: false
-      },
-      {
-        headerName: " ",
-        field: 'cartId',
-        width: 50,
-        cellRenderer: "cardCellRenderer",
-        sortable: false,
-        suppressMenu: false,
-
-      },
-      {
-        headerName: "ID",
-        width: 50,
-        field: 'id',
-        cellRenderer: "loadingCellRenderer",
-        sortable: false,
-        suppressMenu: true
-      },
-      {
-        headerName: "თარიღი",
-        field: "trDate",
-        width: 150,
-        filter: 'agDateColumnFilter',
-        filterParams: {
-          comparator: function (filterLocalDateAtMidnight, cellValue) {
-            const dateAsString = cellValue;
-            if (dateAsString == null) return 0;
-            const dateParts = dateAsString.split("/");
-            const day = Number(dateParts[2]);
-            const month = Number(dateParts[1]) - 1;
-            const year = Number(dateParts[0]);
-            const cellDate = new Date(day, month, year);
-            // Now that both parameters are Date objects, we can compare
-            if (cellDate < filterLocalDateAtMidnight) {
-              return -1;
-            } else if (cellDate > filterLocalDateAtMidnight) {
-              return 1;
-            } else {
-              return 0;
-            }
-          }
-        }
-      },
-      {
-        headerName: "ქალაქი",
-        field: 'section.city.name',
-        sortable: false,
-        suppressMenu: false
-      },
-      {
-        headerName: "შენობა",
-        field: 'section.building.name',
-        sortable: false,
-        suppressMenu: false
-      },
-      {
-        headerName: "დეპარტამენტი",
-        field: 'section.department.name',
-        sortable: false,
-        suppressMenu: false
-      },
-      {
-        headerName: "სამმართველო",
-        field: 'section.division.name',
-        sortable: false,
-        suppressMenu: false
-      },
-      {
-        headerName: "სექცია",
-        field: 'section.section.name',
-        sortable: false,
-        suppressMenu: false
-      },
-
-      {
-        headerName: "დასახელება",
-        field: "name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {
-          filterOptions: ["equals"],
-          suppressAndOrCondition: true
-        }
-      },
-      {
-        headerName: "მარკა",
-        field: "maker.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "მოდელი",
-        field: "model.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ფასი",
-        field: "price",
-        width: 90,
-        filter: "agNumberColumnFilter",
-        filterParams: {
-          filterOptions: ["equals", "lessThan", "greaterThan"],
-          suppressAndOrCondition: true
-        }
-      },
-      {
-        headerName: "რაოდენობა",
-        field: "amount",
-        width: 90,
-        filter: "agNumberColumnFilter",
-        filterParams: {
-          filterOptions: ["equals", "lessThan", "greaterThan"],
-          suppressAndOrCondition: true
-        }
-      },
-      {
-        headerName: "განზ, ერთეული",
-        field: "measureUnit.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "შტრიხკოდი",
-        field: "barcode",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ქარხ.#",
-        field: "factoryNumber",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ჯგუფი",
-        field: "itemGroup.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ტიპი",
-        field: "itemType.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "სტატუსი",
-        field: "itemStatus.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "მიმწოდებელი",
-        field: "supplier.name",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ზედნადები",
-        field: "invoice",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ზედდებული",
-        field: "invoiceAddon",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      },
-      {
-        headerName: "ინსპ",
-        field: "inspectionNumber",
-        width: 150,
-        suppressMenu: true,
-        filter: "agTextColumnFilter",
-        filterParams: {defaultOption: "startsWith"}
-      }
-    ];
-
-
-
-    this.defaultColDef = {
-      sortable: true,
-      resizable: true
-    };
-    this.getRowStyle={
-      'ag-gray': function(params) {
-        try {
-          return params['data']["initialAmount"] !== params['data']["amount"];
-        }catch (e) {}
-      },
-      "ag-red": function(params) {
-        try {
-          return params['data']["tmpAmount"] > 0
-        }catch (e) {}
-      }
-    }
-    this.rowSelection = "single";
-    this.rowModelType = "infinite";
-    this.paginationPageSize = 100;
-    this.cacheOverflowSize = 2;
-    this.maxConcurrentDatasourceRequests = 2;
-    this.infiniteInitialRowCount = 1;
-    this.maxBlocksInCache = 2;
-    this.getRowNodeId = function (item) {
-      return item.id;
-    };
-    this.components = {
-      loadingCellRenderer: function (params) {
-        if (params.value !== undefined) {
-          return params.value;
-        } else {
-          return '<img src="https://raw.githubusercontent.com/ag-grid/ag-grid/master/packages/ag-grid-docs/src/images/loading.gif" alt="">';
-        }
-      },
-      cardCellRenderer: function (params) {
-          try {
-            if(params["data"]["tmpAmount"] === params['data']['amount']){
-              return  '';
-            }
-          }catch (e) {}
-
-        if (params["data"] !== undefined && params["data"]["inCart"]) {
-          return ' <button pButton type="button" label="Secondary"  style="padding: 2px; height: 100%" class="ui-button-raised ui-button-secondary"><i class="pi pi-shopping-cart cursor"  style="font-size: 28px;color: #bd0000; margin-top: -4px;"></i></button>';
-        } else {
-          return '<button pButton type="button" label="Secondary" style="padding: 2px; height: 100%"  class="ui-button-raised ui-button-secondary"><i class="pi pi-shopping-cart cursor"  style="font-size: 28px; margin-top: -4px;"></i></button>';
-        }
-      }
-    };
-
-
-    this.operation.getStoks()
-      .then(response => {
-        this.stockList = (response['status'] === 200) ? response["data"] : [];
-      })
-      .catch()
+  static inCart(inCard) {
+    alert(inCard);
   }
 /*  getCartItemsData(){
     this.cartItemsData = [];
@@ -573,41 +589,41 @@ export class PropertyComponent implements OnInit {
   }*/
 
   uploadedFiles($event: any) {
-    this.uploadFiles=$event;
+    this.uploadFiles = $event;
   }
   cart($event: any) {
     try {
 
       const status = $event['data']['tmpAmount'] === 0 || $event['data']['tmpAmount'] !== $event['data']['amount'] ;
-      const status2 = ($event['contextMenu']===true && status===true);
-      let  status3=false;
-      if($event['colDef'] !== undefined){
-        status3=($event['colDef']['field'] ==='cartId' && status === true);
+      const status2 = ($event['contextMenu'] === true && status === true);
+      let  status3 = false;
+      if ($event['colDef'] !== undefined) {
+        status3 = ($event['colDef']['field'] === 'cartId' && status === true);
       }
-      if( status2 || status3){
-          this.cartItems.indexOf($event['data']["id"].toString());
-          let formData = new FormData();
-          formData.append("globalKey", this.selectedTabId.toString());
-          formData.append("key", $event['data']["id"]);
-          formData.append("value", JSON.stringify($event['data']));
+      if ( status2 || status3) {
+          this.cartItems.indexOf($event['data']['id'].toString());
+          const formData = new FormData();
+          formData.append('globalKey', this.selectedTabId.toString());
+          formData.append('key', $event['data']['id']);
+          formData.append('value', JSON.stringify($event['data']));
 
-          if(this.cartItems.indexOf($event['data']["id"].toString()) === -1){
+          if (this.cartItems.indexOf($event['data']['id'].toString()) === -1) {
             this.operation.putInCart(formData)
-              .then(response=>{
-                if(response['status'] === 200){
-                  $event["data"]['inCart']= true;
-                  this.gridApi.refreshCells({ force:true });
-                  //this.onGridReady(this.eventData);
+              .then(response => {
+                if (response['status'] === 200) {
+                  $event['data']['inCart'] = true;
+                  this.gridApi.refreshCells({ force: true });
+                  // this.onGridReady(this.eventData);
                   this.getCartItems();
                 }
               }).catch();
-          }else{
+          } else {
             this.operation.removeCartItem(formData)
-              .then(response=>{
-                if(response['status'] === 200){
-                  $event["data"]['inCart']= false;
-                  this.gridApi.refreshCells({ force:true });
-                  //this.onGridReady(this.eventData);
+              .then(response => {
+                if (response['status'] === 200) {
+                  $event['data']['inCart'] = false;
+                  this.gridApi.refreshCells({ force: true });
+                  // this.onGridReady(this.eventData);
                   this.getCartItems();
                 }
 
@@ -616,7 +632,7 @@ export class PropertyComponent implements OnInit {
 
         }
 
-    }catch (e) {}
+    } catch (e) {}
   }
 
   cartDialog() {
@@ -624,78 +640,74 @@ export class PropertyComponent implements OnInit {
       .then(response => {
         if (response['status'] === 200) {
           this.cartItemsData = [];
-          for (let key in response['data']) {
+          for (const key in response['data']) {
             this.cartItemsData.push(JSON.parse(response['data'][key]));
           }
           this.cartItemsData.map(value => {
-            if(value['name'] ===undefined || value['name']===null){
+            if (value['name'] === undefined || value['name'] === null) {
               value['name'] = '';
             }
             return value;
-          })
-        }else{
-          this.error("შეცდომა",response['error'])
+          });
+        } else {
+          this.error('შეცდომა', response['error']);
         }
         this.cartDialogShow = true;
-      }).catch(response=>{
-      this.error("შეცდომა",response['error'])
-    })
+      }).catch(response => {
+      this.error('შეცდომა', response['error']);
+    });
   }
 
   private getCartItems() {
     return new Promise((resolve, reject) => {
-      let formData = new FormData();
-      formData.append("globalKey", this.selectedTabId.toString());
+      const formData = new FormData();
+      formData.append('globalKey', this.selectedTabId.toString());
       this.operation.getCartItems(formData)
         .then(response => {
           this.cartItemsData = [];
           this.cartItems = [];
-          if (response["status"] === 200) {
-            for (let i in response['data']) {
+          if (response['status'] === 200) {
+            for (const i in response['data']) {
               this.cartItemsData.push(JSON.parse(response['data'][i]));
               this.cartItems.push(i);
             }
             this.cartItemsData.map(value => {
-              if(value['name'] ===undefined || value['name']===null){
+              if (value['name'] === undefined || value['name'] === null) {
                 value['name'] = '';
               }
               return value;
-            })
+            });
             resolve(response);
           }
         })
-        .catch()
-    })
+        .catch();
+    });
   }
 
   removeCartItem() {
 
-    let formData = new FormData()
-    formData.append("globalKey", this.selectedTabId.toString());
+    const formData = new FormData();
+    formData.append('globalKey', this.selectedTabId.toString());
 
     this.operation.clearCart(formData)
       .then(response => {
         if (response['status'] === 200) {
           this.cartItemsData = [];
           this.cartItems = [];
-          this.onGridReady(this.eventData)
-        }else{
-          this.error('შეცდომა',response["error"])
+          this.onGridReady(this.eventData);
+        } else {
+          this.error('შეცდომა', response['error']);
         }
       })
-      .catch(response=>{
-        this.error('შეცდომა',response["error"])
-      })
-  }
-
-  static inCart(inCard) {
-    alert(inCard);
+      .catch(response => {
+        this.error('შეცდომა', response['error']);
+      });
   }
 
   filterBrands(event) {
     this.filteredBrands = [];
     for (let i = 0; i < this.brands.length; i++) {
-      let brand = this.brands[i];
+      const brand = this.brands[i];
       if (brand.toLowerCase().indexOf(event.query.toLowerCase()) == 0) {
         this.filteredBrands.push(brand);
       }
@@ -707,18 +719,18 @@ export class PropertyComponent implements OnInit {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
 
-    this.operation.getAllData(this.inOut==='v2'?'in':this.inOut,0, 1000)
+    this.operation.getAllData(this.inOut === 'v2' ? 'in' : this.inOut, 0, 1000)
       .then((response: Data) => {
-        //this.totalCount= response.TotalCount;
-        //this.virtualItems = response.data;
+        // this.totalCount= response.TotalCount;
+        // this.virtualItems = response.data;
         const data = response.data.map((v, i) => {
           v['rowId'] = i + 1;
           if (v['barcode'].toString().length <= v['barCodeType']['length']) {
             v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
           }
-          v['count']=1;
+          v['count'] = 1;
           v['cartId'] = v['id'];
-          v['barcode']=(v['spend']===1)?'':(v['barcode'].toString()==='0')?'':v['barcode'];
+          v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
           v['inCart'] = (this.cartItems.indexOf(v['id'].toString()) > -1);
 
           return v;
@@ -726,7 +738,7 @@ export class PropertyComponent implements OnInit {
         const dataSource = {
           rowCount: null,
           getRows: function (params) {
-            console.log("asking for " + params.startRow + " to " + params.endRow);
+            console.log('asking for ' + params.startRow + ' to ' + params.endRow);
             setTimeout(function () {
               const dataAfterSortingAndFiltering = sortAndFilter(data, params.sortModel, params.filterModel);
               const rowsThisPage = dataAfterSortingAndFiltering.slice(params.startRow, params.endRow);
@@ -740,39 +752,68 @@ export class PropertyComponent implements OnInit {
         };
         params.api.setDatasource(dataSource);
       })
-      .catch(response=>{
-        this.error("შეცდომა",response['error'])
+      .catch(response => {
+        this.error('შეცდომა', response['error']);
       });
   }
 
-  getContextMenuItems(params){
+  getContextMenuItems(params) {
     return [
-      "copy", "copyWithHeaders", "paste", "separator", "export",
+      'copy', 'copyWithHeaders', 'paste', 'separator',
       {
-        name: "განპიროვნება",
+        name: 'ექსელში ექსპორტი',
         action: function () {
-          if(!params['node']['data']['inCart']){
-            params.context.thisComponent.cart({data:params['node']['data'], contextMenu:true})
+          if (params.context.thisComponent.selectedTabId === -2) {
+            window.open(params.context.thisComponent.prod+'/api/secured/Item/Section/In/Export', '_blank');
+          } else {
+            window.open(params.context.thisComponent.prod+'/api/secured/Item/Section/Out/Export', '_blank');
+          }
+
+        }
+      },
+      {
+        name: 'განპიროვნება',
+        action: function () {
+          if (!params['node']['data']['inCart']) {
+            params.context.thisComponent.cart({data: params['node']['data'], contextMenu: true});
           }
           params.context.thisComponent.personDialog();
         }
       },
       {
-        name: "ინვენტარის საწყობში დაბრუნება",
+        name: 'ინვ. შებრუნება',
         action: function () {
-          if(!params['node']['data']['inCart']){
-            params.context.thisComponent.cart({data:params['node']['data'], contextMenu:true})
+          if (!params['node']['data']['inCart']) {
+            params.context.thisComponent.cart({data: params['node']['data'], contextMenu: true});
           }
           params.context.thisComponent.showDialog();
         }
       },
       {
-        name: "ინვენტარის მოძრაობა შენობებს შორის",
+        name: 'ინვენტარის მოძრაობა შენობებს შორის',
         action: function () {
-          if(!params['node']['data']['inCart']){
-            params.context.thisComponent.cart({data:params['node']['data'], contextMenu:true})
+          if (!params['node']['data']['inCart']) {
+            params.context.thisComponent.cart({data: params['node']['data'], contextMenu: true});
           }
           params.context.thisComponent.inventoryToBuildingDialog();
+        }
+      },
+      {
+        name: 'მონიშნულის გაუქმება',
+        action: function () {
+          params.context.thisComponent.gridOptions.api.deselectAll();
+        }
+      },
+      {
+        name: 'კალათაში ჩაყრილი ნივთები',
+        action: function () {
+          params.context.thisComponent.cartDialog();
+        }
+      },
+      {
+        name: 'კალათის გასუფთავება',
+        action: function () {
+          params.context.thisComponent.removeCartItem();
         }
       }
     ];
@@ -781,18 +822,18 @@ export class PropertyComponent implements OnInit {
     this.items = [
       {
         label: 'გასანაწილებელი', icon: '', command: (event) => {
-          this.selectedTabId=-1;
-          this.getCartItems().then(()=>{
-            this.clickTabMenu(1)
+          this.selectedTabId = -1;
+          this.getCartItems().then(() => {
+            this.clickTabMenu(1);
 
           });
         }
       },
       {
         label: 'განაწილებული', icon: '', command: (event) => {
-          this.selectedTabId=-2;
-          this.getCartItems().then(()=>{
-            this.clickTabMenu(0)
+          this.selectedTabId = -2;
+          this.getCartItems().then(() => {
+            this.clickTabMenu(0);
           });
         }
       }/*,
@@ -809,35 +850,57 @@ export class PropertyComponent implements OnInit {
   }
 
   inventoryToBuildingDialog() {
-    this.uploadFiles = [];
-    this.inventoryToBuildingDialogShow = true;
-    this.inventorTransfer = {
-      date: new Date(),
-      selectedIndex: 0,
-      generator: false,
-      roomId: 89
 
-    };
-    this.checkMinDate();
+    this.operation.getAddonNumber({type: 'Section/Transfer', subType: 'last'})
+      .then(response => {
+        if (response['status'] === 200) {
+          this.lastCode = response['data']['Right'];
+          this.uploadFiles = [];
+          this.inventoryToBuildingDialogShow = true;
+          this.inventorTransfer = {
+            date: new Date(),
+            selectedIndex: 0,
+            generator: false,
+            roomId: 89
+
+          };
+          this.checkMinDate();
+        }
+      });
+
+
   }
 
   showDialog() {
-    this.uploadFiles = [];
-    this.inventorReturnModel = {
-      inventarReturnGenerator: false,
-      date: new Date()
-    };
-    this.display = true;
-    this.checkMinDate();
+    this.operation.getAddonNumber({type: 'Stock/Return', subType: 'last'})
+      .then(response => {
+        if (response['status'] === 200) {
+          this.lastCode = response['data']['Right'];
+          this.uploadFiles = [];
+          this.inventorReturnModel = {
+            inventarReturnGenerator: false,
+            date: new Date()
+          };
+          this.display = true;
+          this.checkMinDate();
+        }
+      });
+
   }
   personDialog() {
-    this.uploadFiles = [];
-    this.personDialogShow = true;
-    this.forPerson = {
-      date: new Date(),
-      generator: false
-    };
-    this.checkMinDate();
+    this.operation.getAddonNumber({type: 'Person/Transfer', subType: 'last'})
+      .then(response => {
+        this.lastCode = response['data']['Right'];
+        this.uploadFiles = [];
+        this.personDialogShow = true;
+        this.forPerson = {
+          date: new Date(),
+          generator: false
+        };
+        this.checkMinDate();
+      })
+      .catch();
+
   }
   clickTabMenu(index) {
     switch (index) {
@@ -851,55 +914,55 @@ export class PropertyComponent implements OnInit {
         this.inOut = 'v2';
         break;
     }
-    //this.inOut = (index === 0)?'in':'out';
+    // this.inOut = (index === 0)?'in':'out';
     this.distributed = index != 0;
     this.onGridReady(this.eventData);
   }
 
   generateInventarReturn() {
-    let filter = ['date', 'selectedSection', 'selectedProperty', 'selectedCarrier'];
+    const filter = ['date', 'selectedSection', 'selectedProperty', 'selectedCarrier'];
     this.formErrors = this.validator.checkObject(this.inventorReturnModel, filter);
     if (this.formErrors.length === 0 && this.dataChecker) {
-      this.operation.getAddonNumber({type:'Stock/Return'})
+      this.operation.getAddonNumber({type: 'Stock/Return'})
         .then(response => {
           if (response['status'] === 200) {
             this.cartItemsData = this.cartItemsData.map(value => {
-              if(value['name'] ===undefined || value['name']===null){
+              if (value['name'] === undefined || value['name'] === null) {
                 value['name'] = '';
               }
               return value;
             });
-            this.inventorReturnModel.trDate = moment(this.inventorReturnModel.date).format("DD-MM-YYYY");
-            this.inventorReturnModel.addon = response["data"];
+            this.inventorReturnModel.trDate = moment(this.inventorReturnModel.date).format('DD-MM-YYYY');
+            this.inventorReturnModel.addon = response['data'];
             this.inventorReturnModel.inventarReturnGenerator = true;
             this.inventorReturnModel.toStock = this.inventorReturnModel.selectedSection['id'];
             this.inventorReturnModel.toWhomStock = this.inventorReturnModel.selectedProperty['id'];
-            this.inventorReturnModel.carrierPerson = this.inventorReturnModel.selectedCarrier["id"];
+            this.inventorReturnModel.carrierPerson = this.inventorReturnModel.selectedCarrier['id'];
 
             this.inventorReturnModel.listData = this.cartItemsData;
             this.inventorReturnModel.list = this.cartItemsData.map(v => {
-              return {itemId: v["id"], amount: v["count"]}
+              return {itemId: v['id'], amount: v['count']};
             });
             this.inventorReturnModel.files = this.uploadFiles.map(value => value['id']).toString();
 
-          }else{
-            this.error("შეცდომა",response['error'])
+          } else {
+            this.error('შეცდომა', response['error']);
           }
 
         })
-        .catch(response=>{
-          this.error("შეცდომა",response['error'])
-        })
+        .catch(response => {
+          this.error('შეცდომა', response['error']);
+        });
     }
   }
 
   activateInventarReturn() {
-    let formData = new FormData();
-    for (let key in this.inventorReturnModel) {
+    const formData = new FormData();
+    for (const key in this.inventorReturnModel) {
       if (key === 'list' || key === 'listData') {
         formData.append(key, JSON.stringify(this.inventorReturnModel[key]));
-      }else if(key==='addon') {
-        formData.append(key,this.inventorReturnModel[key]['Right']);
+      } else if (key === 'addon') {
+        formData.append(key, this.inventorReturnModel[key]['Right']);
       } else {
         formData.append(key, this.inventorReturnModel[key].toString());
       }
@@ -910,12 +973,12 @@ export class PropertyComponent implements OnInit {
         if (response['status'] === 200) {
           this.display = false;
         } else {
-          this.error('შეცდომა',response["error"])
+          this.error('შეცდომა', response['error']);
         }
       })
       .catch(response => {
-        this.error('შეცდომა',response["error"])
-      })
+        this.error('შეცდომა', response['error']);
+      });
   }
 
   if_error(data: Array<string>, field: string) {
@@ -929,28 +992,28 @@ export class PropertyComponent implements OnInit {
         this.staffList = (response['status'] === 200) ? response.data.map(v => {
           return {
             id: v['id'],
-            name:  v["fullname"] + " , " + v["position"]["name"] + " ," + v["department"]["name"],
-            fname: v["fullname"],
-            position: v["position"]["name"],
-            department:  v["department"]["name"]
-          }
+            name:  v['fullname'] + ' , ' + v['position']['name'] + ' ,' + v['department']['name'],
+            fname: v['fullname'],
+            position: v['position']['name'],
+            department:  v['department']['name']
+          };
         }) : [];
       })
-      .catch(response=>{
-        this.error("შეცდომა",response['error'])
-      })
+      .catch(response => {
+        this.error('შეცდომა', response['error']);
+      });
 
   }
 
   getTransferProperty() {
-    let formData = new FormData();
-    formData.append("stockId", this.inventorReturnModel.selectedSection.id.toString());
+    const formData = new FormData();
+    formData.append('stockId', this.inventorReturnModel.selectedSection.id.toString());
     this.operation.getPropertyByStock(formData)
       .then((response: { data: Array<any> }) => {
         this.propertyData = response.data;
       })
-      .catch(response=>{
-        this.error("შეცდომა",response['error'])
+      .catch(response => {
+        this.error('შეცდომა', response['error']);
       })
     ;
   }
@@ -959,72 +1022,72 @@ export class PropertyComponent implements OnInit {
     this.inventorTransfer.selectedIndex = $event.index;
   }
 
-  checkMinDate(){
-    if(this.cartItemsData.length >0 ){
-      const date = this.cartItemsData.map(v=>v['trDate']).sort((a, b) => {
-        const aDate = a.split("-");
-        const bDate = b.split("-");
+  checkMinDate() {
+    if (this.cartItemsData.length > 0 ) {
+      const date = this.cartItemsData.map(v => v['trDate']).sort((a, b) => {
+        const aDate = a.split('-');
+        const bDate = b.split('-');
         return (
-          (new Date(moment(aDate[2]+"-"+aDate[1]+"-"+aDate[0]).format("YYYY-MM-DD"))).getTime()
+          (new Date(moment(aDate[2] + '-' + aDate[1] + '-' + aDate[0]).format('YYYY-MM-DD'))).getTime()
           -
-          (new Date(moment(bDate[2]+"-"+bDate[1]+"-"+bDate[0]).format("YYYY-MM-DD"))).getTime()
-        )
-      })[0].split("-");
-      this.minDate =new Date(moment(date[2]+"-"+date[1]+"-"+date[0]).format("YYYY-MM-DD"))
+          (new Date(moment(bDate[2] + '-' + bDate[1] + '-' + bDate[0]).format('YYYY-MM-DD'))).getTime()
+        );
+      })[0].split('-');
+      this.minDate = new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD'));
     }
   }
 
   generaTeInventorTransfer() {
-    let filter = ['date', 'selectedProperty', 'selectedCarrier'];
+    const filter = ['date', 'selectedProperty', 'selectedCarrier'];
     if (this.inventorTransfer.selectedIndex === 1) {
       filter.push('selectedSection');
       filter.push('selectedRequestPerson');
     }
     this.formErrors = this.validator.checkObject(this.inventorTransfer, filter);
     if (this.formErrors.length === 0 && this.dataChecker) {
-      if(this.cartItemsData.length ===0){
-        alert("კალათა ცარიელია");
+      if (this.cartItemsData.length === 0) {
+        alert('კალათა ცარიელია');
         return;
       }
-      this.operation.getAddonNumber({type:'Section/Transfer'})
+      this.operation.getAddonNumber({type: 'Section/Transfer'})
         .then(response => {
           if (response['status'] === 200) {
             this.cartItemsData = this.cartItemsData.map(value => {
-              if(value['name'] ===undefined || value['name']===null){
+              if (value['name'] === undefined || value['name'] === null) {
                 value['name'] = '';
               }
               return value;
             });
             this.inventorTransfer.list = this.cartItemsData.map(value => {
-              return {itemId: value["id"], amount: value["count"]}
+              return {itemId: value['id'], amount: value['count']};
             });
             this.inventorTransfer.files = this.uploadFiles.map(value => value['id']).toString();
 
-            this.inventorTransfer.addon = response["data"];
+            this.inventorTransfer.addon = response['data'];
             this.inventorTransfer.generator = true;
-            this.inventorTransfer.requestPerson = this.inventorTransfer.selectedRequestPerson["id"];
+            this.inventorTransfer.requestPerson = this.inventorTransfer.selectedRequestPerson['id'];
             this.inventorTransfer.fromStock = 11;
             this.inventorTransfer.listData = this.cartItemsData;
-            this.inventorTransfer.carrierPerson = this.inventorTransfer.selectedCarrier["id"];
-            this.inventorTransfer.toWhomSection = this.inventorTransfer.selectedProperty["id"];
-            this.inventorTransfer.trDate = moment(this.inventorTransfer.date).format("DD-MM-YYYY");
-            this.inventorTransfer.receiverPerson = this.inventorTransfer.selectedPerson["id"];
+            this.inventorTransfer.carrierPerson = this.inventorTransfer.selectedCarrier['id'];
+            this.inventorTransfer.toWhomSection = this.inventorTransfer.selectedProperty['id'];
+            this.inventorTransfer.trDate = moment(this.inventorTransfer.date).format('DD-MM-YYYY');
+            this.inventorTransfer.receiverPerson = this.inventorTransfer.selectedPerson['id'];
           }
 
         })
-        .catch(response=>{
+        .catch(response => {
 
-        })
+        });
     }
   }
 
   activeInventorTransfer() {
-    let formData = new FormData();
-    for (let key in this.inventorTransfer) {
+    const formData = new FormData();
+    for (const key in this.inventorTransfer) {
       if (key === 'list' || key === 'listData') {
         formData.append(key, JSON.stringify(this.inventorTransfer[key]));
-      }else if(key==='addon') {
-        formData.append(key,this.inventorTransfer[key]['Right']);
+      } else if (key === 'addon') {
+        formData.append(key, this.inventorTransfer[key]['Right']);
       } else {
         formData.append(key, this.inventorTransfer[key]);
       }
@@ -1042,73 +1105,73 @@ export class PropertyComponent implements OnInit {
           this.inventorTransfer.generator = false;
           this.inventoryToBuildingDialogShow = false;
         } else {
-          this.error("შეცდომა",response['error'])
+          this.error('შეცდომა', response['error']);
         }
       })
       .catch(response => {
-        this.error("შეცდომა",response['error'])
-      })
+        this.error('შეცდომა', response['error']);
+      });
 
   }
 
   selectPerson($event: any) {
       this.operation.getRoomsByPerson($event['id'])
         .then(response => {
-          if(response['status']===200){
+          if (response['status'] === 200) {
               this.roomsList = response['data'];
-          }else{
-            this.error("შეცდომა",response['error'])
+          } else {
+            this.error('შეცდომა', response['error']);
           }
         })
-        .catch(response=>{
-          this.error("შეცდომა",response['error'])
-        })
+        .catch(response => {
+          this.error('შეცდომა', response['error']);
+        });
   }
 
-  generateForPersonInvoice(){
-    let filter = ['date', 'selectedPerson', 'selectedRoom'];
-    if(this.cartItemsData.length===0){
-      alert("კალათა ცარიელია");
+  generateForPersonInvoice() {
+    const filter = ['date', 'selectedPerson', 'selectedRoom'];
+    if (this.cartItemsData.length === 0) {
+      alert('კალათა ცარიელია');
       return;
     }
     this.formErrors = this.validator.checkObject(this.forPerson, filter);
     if (this.formErrors.length === 0 && this.dataChecker) {
-        this.operation.getAddonNumber({type:'Person/Transfer'})
+        this.operation.getAddonNumber({type: 'Person/Transfer'})
           .then(response => {
             if (response['status'] === 200) {
               this.cartItemsData = this.cartItemsData.map(value => {
-                if(value['name'] ===undefined || value['name']===null){
+                if (value['name'] === undefined || value['name'] === null) {
                   value['name'] = '';
                 }
                 return value;
               });
-              this.forPerson.addon = response["data"];
+              this.forPerson.addon = response['data'];
               this.forPerson.generator = true;
-              this.forPerson.trDate = moment(this.forPerson.date).format("DD-MM-YYYY");
+              this.forPerson.trDate = moment(this.forPerson.date).format('DD-MM-YYYY');
               this.forPerson.receiverPerson = this.forPerson.selectedPerson['id'];
               this.forPerson.roomId = this.forPerson.selectedRoom['id'];
               this.forPerson.list = this.cartItemsData.map(value => {
-                return {itemId: value["id"], amount: value["count"]}
+                return {itemId: value['id'], amount: value['count']};
               });
-              this.forPerson.files = this.uploadFiles.map(value => value['id']).toString()
+              this.forPerson.files = this.uploadFiles.map(value => value['id']).toString();
               this.forPerson.listData = this.cartItemsData;
 
-            }else{
-              this.error("შეცდომა",response['error'])
+            } else {
+              this.error('შეცდომა', response['error']);
             }
-          }).catch(response=>{
-            this.error("შეცდომა",response['error'])
-        })
+          }).catch(response => {
+            this.error('შეცდომა', response['error']);
+        });
     }
   }
 
   activeForPersonTransferInvoice() {
-    let formData = new FormData();
-    for (let key in this.forPerson) {
+    const formData = new FormData();
+    for (const key in this.forPerson) {
       if (key === 'list' || key === 'listData') {
         formData.append(key, JSON.stringify(this.forPerson[key]));
-      }else if(key==='addon') {
-        formData.append(key,this.forPerson[key]['Right']);
+      } else if (key === 'addon') {
+        formData.append(key, this.forPerson[key]['Right']);
       } else {
         formData.append(key, this.forPerson[key]);
       }
@@ -1125,21 +1188,21 @@ export class PropertyComponent implements OnInit {
 
           this.personDialogShow = false;
         } else {
-          this.error("შეცდომა",response['error'])
+          this.error('შეცდომა', response['error']);
         }
       })
       .catch(response => {
-        this.error("შეცდომა",response['error'])
-      })
+        this.error('შეცდომა', response['error']);
+      });
   }
 
   checker($event) {
-    this.dataChecker=$event['status'];
+    this.dataChecker = $event['status'];
   }
 
-  error(title,data) {
+  error(title, data) {
     this.confirmationService.confirm({
-      message:data,
+      message: data,
       header: title,
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
@@ -1164,7 +1227,7 @@ function sortData(sortModel, data) {
       if (valueA == valueB) {
         continue;
       }
-      const sortDirection = sortColModel.sort === "asc" ? 1 : -1;
+      const sortDirection = sortColModel.sort === 'asc' ? 1 : -1;
       if (valueA > valueB) {
         return sortDirection;
       } else {
@@ -1176,11 +1239,11 @@ function sortData(sortModel, data) {
   return resultOfSort;
 }
 function filterData(filterModel, data) {
-  let filterPresent = filterModel && Object.keys(filterModel).length > 0;
+  const filterPresent = filterModel && Object.keys(filterModel).length > 0;
   if (!filterPresent) {
     return data;
   }
-  let resultOfFilter = [];
+  const resultOfFilter = [];
   for (let i = 0; i < data.length; i++) {
     const item = data[i];
 
