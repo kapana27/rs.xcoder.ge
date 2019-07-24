@@ -9,8 +9,8 @@ import {RequestService} from '../request.service';
 export class OperationsService {
 
   constructor(private http: HttpClient, private Request: RequestService) {}
-  getData(tab, index, length) {
-     return this.Request.Get(Config.baseURI + Config.operations.property.get.list + '?stockId=' + tab + '&page=1&start=' + index + '&limit=' + length );
+  getData(tab, index, length, params) {
+     return this.Request.Get(Config.baseURI + Config.operations.property.get.list + '?stockId=' + tab + '&page=1&start=' + index + '&limit=' + length+"&filter="+params );
   }
   getAllData(inOut, index, length) {
     return this.Request.Get(Config.baseURI + Config.operations.property.get[inOut] + '?page=1&start=' + index + '&limit=' + length );

@@ -14,13 +14,11 @@ import {InventorTransfer} from '../../../models/inventorTransfer';
 import {ValidatorService} from '../../../services/validator/validator.service';
 import {TreeNode} from '../../../models/tree-node';
 import {RequestService} from '../../../services/request.service';
-
 interface Default {
   id?: number;
   name?: string;
   isDefault?: boolean;
 }
-
 interface Data {
   TotalCount: number;
   data: Item[];
@@ -28,7 +26,6 @@ interface Data {
   success: boolean;
   totalCount: number;
 }
-
 @Component({
   selector: 'app-warehouse',
   templateUrl: './warehouse.component.html',
@@ -60,6 +57,7 @@ export class WarehouseComponent implements OnInit {
     context?: any,
     rowSelection: string,
     getSelectedRows: string,
+    api?:any
   };
   items: MenuItem[];
   activeItem: MenuItem;
@@ -160,10 +158,6 @@ export class WarehouseComponent implements OnInit {
       {label: 'აირჩიეთ ფროფერთი', value: null},
       {label: 'ფროფერთი1', value: {id: 1, name: 'ფროფერთი1', code: 'NY'}},
     ];
-
-
-
-
     this.columnDefs = [
       {
         headerName: '#',
@@ -341,7 +335,6 @@ export class WarehouseComponent implements OnInit {
         filterParams: { defaultOption: 'startsWith' }
       }
     ];
-
     this.getRowStyle = {
 
       'ag-red': function(params) {
@@ -361,11 +354,8 @@ export class WarehouseComponent implements OnInit {
       sortable: true,
       resizable: true
     };
-
-
-
     this.rowSelection = 'single';
-    this.rowModelType = 'infinite';
+    this.rowModelType = 'serverSide';
     this.paginationPageSize = 100;
     this.cacheOverflowSize = 2;
     this.maxConcurrentDatasourceRequests = 2;
@@ -477,7 +467,7 @@ export class WarehouseComponent implements OnInit {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
-    this.operation.getData(this.selectedTabId, 0, 1000)
+    /*this.operation.getData(this.selectedTabId, 0, 1000)
       .then((response: Data) => {
         // this.totalCount= response.TotalCount;
         // this.virtualItems = response.data;
@@ -496,7 +486,25 @@ export class WarehouseComponent implements OnInit {
         const dataSource = {
           rowCount: null,
           getRows: function (params) {
-            console.log('asking for ' + params.startRow + ' to ' + params.endRow);
+
+            console.log(JSON.stringify(params.request, null, 1));
+
+            fetch('./olympicWinners/', {
+              method: 'post',
+              body: JSON.stringify(params.request),
+              headers: {"Content-Type": "application/json; charset=utf-8"}
+            })
+              .then(httpResponse => httpResponse.json())
+              .then(response => {
+                params.successCallback(response.rows, response.lastRow);
+              })
+              .catch(error => {
+                console.error(error);
+                params.failCallback();
+              })
+            console.log(params)
+
+           /!* console.log('asking for ' + params.startRow + ' to ' + params.endRow);
             setTimeout(function () {
               const dataAfterSortingAndFiltering = sortAndFilter(data, params.sortModel, params.filterModel);
               const rowsThisPage = dataAfterSortingAndFiltering.slice(params.startRow, params.endRow);
@@ -505,14 +513,38 @@ export class WarehouseComponent implements OnInit {
                 lastRow = dataAfterSortingAndFiltering.length;
               }
               params.successCallback(rowsThisPage, lastRow);
-            }, 10);
+            }, 10);*!/
           }
         };
         params.api.setDatasource(dataSource);
       })
       .catch(response => {
         this.error('შეცდომა', response['error']);
-      });
+      });*/
+    const operation = this.operation;
+    const selectedTabId =this.selectedTabId;
+    const datasource = {
+      getRows(params) {
+        const parameters = [];
+        for(let f in params['request']['filterModel']){
+          const name = (f.split(".").length>0)? f.split(".")[0]: f;
+           parameters.push({
+             property: name,
+             value:params['request']['filterModel'][f]['filter'],
+             operator:"like"
+           });
+        }
+        operation.getData(selectedTabId, params['request']['startRow'], params['request']['endRow'], encodeURIComponent(JSON.stringify(parameters)))
+          .then(response => {
+            params.successCallback(response['data'], response['totalCount']);
+          })
+          .catch(error => {
+            console.error(error);
+            params.failCallback();
+          })
+      }
+    };
+    params.api.setServerSideDatasource(datasource);
   }
   cart($event: any) {
     try {
@@ -684,10 +716,7 @@ export class WarehouseComponent implements OnInit {
 
   }
   inventorEditDialog() {
-
-
      this.inventorOperation = this.cartItemsData.length > 1 ? 'multiple' : 'edit';
-
      console.log(this.cartItemsData, this.inventorOperation);
     if (Object.entries(this.tmpData).length > 1 || this.inventorOperation === 'multiple') {
       this.inventorDialogShow = true;
@@ -880,7 +909,6 @@ export class WarehouseComponent implements OnInit {
       });
   }
   nodeSelect($event: any) {
-    console.log($event);
     this.itemGroupDialogShow = false;
     this.newInventor.itemGroup = $event.node['data']['id'];
     this.newInventor.itemGroupName = $event.node['data']['name'];
@@ -1107,7 +1135,7 @@ console.log(this.newInventor);
     this.filterItemSingle({query: ''}, 'marker');
     this.getLastCode();
   }
-  private getCartItems() {
+  getCartItems() {
     return new Promise((resolve, reject) => {
       const formData = new FormData();
       this.cartItemsData = [];
@@ -1133,7 +1161,6 @@ console.log(this.newInventor);
         .catch();
     });
   }
-
   checker($event) {
     this.dataChecker = $event['status'];
     console.log($event);
@@ -1253,8 +1280,7 @@ console.log(this.newInventor);
           this.error('შეცდომა', response['error']);
         });
   }
-  filterBrands($event: any) {
-  }
+  filterBrands($event: any) {}
   generaTeInventorTransfer() {
     const filter = ['date', 'selectedProperty', 'selectedPerson', 'selectedCarrier'];
     if (this.inventorTransfer.selectedIndex === 1) {
@@ -1365,7 +1391,6 @@ console.log(this.newInventor);
       }
     });
   }
-
   selectCell($event: any) {
 
   }
@@ -1494,11 +1519,7 @@ console.log(this.newInventor);
 
     }
   }
-
-
-
   onKeyUp($event: any) {
-
     if (typeof $event === 'object') {
       return;
     }
@@ -1519,7 +1540,6 @@ console.log(this.newInventor);
       }, 20);
     }
   }
-
   onKeyUpSupplier($event: any) {
     if (this.lang === 'ge') {
       this.newInventor.selectedSupplier = { id: this.newInventor.selectedSupplier['id'], name: this.newInventor.selectedSupplier['name'], generatedName: en2geo((typeof this.newInventor.selectedSupplier === 'string') ? this.newInventor.selectedSupplier : this.newInventor.selectedSupplier['name']) };
@@ -1534,30 +1554,22 @@ console.log(this.newInventor);
       }, 20);
     }
   }
-
   changeLang() {
     this.lang = (this.lang === 'ge') ? 'uk' : 'ge';
   }
-
-
   onRowClicked($event: any) {
     console.log($event);
     this.tmpData = $event['data'];
   }
-
   changeAddon($event: any) {
     console.log($event, this.transferToSection);
   }
-
   inventorSearch() {
     this.searchBox = true;
   }
-
   CloseInventorSearch() {
     this.searchBox = false;
   }
-
-
   uploadedFiles($event: any) {
       this.uploadFiles = $event;
   }

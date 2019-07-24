@@ -27,9 +27,7 @@ interface Data {
 })
 export class PropertyComponent implements OnInit {
   private lastCode: any = 0;
-
   prod: any='';
-
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService, private Request: RequestService) {
     this.prod=this.Request.prod;
     this.inOut = 'out';
@@ -569,7 +567,6 @@ export class PropertyComponent implements OnInit {
   minDate: Date = new Date();
   filesDialog: boolean = false;
   dialogName: any =  'ელექტრონული ზედდებული №';
-
   static inCart(inCard) {
     alert(inCard);
   }
@@ -587,7 +584,6 @@ export class PropertyComponent implements OnInit {
       })
     });
   }*/
-
   uploadedFiles($event: any) {
     this.uploadFiles = $event;
   }
@@ -634,7 +630,6 @@ export class PropertyComponent implements OnInit {
 
     } catch (e) {}
   }
-
   cartDialog() {
     this.getCartItems()
       .then(response => {
@@ -657,7 +652,6 @@ export class PropertyComponent implements OnInit {
       this.error('შეცდომა', response['error']);
     });
   }
-
   private getCartItems() {
     return new Promise((resolve, reject) => {
       const formData = new FormData();
@@ -683,7 +677,6 @@ export class PropertyComponent implements OnInit {
         .catch();
     });
   }
-
   removeCartItem() {
 
     const formData = new FormData();
@@ -703,7 +696,6 @@ export class PropertyComponent implements OnInit {
         this.error('შეცდომა', response['error']);
       });
   }
-
   filterBrands(event) {
     this.filteredBrands = [];
     for (let i = 0; i < this.brands.length; i++) {
@@ -713,12 +705,10 @@ export class PropertyComponent implements OnInit {
       }
     }
   }
-
   onGridReady(params) {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
-
     this.operation.getAllData(this.inOut === 'v2' ? 'in' : this.inOut, 0, 1000)
       .then((response: Data) => {
         // this.totalCount= response.TotalCount;
@@ -756,7 +746,6 @@ export class PropertyComponent implements OnInit {
         this.error('შეცდომა', response['error']);
       });
   }
-
   getContextMenuItems(params) {
     return [
       'copy', 'copyWithHeaders', 'paste', 'separator',
@@ -848,7 +837,6 @@ export class PropertyComponent implements OnInit {
     ];
 
   }
-
   inventoryToBuildingDialog() {
 
     this.operation.getAddonNumber({type: 'Section/Transfer', subType: 'last'})
@@ -870,7 +858,6 @@ export class PropertyComponent implements OnInit {
 
 
   }
-
   showDialog() {
     this.operation.getAddonNumber({type: 'Stock/Return', subType: 'last'})
       .then(response => {
@@ -918,7 +905,6 @@ export class PropertyComponent implements OnInit {
     this.distributed = index != 0;
     this.onGridReady(this.eventData);
   }
-
   generateInventarReturn() {
     const filter = ['date', 'selectedSection', 'selectedProperty', 'selectedCarrier'];
     this.formErrors = this.validator.checkObject(this.inventorReturnModel, filter);
@@ -955,7 +941,6 @@ export class PropertyComponent implements OnInit {
         });
     }
   }
-
   activateInventarReturn() {
     const formData = new FormData();
     for (const key in this.inventorReturnModel) {
@@ -980,12 +965,10 @@ export class PropertyComponent implements OnInit {
         this.error('შეცდომა', response['error']);
       });
   }
-
   if_error(data: Array<string>, field: string) {
     // console.log(data,field, data.indexOf(field));
     return data.indexOf(field) > -1;
   }
-
   filterStaff($event: any) {
     this.operation.getStaffList($event.query)
       .then((response: { data: Array<any> }) => {
@@ -1004,7 +987,6 @@ export class PropertyComponent implements OnInit {
       });
 
   }
-
   getTransferProperty() {
     const formData = new FormData();
     formData.append('stockId', this.inventorReturnModel.selectedSection.id.toString());
@@ -1017,11 +999,9 @@ export class PropertyComponent implements OnInit {
       })
     ;
   }
-
   onTabChange($event: any) {
     this.inventorTransfer.selectedIndex = $event.index;
   }
-
   checkMinDate() {
     if (this.cartItemsData.length > 0 ) {
       const date = this.cartItemsData.map(v => v['trDate']).sort((a, b) => {
@@ -1036,7 +1016,6 @@ export class PropertyComponent implements OnInit {
       this.minDate = new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD'));
     }
   }
-
   generaTeInventorTransfer() {
     const filter = ['date', 'selectedProperty', 'selectedCarrier'];
     if (this.inventorTransfer.selectedIndex === 1) {
@@ -1080,7 +1059,6 @@ export class PropertyComponent implements OnInit {
         });
     }
   }
-
   activeInventorTransfer() {
     const formData = new FormData();
     for (const key in this.inventorTransfer) {
@@ -1113,7 +1091,6 @@ export class PropertyComponent implements OnInit {
       });
 
   }
-
   selectPerson($event: any) {
       this.operation.getRoomsByPerson($event['id'])
         .then(response => {
@@ -1127,7 +1104,6 @@ export class PropertyComponent implements OnInit {
           this.error('შეცდომა', response['error']);
         });
   }
-
   generateForPersonInvoice() {
     const filter = ['date', 'selectedPerson', 'selectedRoom'];
     if (this.cartItemsData.length === 0) {
@@ -1164,7 +1140,6 @@ export class PropertyComponent implements OnInit {
         });
     }
   }
-
   activeForPersonTransferInvoice() {
     const formData = new FormData();
     for (const key in this.forPerson) {
@@ -1195,11 +1170,9 @@ export class PropertyComponent implements OnInit {
         this.error('შეცდომა', response['error']);
       });
   }
-
   checker($event) {
     this.dataChecker = $event['status'];
   }
-
   error(title, data) {
     this.confirmationService.confirm({
       message: data,
