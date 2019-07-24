@@ -9,6 +9,8 @@ import {MessagesComponent} from './views/messages/messages.component';
 import {ReportComponent} from './views/report/report.component';
 import {DirectoryComponent} from './views/directory/directory.component';
 import {IncameOperationComponent} from './views/incame-operation/incame-operation.component';
+import {TestComponent} from "./views/test/test.component";
+import {Test1Component} from "./views/test1/test1.component";
 
 export const routes: Routes = [
   {
@@ -79,6 +81,20 @@ export const routes: Routes = [
         component: DirectoryComponent,
         data: {
           title: 'ცნობარი'
+        }
+      },
+      {
+        path: 'test',
+        component: TestComponent,
+        data: {
+          title: 'ტესტი'
+        }
+      },
+      {
+        path: 'test1',
+        component: Test1Component,
+        data: {
+          title: 'ტესტი'
         }
       },
     ]

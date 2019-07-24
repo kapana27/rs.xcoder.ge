@@ -60,6 +60,8 @@ import {
 } from "primeng/primeng";
 import {ComponentsModule} from "./components/components.module";
 import { IncameOperationComponent } from './views/incame-operation/incame-operation.component';
+import { TestComponent } from './views/test/test.component';
+import { Test1Component } from './views/test1/test1.component';
 
 @NgModule({
   imports: [
@@ -101,12 +103,17 @@ import { IncameOperationComponent } from './views/incame-operation/incame-operat
     DirectoryComponent,
     ReportComponent,
     IncameOperationComponent,
+    TestComponent,
+    Test1Component,
+  ],
+  exports:[
+    TestComponent,
+    Test1Component,
   ],
   providers: [{
     provide: LocationStrategy,
     useClass: HashLocationStrategy
   }],
-  exports: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

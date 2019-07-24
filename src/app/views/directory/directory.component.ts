@@ -142,19 +142,13 @@ export class DirectoryComponent implements OnInit {
 
   ngOnInit() {
     this.getMeasureUnits();
-    this.getStructuralUnitGrid('?');
     this.getItemGroup();
-    this.directoryService.getStructuralUnitTree()
-        .then(value => {
-          this.ItemGroup = parseTree(value['children'] );
-        }).catch();
-
+    this.getStructuralUnit();
 
     this.mainTabs = [
       {label: 'სტრუქტურა', type: 'structura',  icon: 'fa fa-fw fa-bar-chart', command: (event=>{
           this.selectType=1;
 
-          this.getList(this.selectType);
           this.selectMainTab(event['item']);
 
         })},
@@ -181,8 +175,6 @@ export class DirectoryComponent implements OnInit {
 
 
     this.activeItem = this.mainTabs[0];
-     this.getStructuralUnit();
-     this.getList(this.selectType)
 
     this.directoryService.getList(1)
       .then(value => {
@@ -245,32 +237,25 @@ export class DirectoryComponent implements OnInit {
       .catch()
   }
   getStructuralUnit(){
-    this.directoryService.getStructuralUnit()
-      .then(value => {
-        for(const i in value['data'])
-          this.subTabs.push({
-          label: value['data'][i],
-          type: i,
-
-          id: i,
-          icon: 'fa fa-fw fa-bar-chart'
-        });
-
-        this.subTabs.push({
-          label: 'სტრუქტურული ერთეული',
-          type: 'StructuralUnit',
-          id: 'structuralUnit',
-          icon: 'fa fa-fw fa-bar-chart'
-        });
-        this.subTabs.push({
-          label: 'თანამშრომლები',
-          type: 'employees',
-          id: 'employees',
-          icon: 'fa fa-fw fa-bar-chart'
-        });
-        this.activeSubItem = this.subTabs[0];
-      })
-      .catch(reason => {})
+    this.subTabs.push({
+      label: 'საშტატო ერთეული',
+      type: 'structUnit1',
+      id: 'structUnit1',
+      icon: 'fa fa-fw fa-bar-chart'
+    });
+    this.subTabs.push({
+      label: 'სტრუქტურული ერთეული',
+      type: 'structUnit2',
+      id: 'structUnit2',
+      icon: 'fa fa-fw fa-bar-chart'
+    });
+    this.subTabs.push({
+      label: 'თანამშრომლები',
+      type: 'employees',
+      id: 'employees',
+      icon: 'fa fa-fw fa-bar-chart'
+    });
+    this.activeSubItem = this.subTabs[0];
   }
   getList(type){
     this.directoryService.getList(type)

@@ -36,16 +36,13 @@ export class IncameOperationComponent implements OnInit {
 
   constructor(private messageService: MessagesService,  private confirmationService: ConfirmationService, private operationService: OperationsService) { }
   ngOnInit() {
-
     this.getList();
-
   }
   getList() {
     this.selectedData = [];
     this.messageService.getInbox(this.params)
       .then(response => {
         if (response['status'] === 200) {
-
           this.totalRecord = response['totalCount'];
           this.data = response['data'].map(v => {
             v['date'] = v['entryDate'].substr(0, 10);

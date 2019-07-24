@@ -29,6 +29,7 @@ export class PropertyComponent implements OnInit {
   private lastCode: any = 0;
   prod: any='';
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService, private Request: RequestService) {
+    this.getCartItems();
     this.prod=this.Request.prod;
     this.inOut = 'out';
     this.gridOptions = {
@@ -36,7 +37,6 @@ export class PropertyComponent implements OnInit {
         thisComponent : this
       }
     };
-    this.getCartItems();
     this.sections = [
       {label: 'აირჩიეთ სექცია', value: null},
       {label: 'სექცია1', value: {id: 1, name: 'სექცია1', code: 'NY'}},
@@ -46,15 +46,11 @@ export class PropertyComponent implements OnInit {
       {label: 'აირჩიეთ ფროფერთი', value: null},
       {label: 'ფროფერთი1', value: {id: 1, name: 'ფროფერთი1', code: 'NY'}},
     ];
-
-
-
-
     this.columnDefs = [
       {
         headerName: '#',
         field: 'rowId',
-        width: 30,
+        width: 50,
         cellRenderer: 'loadingCellRenderer',
         sortable: false,
         suppressMenu: false
@@ -229,12 +225,11 @@ export class PropertyComponent implements OnInit {
         filterParams: {defaultOption: 'startsWith'}
       }
     ];
-
     this.columnDefs1 = [
       {
         headerName: '#',
         field: 'rowId',
-        width: 30,
+        width: 50,
         cellRenderer: 'loadingCellRenderer',
         sortable: false,
         suppressMenu: false
@@ -285,19 +280,29 @@ export class PropertyComponent implements OnInit {
         headerName: 'თანამშრომელი',
         field: 'staff.fullname',
         sortable: false,
-        suppressMenu: false
+        suppressMenu: false,
+        filter: 'agTextColumnFilter',
+        filterParams: {
+          filterOptions: ['equals'],
+          suppressAndOrCondition: true
+        }
       },
       {
         headerName: 'ქალაქი',
         field: 'section.city.name',
         sortable: false,
-        suppressMenu: false
+        suppressMenu: false,
+        filter: 'agTextColumnFilter',
+        filterParams: {
+          filterOptions: ['equals'],
+          suppressAndOrCondition: true
+        }
       },
       {
         headerName: 'შენობა',
         field: 'section.building.name',
         sortable: false,
-        suppressMenu: false
+        suppressMenu: false,
       },
       {
         headerName: 'დეპარტამენტი',
@@ -446,9 +451,6 @@ export class PropertyComponent implements OnInit {
         filterParams: {defaultOption: 'startsWith'}
       }
     ];
-
-
-
     this.defaultColDef = {
       sortable: true,
       resizable: true
@@ -466,7 +468,7 @@ export class PropertyComponent implements OnInit {
       }
     };
     this.rowSelection = 'single';
-    this.rowModelType = 'infinite';
+    this.rowModelType = 'serverSide';
     this.paginationPageSize = 100;
     this.cacheOverflowSize = 2;
     this.maxConcurrentDatasourceRequests = 2;
@@ -497,8 +499,6 @@ export class PropertyComponent implements OnInit {
         }
       }
     };
-
-
     this.operation.getStoks()
       .then(response => {
         this.stockList = (response['status'] === 200) ? response['data'] : [];
@@ -709,42 +709,43 @@ export class PropertyComponent implements OnInit {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
-    this.operation.getAllData(this.inOut === 'v2' ? 'in' : this.inOut, 0, 1000)
-      .then((response: Data) => {
-        // this.totalCount= response.TotalCount;
-        // this.virtualItems = response.data;
-        const data = response.data.map((v, i) => {
-          v['rowId'] = i + 1;
-          if (v['barcode'].toString().length <= v['barCodeType']['length']) {
-            v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
-          }
-          v['count'] = 1;
-          v['cartId'] = v['id'];
-          v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
-          v['inCart'] = (this.cartItems.indexOf(v['id'].toString()) > -1);
-
-          return v;
-        });
-        const dataSource = {
-          rowCount: null,
-          getRows: function (params) {
-            console.log('asking for ' + params.startRow + ' to ' + params.endRow);
-            setTimeout(function () {
-              const dataAfterSortingAndFiltering = sortAndFilter(data, params.sortModel, params.filterModel);
-              const rowsThisPage = dataAfterSortingAndFiltering.slice(params.startRow, params.endRow);
-              let lastRow = -1;
-              if (dataAfterSortingAndFiltering.length <= params.endRow) {
-                lastRow = dataAfterSortingAndFiltering.length;
+    const operation = this.operation;
+    const cartItems = this.cartItems;
+    const inOut = this.inOut;
+    const datasource = {
+      getRows(params) {
+        const parameters = [];
+        for(let f in params['request']['filterModel']){
+          const name = (f.split(".").length>0)? f.split(".")[0]: f;
+          parameters.push({
+            property: name,
+            value:params['request']['filterModel'][f]['filter'],
+            operator:"like"
+          });
+        }
+        operation.getAllData(inOut === 'v2' ? 'in' : inOut, params['request']['startRow'], params['request']['endRow'], encodeURIComponent(JSON.stringify(parameters)))
+          .then(response => {
+            console.log(cartItems);
+            params.successCallback(response['data'].map((v,k)=>{
+              v['rowId']=(params['request']['startRow']+1+k );
+              if (v['barcode'].toString().length <= v['barCodeType']['length']) {
+                v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
               }
-              params.successCallback(rowsThisPage, lastRow);
-            }, 100);
-          }
-        };
-        params.api.setDatasource(dataSource);
-      })
-      .catch(response => {
-        this.error('შეცდომა', response['error']);
-      });
+              v['count'] = 1;
+              v['cartId'] = v['id'];
+              v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
+              v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
+
+              return v;
+            }), response['totalCount']);
+          })
+          .catch(error => {
+            console.error(error);
+            params.failCallback();
+          })
+      }
+    };
+    params.api.setServerSideDatasource(datasource);
   }
   getContextMenuItems(params) {
     return [

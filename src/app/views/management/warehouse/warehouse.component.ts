@@ -162,7 +162,7 @@ export class WarehouseComponent implements OnInit {
       {
         headerName: '#',
         field: 'rowId',
-        width: 30,
+        width: 50,
         cellRenderer: 'loadingCellRenderer',
         sortable: false,
         suppressMenu: false
@@ -364,7 +364,6 @@ export class WarehouseComponent implements OnInit {
     this.getRowNodeId = function(item) {
       return item.id;
     };
-
     this.components = {
 
       loadingCellRenderer: function(params) {
@@ -387,14 +386,11 @@ export class WarehouseComponent implements OnInit {
         }
       }
     };
-
     this.operation.getStoks()
       .then(response => {
         this.stockList = (response['status'] === 200) ? response['data'] : [];
       })
       .catch();
-
-
   }
 
   filterInventorsByName(event) {
@@ -467,62 +463,9 @@ export class WarehouseComponent implements OnInit {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
-    /*this.operation.getData(this.selectedTabId, 0, 1000)
-      .then((response: Data) => {
-        // this.totalCount= response.TotalCount;
-        // this.virtualItems = response.data;
-        const data  = response.data.map((v, i) => {
-          v['rowId'] = i + 1;
-          v['cartId'] = v['id'];
-          if (v['barcode'].toString().length <= v['barCodeType']['length'] ) {
-              v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
-          }
-          v['count'] = 1;
-          v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
-          v['inCart'] = (this.cartItems.indexOf(v['id'].toString()) > -1) ? true : false;
-          return v;
-        });
-
-        const dataSource = {
-          rowCount: null,
-          getRows: function (params) {
-
-            console.log(JSON.stringify(params.request, null, 1));
-
-            fetch('./olympicWinners/', {
-              method: 'post',
-              body: JSON.stringify(params.request),
-              headers: {"Content-Type": "application/json; charset=utf-8"}
-            })
-              .then(httpResponse => httpResponse.json())
-              .then(response => {
-                params.successCallback(response.rows, response.lastRow);
-              })
-              .catch(error => {
-                console.error(error);
-                params.failCallback();
-              })
-            console.log(params)
-
-           /!* console.log('asking for ' + params.startRow + ' to ' + params.endRow);
-            setTimeout(function () {
-              const dataAfterSortingAndFiltering = sortAndFilter(data, params.sortModel, params.filterModel);
-              const rowsThisPage = dataAfterSortingAndFiltering.slice(params.startRow, params.endRow);
-              let lastRow = -1;
-              if (dataAfterSortingAndFiltering.length <= params.endRow) {
-                lastRow = dataAfterSortingAndFiltering.length;
-              }
-              params.successCallback(rowsThisPage, lastRow);
-            }, 10);*!/
-          }
-        };
-        params.api.setDatasource(dataSource);
-      })
-      .catch(response => {
-        this.error('შეცდომა', response['error']);
-      });*/
     const operation = this.operation;
     const selectedTabId =this.selectedTabId;
+    const cartItems = this.cartItems;
     const datasource = {
       getRows(params) {
         const parameters = [];
@@ -536,7 +479,19 @@ export class WarehouseComponent implements OnInit {
         }
         operation.getData(selectedTabId, params['request']['startRow'], params['request']['endRow'], encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
-            params.successCallback(response['data'], response['totalCount']);
+            console.log(cartItems);
+            params.successCallback(response['data'].map((v,k)=>{
+              v['rowId']=(params['request']['startRow']+1+k );
+              if (v['barcode'].toString().length <= v['barCodeType']['length']) {
+                v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
+              }
+              v['count'] = 1;
+              v['cartId'] = v['id'];
+              v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
+              v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
+
+              return v;
+            }), response['totalCount']);
           })
           .catch(error => {
             console.error(error);

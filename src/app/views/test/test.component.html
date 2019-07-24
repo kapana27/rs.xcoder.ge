@@ -1,0 +1,74 @@
+
+<div class="p-grid p-align-stretch vertical-container">
+  <div class="p-col">
+    <app-multiple-table
+
+      header="დეპარტამენტი"
+      title="&nbsp;"
+      filterTitle="დეპარტამენტი"
+      [filter]="true"
+      (onSelected)="selected($event,1)"
+      [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'name', header: 'დასახელება' }
+    ]"
+      [actions]="{
+        get: 'api/secured/Organizational/Structure/Department/Select',
+        delete: 'api/secured/Organizational/Structure/Delete',
+        update: 'api/secured/Organizational/Structure/Update',
+        insert: 'api/secured/Organizational/Structure/Insert?lvl=1&parentId=0'
+    }"
+    >
+    </app-multiple-table>
+  </div>
+  <div class="p-col" >
+    <div class="box box box-stretched">
+      <app-multiple-table
+        [changer]="selectedItem[1]"
+        [title]="selectedItem[1]['name']"
+        header="სამმართველო/ს.გ.პ/ს.ც"
+        filterTitle="სამმართველო"
+        [parent]=""
+        [filter]="true"
+        (onSelected)="selected($event,2)"
+        [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'name', header: 'დასახელება' }
+    ]"
+        [actions]="{
+        get: 'api/secured/Organizational/Structure/Division/Select?parentId='+this.selectedItem[1]['id'],
+        delete: 'api/secured/Organizational/Structure/Delete',
+        update: 'api/secured/Organizational/Structure/Update',
+        insert: 'api/secured/Organizational/Structure/Insert?lvl=2&parentId='+this.selectedItem[1]['id']
+    }"
+      >
+      </app-multiple-table>
+
+    </div>
+  </div>
+  <div class="p-col">
+    <div class="box box box-stretched">
+      <app-multiple-table
+
+        [changer]="selectedItem[2]"
+        [title]="selectedItem[2]['name']"
+        header="განყოფილება/სექტორი"
+        filterTitle="განყოფილება"
+        [parent]=""
+        [filter]="true"
+        (onSelected)="selected($event,3)"
+        [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'name', header: 'დასახელება' }
+    ]"
+        [actions]="{
+        get: 'api/secured/Organizational/Structure/Division/Select?parentId='+this.selectedItem[2]['id'],
+        delete: 'api/secured/Organizational/Structure/Delete',
+        update: 'api/secured/Organizational/Structure/Update',
+        insert: 'api/secured/Organizational/Structure/Insert?lvl=3&parentId='+this.selectedItem[2]['id']
+    }"
+      >
+      </app-multiple-table>
+    </div>
+  </div>
+</div>

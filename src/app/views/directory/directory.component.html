@@ -2,62 +2,19 @@
 <p-tabMenu [model]="mainTabs"   [activeItem]="activeItem" ></p-tabMenu>
 <br>
 <p-tabView *ngIf="activeItem['type']==='structura'" (onChange)="handleChange($event)">
-  <div class="action-button" *ngIf="activeSubItem['id']!=='employees'">
-    <button pButton type="button"  class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="item({ action: 'new',type:'sub'})"></button>
-    <button pButton type="button"  class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="item({action: 'edit', type:'sub'})"></button>
-    <button pButton type="button"  class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="deleteItem()"></button>
-  </div>
+
   <div class="action-button" *ngIf="activeSubItem['id']==='employees'">
     <button pButton type="button"   class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="employee({ action: 'new',type:'sub'})"></button>
     <button pButton type="button"   class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="employee({action: 'edit', type:'sub'})"></button>
     <button pButton type="button"   class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="deleteEmployee()"></button>
   </div>
   <p-tabPanel [header]="item.label" *ngFor="let item of subTabs; let i = index" [selected]="i == 0"  >
-     <div *ngIf="item.id !== 'employees'">
-       <p-table [value]="lists" *ngIf="item.id !== 'structuralUnit'"   selectionMode="single" (onRowSelect)="onRowSelect($event)" >
-         <ng-template pTemplate="header">
-           <tr>
-             <th width="100">id</th>
-             <th>დასახელება</th>
-           </tr>
-         </ng-template>
-         <ng-template pTemplate="body" let-rowData >
-           <tr [pSelectableRow]="rowData" >
-             <td>{{rowData.id}}</td>
-             <td>{{rowData.name}}</td>
-           </tr>
-         </ng-template>
-       </p-table>
-       <p-table #dt [value]="structuralLevelGrid" selectionMode="single" (onRowSelect)="onRowSelect($event)"  *ngIf="item.id === 'structuralUnit'">
-         <ng-template pTemplate="header">
-           <tr>
-             <td>
-               <p-dropdown placeholder="ქალაქი" [options]="cities" [style]="{'width':'100%'}"   (onChange)="filter($event, 'type1' )" optionLabel="name" [showClear]="true"></p-dropdown>
-             <td>
-               <p-dropdown placeholder="შენობა" [options]="buildings" [style]="{'width':'100%'}" (onChange)="filter($event, 'type2' )" optionLabel="name" [showClear]="true"></p-dropdown>
-             </td>
-             <td>
-               <p-dropdown placeholder="დეპარტამენტი" [options]="departments" [style]="{'width':'100%'}" (onChange)="filter($event, 'type3' )" optionLabel="name" [showClear]="true"></p-dropdown>
-             </td>
-             <td>
-               <p-dropdown placeholder="სამმართველო" [options]="divisions" [style]="{'width':'100%'}" (onChange)="filter($event, 'type4' )" optionLabel="name" [showClear]="true"></p-dropdown>
-             </td>
-             <td>
-               <p-dropdown placeholder="სექცია" [options]="sections" [style]="{'width':'100%'}" (onChange)="filter($event, 'type5' )" optionLabel="name" [showClear]="true"></p-dropdown>
-             </td>
-           </tr>
-         </ng-template>
-         <ng-template pTemplate="body" let-list>
-           <tr [pSelectableRow]="list">
-             <td>{{list['type1']['name']}}</td>
-             <td>{{list['type2']['name']}}</td>
-             <td>{{list['type3']['name']}}</td>
-             <td>{{list['type4']['name']}}</td>
-             <td>{{list['type5']['name']}}</td>
-           </tr>
-         </ng-template>
-       </p-table>
+     <div *ngIf="item.id === 'structUnit1'">
+        <app-test></app-test>
      </div>
+    <div *ngIf="item.id === 'structUnit2'">
+      <app-test1></app-test1>
+    </div>
     <div class="row colegs" *ngIf="item.id === 'employees'">
       <div class="col-sm-3">
         <app-tree [ItemGroup]="ItemGroup" (selected)="selectedNode($event)"></app-tree>

@@ -1,0 +1,71 @@
+<p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
+<div class="pTable">
+  <p-table
+    [columns]="cols"
+    [value]="data"
+    [lazy]="true"
+    (onLazyLoad)="loadLazy($event)"
+    [paginator]="true"
+    [rows]="30"
+    [totalRecords]="totalRecords"
+    [loading]="loading"
+    selectionMode="single"
+    (onRowSelect)="onRowSelect($event)"
+    (onRowUnselect)="onUnselect($event)"
+    [metaKeySelection]="false"
+    dataKey="id"
+    [(selection)]="selectedRows"
+  >
+    <ng-template pTemplate="header" let-columns>
+      <tr style="visibility: collapse;">
+        <th style="width: 50px;"></th>
+        <th></th>
+      </tr>
+      <tr >
+        <th  [colSpan]="columns.length">
+          <span [innerHTML]="header"></span>
+          <div  *ngIf="enableActions" style="text-align: right; border-left: 0px; float: right">
+            <i class="pi pi-plus" style="font-size: 20px" (click)="newItem()" ></i>
+            <i class="pi pi-pencil" style="font-size: 20px" (click)="newItemDialog=true"></i>
+            <i class="pi pi-times" style="font-size: 20px" (click)="onDelete()"></i>
+          </div>
+        </th>
+
+      </tr>
+      <tr >
+        <th [innerHTML]="title" style="border-right: 0px" [colSpan]="columns.length"></th>
+      </tr>
+      <tr >
+        <th *ngFor="let col of columns">
+          {{col.header}}
+        </th>
+      </tr>
+      <tr *ngIf="filter">
+        <th [colSpan]="columns.length">
+        <span class="ui-float-label" style="width: 100%">
+            <input [placeholder]="filterTitle" type="text" size="30" pInputText [(ngModel)]="filterValue" style="width: 100%" (ngModelChange)="changeValue()">
+        </span>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr  [pSelectableRow]="rowData">
+        <td *ngFor="let col of columns">
+          {{rowData[col.field]}}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <p-dialog *ngIf="newItemDialog" header="დასახელება" [(visible)]="newItemDialog" [modal]="true" [responsive]="true" [style]="{width: '350px', minWidth: '200px'}" [minY]="70"
+            [maximizable]="true" [baseZIndex]="10000">
+    <div>
+      <label for="id">დასახელება</label>
+      <input type="text" id="id"  pInputText [(ngModel)]="this.selectedRow['name']" style="width: 100%;"/>
+    </div>
+    <p-footer>
+      <button type="button" pButton icon="pi pi-check" (click)="editItem()" label="შენახვა"></button>
+      <button type="button" pButton icon="pi pi-close" (click)="newItemDialog=false" label="გაუქმება" class="ui-button-secondary"></button>
+    </p-footer>
+  </p-dialog>
+
+</div>

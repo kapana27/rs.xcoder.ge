@@ -12,8 +12,8 @@ export class OperationsService {
   getData(tab, index, length, params) {
      return this.Request.Get(Config.baseURI + Config.operations.property.get.list + '?stockId=' + tab + '&page=1&start=' + index + '&limit=' + length+"&filter="+params );
   }
-  getAllData(inOut, index, length) {
-    return this.Request.Get(Config.baseURI + Config.operations.property.get[inOut] + '?page=1&start=' + index + '&limit=' + length );
+  getAllData(inOut, index, length, params) {
+    return this.Request.Get(Config.baseURI + Config.operations.property.get[inOut] + '?page=1&start=' + index + '&limit=' + length +'&filter='+params);
   }
   getItemTypes() {
     return this.Request.Get(Config.baseURI + Config.itemTypes.get.types);

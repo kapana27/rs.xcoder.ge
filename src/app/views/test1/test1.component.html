@@ -1,0 +1,98 @@
+
+<div class="p-grid p-align-stretch vertical-container">
+  <div class="p-col">
+    <app-multiple-table
+
+      header="რეგიონი"
+      title="&nbsp;"
+      filterTitle="რეგიონი"
+      [filter]="true"
+      (onSelected)="selected($event,1)"
+      [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'name', header: 'დასახელება' }
+    ]"
+      [actions]="{
+        get: 'api/secured/StructuralUnit/Select?parentId=0',
+        delete: 'api/secured/StructuralUnit/Delete',
+        update: 'api/secured/StructuralUnit/Update',
+        insert: 'api/secured/StructuralUnit/Insert?lvl=1&parentId=0'
+    }"
+    >
+    </app-multiple-table>
+  </div>
+  <div class="p-col" >
+    <div class="box box box-stretched">
+      <app-multiple-table
+        [changer]="selectedItem[1]"
+        [title]="selectedItem[1]['name']"
+        header="ქალაქი"
+        filterTitle="ქალაქი"
+        [parent]=""
+        [filter]="true"
+        (onSelected)="selected($event,2)"
+        [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'name', header: 'დასახელება' }
+    ]"
+        [actions]="{
+        get: 'api/secured/StructuralUnit/Select?parentId='+this.selectedItem[1]['id'],
+        delete: 'api/secured/StructuralUnit/Delete',
+        update: 'api/secured/StructuralUnit/Update',
+        insert: 'api/secured/StructuralUnit/Insert?lvl=2&parentId='+this.selectedItem[1]['id']
+    }"
+      >
+      </app-multiple-table>
+
+    </div>
+  </div>
+  <div class="p-col">
+    <div class="box box box-stretched">
+      <app-multiple-table
+        [changer]="selectedItem[2]"
+        [title]="selectedItem[2]['name']"
+        header="შენობა"
+        filterTitle="შენობა"
+        [parent]=""
+        [filter]="true"
+        (onSelected)="selected($event,3)"
+        [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'name', header: 'დასახელება' }
+    ]"
+        [actions]="{
+        get: 'api/secured/StructuralUnit/Select?parentId='+this.selectedItem[2]['id'],
+        delete: 'api/secured/StructuralUnit/Delete',
+        update: 'api/secured/StructuralUnit/Update',
+        insert: 'api/secured/StructuralUnit/Insert?lvl=3&parentId='+this.selectedItem[2]['id']
+    }"
+      >
+      </app-multiple-table>
+    </div>
+  </div>
+  <div class="p-col">
+    <div class="box box box-stretched">
+      <app-multiple-table
+
+        [changer]="selectedItem[3]"
+        [title]="selectedItem[3]['name']"
+        header="სექცია"
+        filterTitle="სექცია"
+        [parent]=""
+        [filter]="true"
+        (onSelected)="selected($event,4)"
+        [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'name', header: 'დასახელება' }
+    ]"
+        [actions]="{
+        get: 'api/secured/StructuralUnit/Select?parentId='+this.selectedItem[3]['id'],
+        delete: 'api/secured/StructuralUnit/Delete',
+        update: 'api/secured/StructuralUnit/Update',
+        insert: 'api/secured/StructuralUnit/Insert?lvl=4&parentId='+this.selectedItem[3]['id']
+    }"
+      >
+      </app-multiple-table>
+    </div>
+  </div>
+</div>

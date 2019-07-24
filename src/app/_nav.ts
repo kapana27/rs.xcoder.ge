@@ -78,7 +78,16 @@ export const navItems: NavData[] = [
     name: 'ცნობარი',
     url: '/directory',
     icon: 'icon-speedometer',
-
+  },
+  {
+    name: 'ტესტი',
+    url: '/test',
+    icon: 'icon-speedometer',
+  },
+  {
+    name: 'ტესტი1',
+    url: '/test1',
+    icon: 'icon-speedometer',
   },
   /*{
     name: 'Icons',

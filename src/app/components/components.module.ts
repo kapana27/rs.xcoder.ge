@@ -12,9 +12,10 @@ import { TreeTableComponent } from './tree-table/tree-table.component';
 import {ConfirmDialogModule, DialogModule, FileUploadModule, TreeTableModule} from 'primeng/primeng';
 import { FileUploaderComponent } from './file-uploader/file-uploader.component';
 import { AttachmentsComponent } from './attachments/attachments.component';
+import { MultipleTableComponent } from './multiple-table/multiple-table.component';
 
 @NgModule({
-  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent, AttachmentsComponent],
+  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent, AttachmentsComponent, MultipleTableComponent],
   imports: [
     CommonModule,
     TableModule,
@@ -33,7 +34,8 @@ import { AttachmentsComponent } from './attachments/attachments.component';
     TreeComponent,
     TreeTableComponent,
     FileUploaderComponent,
-    AttachmentsComponent
+    AttachmentsComponent,
+    MultipleTableComponent
   ]
 })
 export class ComponentsModule { }
