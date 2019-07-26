@@ -1,4 +1,6 @@
 /deep/ app-directory{
+
+
   p-table{
     input{
       width: 100%;
@@ -19,6 +21,10 @@
 
   p-tabView {
     .ui-tabview {position: relative;}
+    .ui-tabview-panels{
+      height: calc(100vh - 200px) !important;
+    }
+
     .action-button {
       position: absolute;
       right: 4px;

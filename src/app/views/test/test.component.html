@@ -1,8 +1,11 @@
 
 <div class="p-grid p-align-stretch vertical-container">
   <div class="p-col">
+    <div class="box box box-stretched pTable">
     <app-multiple-table
-
+      (onAdditionAction)="additionButton($event)"
+      (onEmployeeAction)="onNewEmployee($event)"
+      [additionButton]="true"
       header="დეპარტამენტი"
       title="&nbsp;"
       filterTitle="დეპარტამენტი"
@@ -20,9 +23,10 @@
     }"
     >
     </app-multiple-table>
+    </div>
   </div>
   <div class="p-col" >
-    <div class="box box box-stretched">
+    <div class="box box box-stretched pTable">
       <app-multiple-table
         [changer]="selectedItem[1]"
         [title]="selectedItem[1]['name']"
@@ -30,6 +34,8 @@
         filterTitle="სამმართველო"
         [parent]=""
         [filter]="true"
+        (onAdditionAction)="additionButton($event)"
+        [additionButton]="true"
         (onSelected)="selected($event,2)"
         [cols]="[
      { field: 'id', header: 'ID' },
@@ -47,9 +53,10 @@
     </div>
   </div>
   <div class="p-col">
-    <div class="box box box-stretched">
+    <div class="box box box-stretched pTable">
       <app-multiple-table
-
+        (onAdditionAction)="additionButton($event)"
+        [additionButton]="true"
         [changer]="selectedItem[2]"
         [title]="selectedItem[2]['name']"
         header="განყოფილება/სექტორი"
@@ -72,3 +79,69 @@
     </div>
   </div>
 </div>
+
+<p-dialog id="personalHeightDialog" *ngIf="additional.dialog" header="თანამდებობების მართვა" [(visible)]="additional.dialog" [modal]="true" [responsive]="true" [style]="{width: '600px', minWidth: '200px'}" [minY]="70"
+          [maximizable]="true" [baseZIndex]="10000">
+   <div style="width: 100%; height: 100%" >
+     <app-multiple-table
+       [disableClass]="true"
+        [checkEditionStatus]="true"
+       [changer]="additional.selected"
+       [title]="additional.selected['name']"
+       header="თანამდებობა"
+       [parent]=additional.selected
+       [filter]="false"
+       (onSelected)="selected($event,3)"
+       [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'name', header: 'დასახელება' }
+    ]"
+       [actions]="{
+        get: '/api/secured/Organizational/Structure/StaffPosition/Position/Select?parentId='+this.additional.selected['id'],
+        delete: '/api/secured/Organizational/Structure/StaffPosition/Position/Delete',
+        update: '/api/secured/Organizational/Structure/StaffPosition/Position/Update',
+        insert: '/api/secured/Organizational/Structure/StaffPosition/Position/Insert?parentId='+this.additional.selected['id']
+    }"
+     >
+     </app-multiple-table>
+   </div>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-close" (click)="additional.dialog=false" label="დახურვა" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+<p-dialog id="employeeDialog" *ngIf="employee.dialog" header="თანამშრომლების მართვა" [(visible)]="employee.dialog" [modal]="true" [responsive]="true" [style]="{width: '80%', minWidth: '200px'}" [minY]="70"
+          [maximizable]="true" [baseZIndex]="10000">
+  <div style="width: 100%; height: 100%" >
+    <app-employees
+      [disableClass]="true"
+      [checkEditionStatus]="true"
+      [selectedEmployeeNode]="employee.selected"
+      [changer]="employee.selected"
+      [title]="employee.selected['name']"
+      header="თანამშრომლები"
+      [filter]="false"
+      (onSelected)="selected($event,3)"
+      [cols]="[
+     { field: 'id', header: 'ID'},
+     { field: 'department.name', header: 'საშტატო ერთეული' , width: 200 },
+     { field: 'location.name', header: 'მდებარეობა' },
+     { field: 'position.name', header: 'თანამდებობა' },
+     { field: 'firstname', header: 'სახელი' },
+     { field: 'lastname', header: 'გვარი' },
+     { field: 'mobile', header: 'მობილური' },
+     { field: 'pid', header: 'პირადობა' },
+     { field: 'email', header: 'ელფოსტა' }
+    ]"
+      [actions]="{
+        get: 'api/secured/Staff/Department/Select?dep='+this.employee.selected['id'],
+        delete: '/api/secured/Organizational/Structure/StaffPosition/Position/Delete',
+        update: '/api/secured/Organizational/Structure/StaffPosition/Position/Update',
+        insert: '/api/secured/Organizational/Structure/StaffPosition/Position/Insert?parentId='+this.employee.selected['id']
+    }"
+    >
+    </app-employees>
+  </div>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-close" (click)="additional.dialog=false" label="დახურვა" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>

@@ -1,9 +1,29 @@
-  /deep/ p-table{
-    .ui-table-wrapper {
-      height: 100%;
-      overflow: auto !important;
-      background-color: #f4f4f4;
+  /deep/ app-multiple-table {
+
+    p-table {
+      .ui-table-wrapper {
+        height: 100%;
+        overflow: auto !important;
+        background-color: #f4f4f4;
+      }
+
+      .ui-widget-overlay {
+        z-index: 99999999999999;
+      }
     }
 
+    .dialog {
+      height: 100% !important;
+
+      .ui-table {
+        height: calc(100% - 50px) !important;
+
+        .ui-table-wrapper {
+          height: 100% !important;
+        }
+      }
+    }
   }
+
+
 

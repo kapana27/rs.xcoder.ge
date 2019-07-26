@@ -32,6 +32,7 @@ export class MessagesComponent implements OnInit {
   items1: MenuItem[];
   selectedCar3: any;
   msgs: Message[] = [];
+  selectedPage: string = 'standart';
 
   constructor(private messageService: MessagesService, private confirmationService: ConfirmationService, private operationService: OperationsService) { }
   ngOnInit() {
@@ -41,18 +42,25 @@ export class MessagesComponent implements OnInit {
         this.selectedParams.id = 0;
         this.params.start = 0;
           this.getList();
+          this.selectedPage = 'standart';
         }},
+
       {label: 'მიღებული', command: (event) => {
           this.params.approved = 1;
           this.params.start = 0;
           this.selectedParams.id = 0;
           this.getList();
+          this.selectedPage = 'standart';
         }},
       {label: 'უარყოფილი', command: (event) => {
           this.params.approved = 2;
           this.params.start = 0;
           this.selectedParams.id = 0;
           this.getList();
+          this.selectedPage = 'standart';
+        }},
+      {label: 'მიღების ოპერაციები', command: (event) => {
+          this.selectedPage = 'income';
         }}
     ];
 

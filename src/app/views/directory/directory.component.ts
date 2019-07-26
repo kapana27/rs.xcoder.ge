@@ -18,6 +18,7 @@ export interface TreeNode {
   providers:[ConfirmationService]
 })
 export class DirectoryComponent implements OnInit {
+  selectedStructuralUnitTree: Default = { id:-1, name:'' };
   mainTabs: MenuItem[];
   subTabs: MenuItem[] = [];
   data: Default[] = [];
@@ -107,6 +108,16 @@ export class DirectoryComponent implements OnInit {
   };
   roles: Array<{role: string, name: string}> =[];
   positions: Array<{id: string, name: string}> =[];
+
+  selectedEmp:{
+    dialog: boolean,
+    selected?: Default
+  } = {
+    dialog:false,
+    selected: {
+      id: -1,
+    }
+  };
   constructor(private directoryService: DirectoryService, private operation: OperationsService,private confirmationService: ConfirmationService, private validator: ValidatorService) {
     this.activeSubItem={
       id: ''
@@ -247,6 +258,12 @@ export class DirectoryComponent implements OnInit {
       label: 'სტრუქტურული ერთეული',
       type: 'structUnit2',
       id: 'structUnit2',
+      icon: 'fa fa-fw fa-bar-chart'
+    });
+    this.subTabs.push({
+      label: 'თანამდებობა',
+      type: 'structUnit3',
+      id: 'structUnit3',
       icon: 'fa fa-fw fa-bar-chart'
     });
     this.subTabs.push({
@@ -628,7 +645,7 @@ export class DirectoryComponent implements OnInit {
       })
       .catch()
 
-    this.directoryService.getPositions()
+    this.directoryService.getPositions(-1)
       .then(response=>{
         this.positions = response['data'];
       })
@@ -696,7 +713,7 @@ export class DirectoryComponent implements OnInit {
 
   getCities() {
     if( this.newEmployee.role['role'] === "ROLE_PLACE" ){
-      this.directoryService.getCities()
+      this.directoryService.getCities('')
         .then(value => {
           this.employeeCities = value['data'];
         })
@@ -776,6 +793,16 @@ export class DirectoryComponent implements OnInit {
 
     }
   }
+
+
+  onStructuralTreeTableSelect($event: any) {
+      this.selectedEmp.selected = $event['data'];
+      this.selectedStructuralUnitTree = $event['data'];
+  }
+
+  selected($event: any, number: number) {
+    
+  }
 }
 function parseTree(data: TreeNode[]): Array<TreeNode> {
   data.forEach( (value,index) => {
@@ -787,3 +814,5 @@ function parseTree(data: TreeNode[]): Array<TreeNode> {
   });
   return data;
 }
+
+

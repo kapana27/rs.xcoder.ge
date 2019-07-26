@@ -1,6 +1,6 @@
 /* Error: expected selector.
  *   ,
- * 1 |   /deep/ p-table{
+ * 1 |   /deep/ app-multiple-table{
  *   |   ^
  *   '
  *   multiple-table.component.scss 1:3  root stylesheet */
@@ -13,5 +13,5 @@ body::before {
   padding: 1em;
   margin-bottom: 1em;
   border-bottom: 2px solid black;
-  content: "Error: expected selector.\a   \2577 \a 1 \2502    /deep/ p-table{\a   \2502    ^\a   \2575 \a   multiple-table.component.scss 1:3  root stylesheet";
+  content: "Error: expected selector.\a   \2577 \a 1 \2502    /deep/ app-multiple-table{\a   \2502    ^\a   \2575 \a   multiple-table.component.scss 1:3  root stylesheet";
 }

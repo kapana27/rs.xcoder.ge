@@ -47,16 +47,16 @@ export class DirectoryService {
   getRoles(){
       return this.Request.Get(Config.List.get.roles);
   }
-  getPositions (){
-    return this.Request.Get(Config.List.get.positions+"?start=0&limit=1000");
+  getPositions (id){
+    return this.Request.Get(Config.List.get.positions+"?parentId="+id+"&start=0&limit=1000");
   }
 
-  getCities() {
-      return this.Request.Get(Config.List.get.cities);
+  getCities(name) {
+      return this.Request.Get(Config.List.get.cities+"?name="+name);
   }
 
   getBuildings(id: any) {
-    return this.Request.Get(Config.List.get.building+"?cityId="+id);
+    return this.Request.Get(Config.List.get.building+"?name=&cityId="+id);
   }
 
   newEmployee(formData: FormData, action) {
@@ -72,5 +72,9 @@ export class DirectoryService {
 
   deleteEmployee(id: any) {
     return this.Request.Get(Config.List.get.deleteEmployee+"?id="+id);
+  }
+
+  getSections(id: number) {
+    return this.Request.Get(Config.List.get.sections+"?name=&parentId="+id);
   }
 }

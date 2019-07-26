@@ -33,6 +33,7 @@ export  const Config = {
   },
   List: {
       get:{
+        sections: 'api/secured/StructuralUnit/City/Building/Section/Select',
         attachments: '/api/secured/Document/Attachments',
         itemFilterByName: '/api/secured/Item/Filter/ByName',
         MeasureUnit: '/api/secured/MeasureUnit/List',
@@ -53,7 +54,7 @@ export  const Config = {
         roles: '/api/secured/Staff/Roles',
         cities: '/api/secured/StructuralUnit/City/Select',
         building: '/api/secured/StructuralUnit/City/Building/Select',
-        positions: '/api/secured/List/Position/Select',
+        positions: '/api/secured/Organizational/Structure/StaffPosition/Select',
         employee: '/api/secured/Staff/Select_Edit',
         deleteEmployee: '/api/secured/Staff/Delete',
         deleteFile: '/api/secured/Document/Delete'

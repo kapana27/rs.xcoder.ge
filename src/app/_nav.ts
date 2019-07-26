@@ -64,11 +64,11 @@ export const navItems: NavData[] = [
     url: '/messages',
     icon: 'icon-puzzle',
   },
-  {
+  /*{
     name: 'მიღების ოპერაციები',
     url: '/incomeOperations',
     icon: 'icon-puzzle',
-  },
+  },*/
   {
     name: 'რეპორტი',
     url: '/report',
@@ -79,7 +79,7 @@ export const navItems: NavData[] = [
     url: '/directory',
     icon: 'icon-speedometer',
   },
-  {
+  /*{
     name: 'ტესტი',
     url: '/test',
     icon: 'icon-speedometer',
@@ -88,7 +88,7 @@ export const navItems: NavData[] = [
     name: 'ტესტი1',
     url: '/test1',
     icon: 'icon-speedometer',
-  },
+  },*/
   /*{
     name: 'Icons',
     url: '/icons',

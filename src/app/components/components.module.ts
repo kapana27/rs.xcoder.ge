@@ -9,14 +9,24 @@ import {FormsModule} from "@angular/forms";
 import { TreeComponent } from './tree/tree.component';
 import {TreeModule} from "primeng/tree";
 import { TreeTableComponent } from './tree-table/tree-table.component';
-import {ConfirmDialogModule, DialogModule, FileUploadModule, TreeTableModule} from 'primeng/primeng';
+import {
+  ConfirmDialogModule,
+  DialogModule,
+  DropdownModule,
+  FileUploadModule,
+  TooltipModule,
+  TreeTableModule
+} from 'primeng/primeng';
 import { FileUploaderComponent } from './file-uploader/file-uploader.component';
 import { AttachmentsComponent } from './attachments/attachments.component';
 import { MultipleTableComponent } from './multiple-table/multiple-table.component';
+import { TableTreeComponent } from './table-tree/table-tree.component';
+import { EmployeesComponent } from './employees/employees.component';
 
 @NgModule({
-  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent, AttachmentsComponent, MultipleTableComponent],
+  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent, AttachmentsComponent, MultipleTableComponent, TableTreeComponent, EmployeesComponent],
   imports: [
+    DropdownModule,
     CommonModule,
     TableModule,
     ButtonModule,
@@ -25,9 +35,10 @@ import { MultipleTableComponent } from './multiple-table/multiple-table.componen
     TreeTableModule,
     FileUploadModule,
     ConfirmDialogModule,
-    DialogModule
+    DialogModule,
+    TooltipModule
   ],
-  exports:[
+  exports: [
     CartComponent,
     GeneratorComponent,
     CartButtonComponent,
@@ -35,7 +46,9 @@ import { MultipleTableComponent } from './multiple-table/multiple-table.componen
     TreeTableComponent,
     FileUploaderComponent,
     AttachmentsComponent,
-    MultipleTableComponent
+    MultipleTableComponent,
+    TableTreeComponent,
+    EmployeesComponent
   ]
 })
 export class ComponentsModule { }

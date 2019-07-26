@@ -3,11 +3,11 @@
 <br>
 <p-tabView *ngIf="activeItem['type']==='structura'" (onChange)="handleChange($event)">
 
-  <div class="action-button" *ngIf="activeSubItem['id']==='employees'">
+  <!--<div class="action-button" *ngIf="activeSubItem['id']==='employees'">
     <button pButton type="button"   class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="employee({ action: 'new',type:'sub'})"></button>
     <button pButton type="button"   class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="employee({action: 'edit', type:'sub'})"></button>
     <button pButton type="button"   class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="deleteEmployee()"></button>
-  </div>
+  </div>-->
   <p-tabPanel [header]="item.label" *ngFor="let item of subTabs; let i = index" [selected]="i == 0"  >
      <div *ngIf="item.id === 'structUnit1'">
         <app-test></app-test>
@@ -15,35 +15,88 @@
     <div *ngIf="item.id === 'structUnit2'">
       <app-test1></app-test1>
     </div>
-    <div class="row colegs" *ngIf="item.id === 'employees'">
-      <div class="col-sm-3">
-        <app-tree [ItemGroup]="ItemGroup" (selected)="selectedNode($event)"></app-tree>
+    <div *ngIf="item.id === 'structUnit3'">
+      <div class="p-grid">
+        <div class="p-col-4">
+          <app-table-tree
+            (selected)="onStructuralTreeTableSelect($event)"
+            [actions]="{
+                get: '/api/secured/Organizational/Structure/Tree/Select'
+            }"
+            [cols]="[
+            { field: 'name', header: 'დასახელება' }
+            ]"
+          >
+          </app-table-tree>
+        </div>
+        <div class="p-col">
+
+          <app-multiple-table
+            [disableClass]="true"
+            [checkEditionStatus]="true"
+            [changer]="selectedStructuralUnitTree"
+            [title]="selectedStructuralUnitTree['name']"
+            header="თანამდებობა"
+            [filter]="false"
+            [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'name', header: 'დასახელება' }
+    ]"
+            [actions]="{
+        get: '/api/secured/Organizational/Structure/StaffPosition/Position/Select?parentId='+this.selectedStructuralUnitTree['id'],
+        delete: '/api/secured/Organizational/Structure/StaffPosition/Position/Delete',
+        update: '/api/secured/Organizational/Structure/StaffPosition/Position/Update',
+        insert: '/api/secured/Organizational/Structure/StaffPosition/Position/Insert?parentId='+this.selectedStructuralUnitTree['id']
+    }"
+          >
+          </app-multiple-table>
+
+        </div>
+
       </div>
-      <div class="col-sm-9">
-        <p-table [value]="employees" selectionMode="single"  [(selection)]="selectedEmployee">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>დეპარტამენტი</th>
-              <th>როლი</th>
-              <th>Email</th>
-              <th>სახელი</th>
-              <th>გვარი</th>
-              <th>მობილური</th>
-              <th>პირადობა</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-emp>
-            <tr [pSelectableRow]="emp">
-              <td>{{emp['department']['name']}}</td>
-              <td>{{emp['position']['name']}}</td>
-              <td>{{emp['email']}}</td>
-              <td>{{emp['firstname']}}</td>
-              <td>{{emp['lastname']}}</td>
-              <td>{{emp['mobile']}}</td>
-              <td>{{emp['pid']}}</td>
-            </tr>
-          </ng-template>
-        </p-table>
+    </div>
+    <div class="p-grid" *ngIf="item.id === 'employees'">
+      < <div class="p-col-4">
+      <app-table-tree
+        (selected)="onStructuralTreeTableSelect($event)"
+        [actions]="{
+                get: '/api/secured/Organizational/Structure/Tree/Select'
+            }"
+        [cols]="[
+            { field: 'name', header: 'დასახელება' }
+            ]"
+      >
+      </app-table-tree>
+    </div>
+      <div class="col">
+        <app-employees
+          [disableClass]="true"
+          [checkEditionStatus]="true"
+          [selectedEmployeeNode]="selectedEmp.selected"
+          [changer]="selectedEmp.selected"
+          [title]="selectedEmp.selected['name']"
+          header="თანამშრომლები"
+          [filter]="false"
+          (onSelected)="selected($event,3)"
+          [cols]="[
+     { field: 'id', header: 'ID'},
+     { field: 'department.name', header: 'საშტატო ერთეული' , width: 200 },
+     { field: 'location.name', header: 'მდებარეობა' },
+     { field: 'position.name', header: 'თანამდებობა' },
+     { field: 'firstname', header: 'სახელი' },
+     { field: 'lastname', header: 'გვარი' },
+     { field: 'mobile', header: 'მობილური' },
+     { field: 'pid', header: 'პირადობა' },
+     { field: 'email', header: 'ელფოსტა' }
+    ]"
+          [actions]="{
+        get: 'api/secured/Staff/Department/Select?dep='+this.selectedEmp.selected['id'],
+        delete: '/api/secured/Organizational/Structure/StaffPosition/Position/Delete',
+        update: '/api/secured/Organizational/Structure/StaffPosition/Position/Update',
+        insert: '/api/secured/Organizational/Structure/StaffPosition/Position/Insert?parentId='+this.selectedEmp.selected['id']
+    }"
+        >
+        </app-employees>
       </div>
     </div>
   </p-tabPanel>

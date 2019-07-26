@@ -1,10 +1,6 @@
 <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
-
 <p-tabMenu [model]="items1" [activeItem]="items1[params.approved]"></p-tabMenu>
-
-
-
-<div class="row">
+<div class="row" *ngIf="selectedPage === 'standart'">
   <div class="col-sm-12 col-lg-4 pTable">
     <p-table [value]="data"  selectionMode="single"   (onRowSelect)="rowSelect($event)" [(selection)]="selectedCar3"  dataKey="id">
       <ng-template pTemplate="header">
@@ -67,6 +63,6 @@
     <p-paginator [rows]="30" totalRecords="{{selectedTotalRecord}}" (onPageChange)="selectedPaginate($event)"></p-paginator>
   </div>
 </div>
-
+<app-incame-operation *ngIf="selectedPage === 'income'"></app-incame-operation>
 
 <app-attachments *ngIf="attachmentDialog" [files]="attachments" [display]="attachmentDialog"></app-attachments>

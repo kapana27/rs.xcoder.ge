@@ -1,0 +1,170 @@
+<p-confirmDialog [style]="{width: '500px'}"></p-confirmDialog>
+<div  [ngClass]="{'pTable':!disableClass, 'dialog':disableClass }">
+  <p-table
+    [columns]="cols"
+    [value]="data"
+    [lazy]="true"
+    (onLazyLoad)="loadLazy($event)"
+    [paginator]="true"
+    [rows]="30"
+    [totalRecords]="totalRecords"
+    [loading]="loading"
+    selectionMode="single"
+    (onRowSelect)="onRowSelect($event)"
+    (onRowUnselect)="onUnselect($event)"
+    [metaKeySelection]="false"
+    dataKey="id"
+    [(selection)]="selectedRows"
+  >
+    <ng-template pTemplate="header" let-columns>
+      <tr style="visibility: collapse;">
+        <th *ngFor="let col of columns"  [ngStyle]="{'width': notNull(col['width'])? col['width']+'px': 'auto' }"></th>
+      </tr>
+      <tr >
+        <th  [colSpan]="columns.length">
+          <span [innerHTML]="header"></span>
+          <div  *ngIf="enableActions" style="text-align: right; border-left: 0px; float: right">
+            <i class="pi pi-users" *ngIf="this.additionButton" style="font-size: 20px;margin-left:  10px; cursor: pointer" (click)="additionEmployee()"  pTooltip="თანამშრომლის დამატება" tooltipPosition="top" ></i>
+            <i class="pi pi-table" *ngIf="this.additionButton" style="font-size: 20px;margin-left:  10px; cursor: pointer" (click)="addition()"  pTooltip="{{header}}ს დამატება" tooltipPosition="top" ></i>
+            <i class="pi pi-plus" style="font-size: 20px;margin-left:  10px; cursor: pointer" (click)="newItem()"  pTooltip="{{header}}ს დამატება" tooltipPosition="top" ></i>
+            <i class="pi pi-pencil" style="font-size: 20px;margin-left: 10px; cursor: pointer" (click)="edit()" pTooltip="{{header}}ს რედაქტირება" tooltipPosition="top" ></i>
+            <i class="pi pi-times" style="font-size: 20px; color:red;margin-left: 10px; cursor: pointer" (click)="onDelete()" pTooltip="{{header}}ს წაშლა" tooltipPosition="top" ></i>
+          </div>
+        </th>
+
+      </tr>
+      <tr >
+        <th [innerHTML]="title" style="border-right: 0px" [colSpan]="columns.length"></th>
+      </tr>
+      <tr >
+        <th *ngFor="let col of columns">
+          {{col.header}}
+        </th>
+      </tr>
+      <tr *ngIf="filter">
+        <th [colSpan]="columns.length">
+        <span class="ui-float-label" style="width: 100%">
+            <input [placeholder]="filterTitle" type="text" size="30" pInputText [(ngModel)]="filterValue" style="width: 100%" (ngModelChange)="changeValue()">
+        </span>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr  [pSelectableRow]="rowData">
+        <td *ngFor="let col of columns" >
+          {{col.field.split(".").length>1? rowData[col.field.split(".")[0]][col.field.split(".")[1]]: rowData[col.field]}}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <p-dialog *ngIf="newItemDialog" header="{{header}}ს {{this.dialogType}}" [(visible)]="newItemDialog" [modal]="true" [responsive]="true" [style]="{width: '500px', minWidth: '200px'}" [minY]="70"
+            [maximizable]="true" [baseZIndex]="10000">
+    <div>
+      <label for="id">მიუთითეთ {{header}}ს დასახელება</label>
+      <input type="text" id="id"  pInputText [(ngModel)]="this.selectedRow['name']" style="width: 100%;"/>
+    </div>
+    <p-footer>
+      <button type="button" pButton icon="pi pi-check" (click)="editItem()" label="შენახვა"></button>
+      <button type="button" pButton icon="pi pi-close" (click)="newItemDialog=false" label="გაუქმება" class="ui-button-secondary"></button>
+    </p-footer>
+  </p-dialog>
+
+</div>
+
+<p-dialog *ngIf="newEmployee.dialog" header="თანამშრომელი" [(visible)]="newEmployee.dialog" [modal]="true" [responsive]="true" [style]="{width: '600px', minWidth: '200px'}" [minY]="70"
+          [maximizable]="true" [baseZIndex]="10000">
+  <div class="row">
+    <div class="col-md-{{newEmployee['role']['role'] ==='ROLE_PLACE'?6 :12}}">
+      <div class="row">
+        <div class="col-md-12">
+          <input type="text" disabled placeholder="განყოფილება" pInputText [(ngModel)]="selectedEmployeeNode['name']" style="width: 100%;"/>
+        </div>
+      </div>
+      <div class="row"  style="margin-top: 5px">
+        <div class="col-md-12">
+          <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'role')?'1px solid red': '' }"  [options]="roles" [(ngModel)]="newEmployee.role" placeholder="როლი" optionLabel="name" [showClear]="true" (ngModelChange)="getCities()"></p-dropdown>
+        </div>
+      </div>
+      <div class="row"  style="margin-top: 5px">
+        <div class="col-md-12">
+          <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'position')?'1px solid red': '' }" [options]="positions" [(ngModel)]="newEmployee.position" placeholder="პოზიცია" optionLabel="name" [showClear]="true" ></p-dropdown>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12" [ngClass]="{ 'red':if_error(formErrors,'firstname')?'1px solid red': '' }" >
+          <input type="text" placeholder="სახელი" pInputText [(ngModel)]="newEmployee.firstname" style="width: 100%;"/>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px" >
+        <div class="col-md-12" [ngClass]="{ 'red':if_error(formErrors,'lastname')?'1px solid red': '' }" >
+          <input type="text" placeholder="გვარი"  pInputText [(ngModel)]="newEmployee.lastname" style="width: 100%;"/>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12"  [ngClass]="{ 'red':if_error(formErrors,'email')?'1px solid red': '' }">
+          <input type="text" placeholder="ელ.ფოსტა"  pInputText [(ngModel)]="newEmployee.email" style="width: 100%;"/>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12">
+          <input type="text" placeholder="მობილური"  pInputText [(ngModel)]="newEmployee.mobile" style="width: 100%;"/>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12" [ngClass]="{ 'red':if_error(formErrors,'pid')?'1px solid red': '' }">
+          <input type="text" placeholder="პირადობა"  pInputText [(ngModel)]="newEmployee.pid" style="width: 100%;"/>
+        </div>
+      </div>
+      <div class="row"  style="margin-top: 5px">
+        <div class="col-md-12">
+          <p-dropdown [options]="employeeCitiesAll" [(ngModel)]="newEmployee.cityAll" placeholder="ქალაქი" optionLabel="name" [showClear]="true" (ngModelChange)="getBuildingsAll()"></p-dropdown>
+        </div>
+      </div>
+      <div class="row"  style="margin-top: 5px">
+        <div class="col-md-12">
+          <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'buildingAll')?'1px solid red': '' }"  [options]="employeeBuildingsAll" [(ngModel)]="newEmployee.buildingAll" placeholder="შენობა" optionLabel="name" [showClear]="true" (ngModelChange)="getSectionsAll()"></p-dropdown>
+        </div>
+      </div>
+      <div class="row"  style="margin-top: 5px">
+        <div class="col-md-12">
+          <p-dropdown [options]="employeeSectionsAll" [(ngModel)]="newEmployee.sectionAll" placeholder="სექცია" optionLabel="name" [showClear]="true" ></p-dropdown>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-{{newEmployee['role']['role'] ==='ROLE_PLACE'?6:12}}" *ngIf="newEmployee['role']['role'] ==='ROLE_PLACE'">
+      <div class="row"  >
+        <div class="col-md-12">
+          <p-dropdown [options]="employeeCities" [(ngModel)]="newEmployee.city" placeholder="ქალაქი" optionLabel="name" [showClear]="true" (ngModelChange)="getBuildings()"></p-dropdown>
+        </div>
+      </div>
+      <div class="row"  style="margin-top: 5px">
+        <div class="col-md-12" >
+          <p-dropdown  [options]="employeeBuildings" [(ngModel)]="newEmployee.building" placeholder="შენობა" optionLabel="name" [showClear]="true" ></p-dropdown>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12">
+          <button pButton type="button" label="დამატება" (click)="addCityByRole()"></button>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-md-12">
+          <table style="width: 100%">
+
+            <tr *ngFor="let l of newEmployee.list; let i = $index">
+              <td>{{l['city']['name']}}</td>
+              <td>{{l['building']['name']}}</td>
+              <td ><i class="pi pi-times" style="margin-top: 5px" (click)="newEmployee.list.splice(i,1)"></i></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="saveNewEmployee()" label="შენახვა"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="newEmployee.dialog=false" label="გაუქმება" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+

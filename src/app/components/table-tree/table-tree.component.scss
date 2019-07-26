@@ -1,0 +1,6 @@
+/deep/ app-table-tree {
+  .ui-treetable{
+    height: calc(100vh - 230px) !important;
+    overflow-y: scroll;
+  }
+}

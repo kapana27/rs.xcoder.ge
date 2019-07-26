@@ -3,23 +3,23 @@ import {TreeNode} from "../../models/tree-node";
 import {RequestService} from "../../services/request.service";
 
 @Component({
-  selector: 'app-tree',
-  templateUrl: './tree.component.html',
-  styleUrls: ['./tree.component.scss']
+  selector: 'app-table-tree',
+  templateUrl: './table-tree.component.html',
+  styleUrls: ['./table-tree.component.scss']
 })
-export class TreeComponent implements OnInit {
+export class TableTreeComponent implements OnInit {
   @Input() ItemGroup: TreeNode[] = [];
   @Output() selected = new EventEmitter();
   @Input() enableActions: boolean = true;
+  @Input() cols: any[] = [];
+
   @Input() actions: {
     get?: string;
     insert?: string;
     update?: string;
     delete?: string;
   };
-  constructor(private Request: RequestService) {
-
-  }
+  constructor(private Request: RequestService) { }
 
   ngOnInit() {
     if(this.notNull(this.actions.get)){
@@ -32,11 +32,8 @@ export class TreeComponent implements OnInit {
       });
     }
   }
-
   nodeSelect($event: any) {
-    if($event['node']['selectable']===1){
-      this.selected.emit($event['node'])
-    }
+    this.selected.emit($event['node'])
   }
   private notNull(value) {
     return (value !== undefined && value !== null && value !=='');
