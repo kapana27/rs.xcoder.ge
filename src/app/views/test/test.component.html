@@ -16,10 +16,10 @@
      { field: 'name', header: 'დასახელება' }
     ]"
       [actions]="{
-        get: 'api/secured/Organizational/Structure/Department/Select',
-        delete: 'api/secured/Organizational/Structure/Delete',
-        update: 'api/secured/Organizational/Structure/Update',
-        insert: 'api/secured/Organizational/Structure/Insert?lvl=1&parentId=0'
+        get: '/api/secured/Organizational/Structure/Department/Select',
+        delete: '/api/secured/Organizational/Structure/Delete',
+        update: '/api/secured/Organizational/Structure/Update',
+        insert: '/api/secured/Organizational/Structure/Insert?lvl=1&parentId=0'
     }"
     >
     </app-multiple-table>
@@ -42,10 +42,10 @@
      { field: 'name', header: 'დასახელება' }
     ]"
         [actions]="{
-        get: 'api/secured/Organizational/Structure/Division/Select?parentId='+this.selectedItem[1]['id'],
-        delete: 'api/secured/Organizational/Structure/Delete',
-        update: 'api/secured/Organizational/Structure/Update',
-        insert: 'api/secured/Organizational/Structure/Insert?lvl=2&parentId='+this.selectedItem[1]['id']
+        get: '/api/secured/Organizational/Structure/Division/Select?parentId='+this.selectedItem[1]['id'],
+        delete: '/api/secured/Organizational/Structure/Delete',
+        update: '/api/secured/Organizational/Structure/Update',
+        insert: '/api/secured/Organizational/Structure/Insert?lvl=2&parentId='+this.selectedItem[1]['id']
     }"
       >
       </app-multiple-table>
@@ -69,10 +69,10 @@
      { field: 'name', header: 'დასახელება' }
     ]"
         [actions]="{
-        get: 'api/secured/Organizational/Structure/Division/Select?parentId='+this.selectedItem[2]['id'],
-        delete: 'api/secured/Organizational/Structure/Delete',
-        update: 'api/secured/Organizational/Structure/Update',
-        insert: 'api/secured/Organizational/Structure/Insert?lvl=3&parentId='+this.selectedItem[2]['id']
+        get: '/api/secured/Organizational/Structure/Division/Select?parentId='+this.selectedItem[2]['id'],
+        delete: '/api/secured/Organizational/Structure/Delete',
+        update: '/api/secured/Organizational/Structure/Update',
+        insert: '/api/secured/Organizational/Structure/Insert?lvl=3&parentId='+this.selectedItem[2]['id']
     }"
       >
       </app-multiple-table>
@@ -133,8 +133,8 @@
      { field: 'email', header: 'ელფოსტა' }
     ]"
       [actions]="{
-        get: 'api/secured/Staff/Department/Select?dep='+this.employee.selected['id'],
-        delete: '/api/secured/Organizational/Structure/StaffPosition/Position/Delete',
+        get: '/api/secured/Staff/Department/Select?dep='+this.employee.selected['id'],
+        delete: 'api/secured/Staff/Delete',
         update: '/api/secured/Organizational/Structure/StaffPosition/Position/Update',
         insert: '/api/secured/Organizational/Structure/StaffPosition/Position/Insert?parentId='+this.employee.selected['id']
     }"

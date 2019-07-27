@@ -63,6 +63,7 @@ export class EmployeesComponent implements OnInit {
   employeeCities: Array<any> = [];
 
   formErrors: Array<string> = [];
+  loadEvent?: any;
   constructor(private Request: RequestService,private confirmationService: ConfirmationService, private validator: ValidatorService, private directoryService: DirectoryService) {
     this.loading = true;
     this.thisProperty=this;
@@ -72,6 +73,7 @@ export class EmployeesComponent implements OnInit {
   ngOnInit() {}
 
   loadLazy(event: LazyLoadEvent, param?: string) {
+    this.loadEvent=event;
     this.event = this.notNull(event)? event: {first: 0, rows: 30};
     this.loading = true;
     const filtered = (this.filterValue)? "&name="+this.filterValue: "";
@@ -95,20 +97,21 @@ export class EmployeesComponent implements OnInit {
 
   onDelete() {
     if(this.notNull(this.selectedRow)){
-      this.confirmationService.confirm({
-        message: `დარწმუნებული ხართ, რომ გსურთ "${this.selectedRow['name']}"-ს  წაშლა?`,
-        accept: () => {
-          const operator = (this.actions.delete.indexOf("?") ===-1)? '?': '&';
-          this.Request.Post(this.actions.delete+operator+"id="+this.selectedRow['id'])
-            .then(response=>{
-              this.loadLazy(this.event);
-              this.selectedRow='';
-            }).catch(reason => {
-            alert(reason)
-          })
-        }
-      })
-
+      if (this.notNull(this.selectedRow['id'])) {
+        this.confirmationService.confirm({
+          message: `დარწმუნებული ხართ, რომ გსურთ   წაშლა?`,
+          accept: () => {
+            const operator = (this.actions.delete.indexOf("?") ===-1)? '?': '&';
+            this.Request.Post(this.actions.delete+operator+"id="+this.selectedRow['id'])
+              .then(response=>{
+                this.loadLazy(this.event);
+                this.selectedRow='';
+              }).catch(reason => {
+              alert(reason)
+            })
+          }
+        })
+      }
     }
   }
   private notNull(value) {
@@ -144,7 +147,11 @@ export class EmployeesComponent implements OnInit {
 
   newItem() {
     this.getPositionAndRoles();
-   this.newEmployee.dialog = true;
+    this.newEmployee = {
+      dialog : true,
+      list: [],
+      role:{role:"", name:""},
+    };
     this.changeZindex()
 
   }
@@ -164,7 +171,47 @@ export class EmployeesComponent implements OnInit {
     this.dialogType = 'რედაქტირება';
     if(this.notNull(this.selectedRow)) {
       if (this.notNull(this.selectedRow['id'])) {
-        this.newItemDialog = true;
+        this.getPositionAndRoles();
+
+        this.directoryService.getEmployee(this.selectedRow['id'])
+          .then(response => {
+
+            this.newEmployee = {
+              dialog: true,
+              department: response['data']['department']['id'],
+              email: response['data']['email'],
+              firstname: response['data']['firstname'],
+              fullname: response['data']['fullname'],
+              lastname: response['data']['lastname'],
+              id: response['data']['id'],
+              role: {role: response['data']['role']['role'], name: response['data']['role']['name']},
+              location: response['data']['position'],
+              mobile: response['data']['mobile'],
+              pid: response['data']['pid'],
+              position: response['data']['position'],
+              cityAll: this.notNull(response['data']['location']['parentUnit']) ? {
+                id: response['data']['location']['parentUnit']['id'],
+                name: response['data']['location']['parentUnit']['name']
+              } : {},
+              buildingAll: this.notNull(response['data']['location']) ? {
+                id: response['data']['location']['id'],
+                name: response['data']['location']['name']
+              } : {},
+              sectionAll: this.notNull(response['data']['section']) ? {
+                id: response['data']['section']['id'],
+                name: response['data']['section']['name']
+              } : {},
+              list: (response['data']['staffBuildings'].length > 0)? response['data']['staffBuildings'].map(v=>{
+                return {
+                  city:{ id: v['id'], name: v['parentName']},
+                  building:{ id: v['buildingId'], name: v['name']}
+                }
+              }): []
+            };
+            this.getBuildingsAll();
+            this.getSectionsAll();
+            this.getCities();
+          });
         this.changeZindex()
       }
     }
@@ -202,7 +249,12 @@ export class EmployeesComponent implements OnInit {
   getPositionAndRoles(){
     this.directoryService.getCities("")
       .then(value => {
-        this.employeeCitiesAll = value['data'];
+        this.employeeCitiesAll = value['data'].map(value=>{
+          return {
+            id: value['id'],
+            name: value['name']
+          }
+        });
       })
       .catch()
     this.directoryService.getRoles()
@@ -222,7 +274,6 @@ export class EmployeesComponent implements OnInit {
   saveNewEmployee() {
     let filter = [
       'lastname',
-      'role',
       'pid',
       'firstname',
       'buildingAll',
@@ -230,12 +281,16 @@ export class EmployeesComponent implements OnInit {
       'email',
     ];
     this.formErrors =this.validator.checkObject(this.newEmployee,filter);
+    console.log(this.newEmployee);
+    if(!this.notNull(this.newEmployee.role['role'])){
+      this.formErrors.push('role');
+    }
     if(this.formErrors.length === 0) {
       let formData = new FormData();
       if(this.notNull(this.newEmployee.id)){
         formData.append("id", this.newEmployee.id.toString())
       }
-      if(this.notNull(this.newEmployee.department)){
+      if(this.notNull(this.selectedEmployeeNode['id'])){
         formData.append("department", this.selectedEmployeeNode['id'].toString())
       }
       if(this.notNull(this.newEmployee.firstname)){
@@ -253,7 +308,7 @@ export class EmployeesComponent implements OnInit {
       if(this.notNull(this.newEmployee.pid)){
         formData.append("pid", this.newEmployee.pid.toString())
       }
-      if(this.notNull(this.newEmployee.role)){
+      if(this.notNull(this.newEmployee.role['role'])){
         formData.append("role", this.newEmployee.role['role'].toString())
       }
       if(this.notNull(this.newEmployee.position)){
@@ -262,15 +317,40 @@ export class EmployeesComponent implements OnInit {
       if(this.notNull(this.newEmployee.list)){
         formData.append("buildings", this.newEmployee.list.map(value => value['building']['id']).toString())
       }
-      if(this.notNull(this.newEmployee.sectionAll)){
+      if(this.notNull(this.newEmployee.sectionAll['id'])){
         formData.append("section", this.newEmployee.sectionAll['id'].toString())
       }
       if(this.notNull(this.newEmployee.buildingAll)){
         formData.append("location", this.newEmployee.buildingAll['id'].toString())
       }
+      if(this.notNull(this.newEmployee['id'])){
+        this.directoryService.newEmployee(formData, 'edit').then(response=>{
+          this.newEmployee={
+            list: [],
+            role:{role:"", name:""},
+          };
+          this.loadLazy(this.loadEvent,'') ;
+        })
+          .catch(reason => {
+            alert("დაფიქსირდა შეცდომა");
+          })
+      }else{
+        this.directoryService.newEmployee(formData, 'new')
+          .then(response=>{
+            this.newEmployee={
+              list: [],
+              role:{role:"", name:""},
+            };
+             this.loadLazy(this.loadEvent,'') ;
+          })
+          .catch(reason => {
+            alert("დაფიქსირდა შეცდომა");
+          })
 
+      }
     }
   }
+
   addCityByRole() {
     if(this.newEmployee.building && this.newEmployee.city){
       if(this.newEmployee.list.map(value => value['building']['id']).indexOf(this.newEmployee.building['id'])===-1){
@@ -303,7 +383,12 @@ export class EmployeesComponent implements OnInit {
   getBuildingsAll() {
     this.directoryService.getBuildings(this.newEmployee.cityAll['id'])
       .then(value => {
-        this.employeeBuildingsAll = value['data'];
+        this.employeeBuildingsAll = value['data'].map(value=>{
+          return {
+            id: value['id'],
+            name: value['name']
+          }
+        });
       })
       .catch()
   }
@@ -311,7 +396,12 @@ export class EmployeesComponent implements OnInit {
   getSectionsAll(){
     this.directoryService.getSections(this.newEmployee.buildingAll['id'])
       .then(value => {
-        this.employeeSectionsAll = value['data'];
+        this.employeeSectionsAll = value['data'].map(value=>{
+          return {
+            id: value['id'],
+            name: value['name']
+          }
+        });
       })
       .catch()
   }

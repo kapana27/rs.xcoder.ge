@@ -33,7 +33,7 @@ export  const Config = {
   },
   List: {
       get:{
-        sections: 'api/secured/StructuralUnit/City/Building/Section/Select',
+        sections: '/api/secured/StructuralUnit/City/Building/Section/Select',
         attachments: '/api/secured/Document/Attachments',
         itemFilterByName: '/api/secured/Item/Filter/ByName',
         MeasureUnit: '/api/secured/MeasureUnit/List',

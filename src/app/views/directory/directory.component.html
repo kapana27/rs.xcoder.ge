@@ -90,7 +90,7 @@
      { field: 'email', header: 'ელფოსტა' }
     ]"
           [actions]="{
-        get: 'api/secured/Staff/Department/Select?dep='+this.selectedEmp.selected['id'],
+        get: '/api/secured/Staff/Department/Select?dep='+this.selectedEmp.selected['id'],
         delete: '/api/secured/Organizational/Structure/StaffPosition/Position/Delete',
         update: '/api/secured/Organizational/Structure/StaffPosition/Position/Update',
         insert: '/api/secured/Organizational/Structure/StaffPosition/Position/Insert?parentId='+this.selectedEmp.selected['id']
