@@ -122,6 +122,73 @@
     </ng-template>
   </p-table>
 </div>
+<div *ngIf="activeItem['type']==='provider1'" class="provider1">
+  <div class="p-grid">
+    <div class="p-col">
+      <app-multiple-table
+        header="მომწოდებელი"
+        title="&nbsp;"
+         [multiple]="true"
+        [filter]="false"
+        (onSelected)="selected($event,1)"
+        [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'code', header: 'ნომერი' },
+     { field: 'generatedName', header: 'დასახელება' }
+    ]"
+        [actions]="{
+        get: '/api/secured/Supplier/Select',
+        delete: '/api/secured/Supplier/Delete',
+        update: '/api/secured/Supplier/Update',
+        insert: '/api/secured/Supplier/Insert'
+    }"
+      >
+      </app-multiple-table>
+    </div>
+  </div>
+</div>
+<div *ngIf="activeItem['type']==='provider'" class="provider">
+  <div class="p-grid">
+    <div class="p-col">
+        <app-multiple-table
+          header="მწარმოებელი"
+          title="&nbsp;"
+          [filter]="false"
+          (onSelected)="selected($event,1)"
+          [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'name', header: 'დასახელება' }
+    ]"
+          [actions]="{
+        get: '/api/secured/List/Maker/Select',
+        delete: '/api/secured/List/Maker/Delete',
+        update: '/api/secured/List/Maker/Update',
+        insert: '/api/secured/List/Maker/Insert'
+    }"
+        >
+        </app-multiple-table>
+    </div>
+    <div class="p-col" >
+        <app-multiple-table
+          [changer]="selectedItem[1]"
+          [title]="selectedItem[1]['name']"
+          header="მოდელი"
+          (onSelected)="selected($event,2)"
+          [cols]="[
+     { field: 'id', header: 'ID' },
+     { field: 'name', header: 'დასახელება' }
+    ]"
+          [actions]="{
+        get: '/api/secured/List/Model/Select?parent='+this.selectedItem[1]['id'],
+        delete: '/api/secured/List/Model/Delete',
+        update: '/api/secured/List/Model/Update',
+        insert: '/api/secured/List/Model/Insert?lvl=2&parent='+this.selectedItem[1]['id']
+    }"
+        >
+        </app-multiple-table>
+    </div>
+  </div>
+</div>
 <div class="row" *ngIf="activeItem['type']==='group'">
   <div class="col-md-12">
     <div class="action-button" style="    margin-bottom: 10px;">
@@ -323,7 +390,6 @@
     <button type="button" pButton icon="pi pi-close" (click)="newItem.dialog=false" label="გაუქმება" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>
-
 <p-dialog *ngIf="newEmployee.dialog" header="თანამშრომელი" [(visible)]="newEmployee.dialog" [modal]="true" [responsive]="true" [style]="{width: '600px', minWidth: '200px'}" [minY]="70"
           [maximizable]="true" [baseZIndex]="10000">
   <div class="row">

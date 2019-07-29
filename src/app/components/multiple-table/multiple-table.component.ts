@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {ConfirmationService, LazyLoadEvent} from "primeng/api";
 import {RequestService} from "../../services/request.service";
+import {OperationsService} from "../../services/operations/operations.service";
 declare var $: any;
 
 @Component({
@@ -25,6 +26,7 @@ export class MultipleTableComponent implements OnInit, OnChanges {
   @Output() onAdditionAction  = new EventEmitter();
   @Output() onEmployeeAction  = new EventEmitter();
   @Input() enableActions: boolean = true;
+  @Input() multiple: boolean = false;
   @Input() actions: {
     get?: string;
     insert?: string;
@@ -44,7 +46,17 @@ export class MultipleTableComponent implements OnInit, OnChanges {
   selectedRows: Array<any> =[];
   interval: any;
   @Input() checkEditionStatus: boolean = false;
-  constructor(private Request: RequestService,private confirmationService: ConfirmationService) {
+  provider: {
+    id?: any,
+    new: boolean,
+    dialog: boolean,
+    selected?: any,
+    type?: any,
+    identification?: string,
+    value?: string
+  } = { dialog: false, new: true, selected: null, value: null};
+
+  constructor(private Request: RequestService,private confirmationService: ConfirmationService, private operation: OperationsService) {
     this.loading = true;
     this.thisProperty=this;
 
@@ -85,7 +97,7 @@ export class MultipleTableComponent implements OnInit, OnChanges {
               this.loadLazy(this.event);
               this.selectedRow='';
             }).catch(reason => {
-            alert(reason)
+            alert(reason['error'])
           })
         }
       })
@@ -108,7 +120,7 @@ export class MultipleTableComponent implements OnInit, OnChanges {
               this.selectedRow='';
               this.newItemDialog = false;
             }).catch(reason => {
-            alert(reason)
+            alert(reason['error'])
           })
         }else{
           const operator = (this.actions.update.indexOf("?") ===-1)? '?': '&';
@@ -116,20 +128,13 @@ export class MultipleTableComponent implements OnInit, OnChanges {
             .then(response => {
               this.newItemDialog = false;
             }).catch(reason => {
-            alert(reason)
+            alert(reason['error'])
           });
         }
     }
   }
 
 
-  newItem() {
-    this.dialogType = 'დამატება';
-    this.selectedRow={ name: '' };
-    this.newItemDialog = true;
-    this.changeZindex()
-
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.loadLazy(this.event);
@@ -143,9 +148,22 @@ export class MultipleTableComponent implements OnInit, OnChanges {
   }
 
   edit() {
+
     this.dialogType = 'რედაქტირება';
     if(this.notNull(this.selectedRow)) {
       if (this.notNull(this.selectedRow['id'])) {
+        if(this.multiple){
+          this.provider = {
+            dialog: true,
+            new: false,
+            id: this.selectedRow['id'],
+            selected: this.selectedRow['type'].toString(),
+            identification: this.selectedRow['code'],
+            value: this.selectedRow['name'],
+          };
+          this.changeZindex()
+          return;
+        }
         this.newItemDialog = true;
         this.changeZindex()
       }
@@ -178,6 +196,57 @@ export class MultipleTableComponent implements OnInit, OnChanges {
     if(this.notNull(this.selectedRow['id'])) {
       this.onEmployeeAction.emit(this.selectedRow);
     }
+  }
+  newItem() {
+    if(this.multiple){
+      this.provider.dialog = true;
+      this.provider.new = true;
+        return;
+    }
+    this.dialogType = 'დამატება';
+    this.selectedRow={ name: '' };
+    this.newItemDialog = true;
+    this.changeZindex()
+
+  }
+
+
+  saveProvider() {
+    if(this.provider.new){
+      if (this.provider.value !== null ) {
+        const operator = (this.actions.insert.indexOf("?") ===-1)? '?': '&';
+
+        let  newItem = 'name=' + this.provider.value;
+        newItem += (this.provider.identification !== null ) ? '&number=' + this.provider.identification : '';
+        newItem += (this.provider.type !== null ) ? '&type=' + this.provider.selected : '';
+        this.Request.Post(this.actions.insert+operator+newItem)
+          .then(response=>{
+            this.provider = { dialog: false, selected: null, value: null, new: true};
+            this.data.push(response['data']);
+          }).catch(reason => {
+          alert(reason['error'])
+        })
+      }
+    }else{
+        if (this.notNull(this.provider.id)) {
+          console.log("update", this.provider)
+
+            const operator = (this.actions.insert.indexOf("?") ===-1)? '?': '&';
+            let  newItem = 'name=' + this.provider.value;
+            newItem += (this.provider.id !== null ) ? '&id=' + this.provider.id : '';
+            newItem += (this.provider.identification !== null ) ? '&number=' + this.provider.identification : '';
+            newItem += (this.provider.type !== null ) ? '&type=' + this.provider.selected : '';
+
+            this.Request.Post(this.actions.update+operator+newItem)
+              .then(response=>{
+              this.loadLazy(this.event);
+                this.provider = { dialog: false, selected: null, value: null, new: true};
+              }).catch(reason => {
+              alert(reason['error'])
+            })
+        }
+      }
+
   }
 }
 

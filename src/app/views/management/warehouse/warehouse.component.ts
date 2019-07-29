@@ -338,6 +338,7 @@ export class WarehouseComponent implements OnInit {
     this.getRowStyle = {
 
       'ag-red': function(params) {
+        console.log(params);
         // console.log('ag-red', params['data']['id'], params['data']);
         try {
           return params['data']['tmpAmount'] > 0;

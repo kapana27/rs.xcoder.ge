@@ -71,3 +71,23 @@
   </p-dialog>
 
 </div>
+<p-dialog header="{{dialogType}}" *ngIf="provider.dialog" [(visible)]="provider.dialog" [modal]="true" [responsive]="true" [style]="{width: '400px', minWidth: '250px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+  <div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-12" >
+      <p>აირჩიეთ მიმწოდებლის ტიპი</p>
+      <p-dropdown [options]="[{label: 'შპს', value: '1'},{label: 'ინდმეწარმე', value: '2'},{label: 'ფიზიკური პირი', value: '3'},{label: 'სააქციო საზოგადოება', value: '4'}]" [(ngModel)]="provider.selected" editable="true" placeholder="აირჩიეთ ტიპი"></p-dropdown>
+    </div>
+    <div class="ui-g-12 ui-md-12" >
+      <p>{{  (provider.type==='2' || provider.type==='3')? 'პირადი ნომერი' : 'საიდენტიფიკაციო'}}</p>
+      <input id="input2" type="text" size="30" pInputText [(ngModel)]="provider.identification">
+    </div>
+    <div class="ui-g-12 ui-md-12">
+      <p>{{(provider.type==='2' || provider.type==='3')? 'სახელი და გვარი': 'დასახელება'}}</p>
+      <input id="input3" type="text" size="30" pInputText [(ngModel)]="provider.value">
+    </div>
+  </div>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="saveProvider()" label="დამატება"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="provider.dialog=false" label="გათიშვა" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>

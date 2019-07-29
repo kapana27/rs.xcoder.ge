@@ -59,7 +59,7 @@ export class MessagesComponent implements OnInit {
           this.getList();
           this.selectedPage = 'standart';
         }},
-      {label: 'მიღების ოპერაციები', command: (event) => {
+      {label: 'გაუქმების ოპერაციები', command: (event) => {
           this.selectedPage = 'income';
         }}
     ];

@@ -289,7 +289,7 @@
 
               <div class="ui-g-12 ui-md-6">
                 <p>სექცია</p>
-                <p-dropdown [disabled]="!inventorTransfer.toWhomSection" [options]="roomsList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="inventorTransfer.selectedSection" [ngClass]="{ 'red':if_error(formErrors,'selectedSection')?'1px solid red': '' }" ></p-dropdown>
+                <p-dropdown [disabled]="!inventorTransfer.selectedPerson" [options]="roomsList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="inventorTransfer.selectedSection" [ngClass]="{ 'red':if_error(formErrors,'selectedSection')?'1px solid red': '' }" ></p-dropdown>
               </div>
               <div class="ui-g-12 ui-md-6">
                 <p>ტრანსპორტ. პასხ. პირი:</p>

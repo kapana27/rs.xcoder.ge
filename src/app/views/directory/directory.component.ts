@@ -118,10 +118,15 @@ export class DirectoryComponent implements OnInit {
       id: -1,
     }
   };
+  selectedItem: any = {};
+
+
   constructor(private directoryService: DirectoryService, private operation: OperationsService,private confirmationService: ConfirmationService, private validator: ValidatorService) {
     this.activeSubItem={
       id: ''
     };
+    this.selectedItem[1]={id:-1, name:'მწარმოებელი არჩეული არ არის'};
+
   }
 
   getMeasureUnits(){
@@ -159,9 +164,7 @@ export class DirectoryComponent implements OnInit {
     this.mainTabs = [
       {label: 'სტრუქტურა', type: 'structura',  icon: 'fa fa-fw fa-bar-chart', command: (event=>{
           this.selectType=1;
-
           this.selectMainTab(event['item']);
-
         })},
 
       {label: 'საზომი ერთეული', type: 'unit', icon: 'fa fa-fw fa-book',command: (event=>{
@@ -182,6 +185,12 @@ export class DirectoryComponent implements OnInit {
           this.selectMainTab(event['item']);
           this.getMainList("Stock");
       })},
+      {label: 'მწარმოებელი', type: 'provider',id: 'provider', icon: 'fa fa-fw fa-twitter',command: (event=>{
+          this.selectMainTab(event['item']);
+        })},
+      {label: 'მომწოდებელი', type: 'provider1',id: 'provider1', icon: 'fa fa-fw fa-twitter',command: (event=>{
+          this.selectMainTab(event['item']);
+        })},
     ];
 
 
@@ -800,8 +809,8 @@ export class DirectoryComponent implements OnInit {
       this.selectedStructuralUnitTree = $event['data'];
   }
 
-  selected($event: any, number: number) {
-    
+  selected($event: any, level) {
+    this.selectedItem[level]= $event;
   }
 }
 function parseTree(data: TreeNode[]): Array<TreeNode> {
