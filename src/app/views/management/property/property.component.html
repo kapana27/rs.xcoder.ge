@@ -6,7 +6,7 @@
   <div class="col-m-12 col-lg-7">
     <button (click)="showDialog()" *ngIf="!distributed" pButton type="button" label="ინვ. შებრუნება" class="ui-button-raised" style="position: absolute; right: 100px"></button> &nbsp;&nbsp;
     <button (click)="inventoryToBuildingDialog()" *ngIf="distributed" pButton type="button" label="ინვ. მოძრაობა შენობებს შორის" class="ui-button-raised"  style="position: absolute; right: 250px"></button>&nbsp;&nbsp;
-    <button (click)="personDialog()" *ngIf="distributed" pButton type="button" label="განპიროვნება" class="ui-button-raised"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
+    <button (click)="personDialog()" *ngIf="distributed" pButton type="button" label="განპიროვნება" class="ui-button-danger"  style="position: absolute; right: 100px"></button>&nbsp;&nbsp;
     <span style="position: absolute;right: 37px;margin-top: 3px;color: #007ad9; cursor: pointer;">
     <fa-icon [icon]="faCartPlus"  (click)="cartDialog()" size="2x"  ></fa-icon>
       {{this.cartItems.length}}

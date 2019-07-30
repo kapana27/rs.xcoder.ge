@@ -10,6 +10,7 @@ import { TreeComponent } from './tree/tree.component';
 import {TreeModule} from "primeng/tree";
 import { TreeTableComponent } from './tree-table/tree-table.component';
 import {
+  CalendarModule,
   ConfirmDialogModule,
   DialogModule,
   DropdownModule,
@@ -22,9 +23,11 @@ import { AttachmentsComponent } from './attachments/attachments.component';
 import { MultipleTableComponent } from './multiple-table/multiple-table.component';
 import { TableTreeComponent } from './table-tree/table-tree.component';
 import { EmployeesComponent } from './employees/employees.component';
+import { CustomDateComponent } from './custom-date/custom-date.component';
+import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
-  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent, AttachmentsComponent, MultipleTableComponent, TableTreeComponent, EmployeesComponent],
+  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent, AttachmentsComponent, MultipleTableComponent, TableTreeComponent, EmployeesComponent, CustomDateComponent],
   imports: [
     DropdownModule,
     CommonModule,
@@ -36,7 +39,9 @@ import { EmployeesComponent } from './employees/employees.component';
     FileUploadModule,
     ConfirmDialogModule,
     DialogModule,
-    TooltipModule
+    TooltipModule,
+    CalendarModule,
+    NgbDatepickerModule
   ],
   exports: [
     CartComponent,
@@ -48,7 +53,11 @@ import { EmployeesComponent } from './employees/employees.component';
     AttachmentsComponent,
     MultipleTableComponent,
     TableTreeComponent,
-    EmployeesComponent
+    EmployeesComponent,
+    CustomDateComponent
+  ],
+  entryComponents: [
+    CustomDateComponent
   ]
 })
 export class ComponentsModule { }

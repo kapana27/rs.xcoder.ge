@@ -60,7 +60,6 @@ export class TestComponent implements OnInit {
 
   onNewEmployee($event: any) {
     this.employee.selected=$event;
-
     this.employee.dialog = true;
     console.log($event);
   }

@@ -99,7 +99,7 @@ export class EmployeesComponent implements OnInit {
     if(this.notNull(this.selectedRow)){
       if (this.notNull(this.selectedRow['id'])) {
         this.confirmationService.confirm({
-          message: `დარწმუნებული ხართ, რომ გსურთ   წაშლა?`,
+          message: `დარწმუნებული ხართ, რომ გსურთ ${this.selectedRow['fullname']}  წაშლა?`,
           accept: () => {
             const operator = (this.actions.delete.indexOf("?") ===-1)? '?': '&';
             this.Request.Post(this.actions.delete+operator+"id="+this.selectedRow['id'])
@@ -308,7 +308,7 @@ export class EmployeesComponent implements OnInit {
       if(this.notNull(this.newEmployee.pid)){
         formData.append("pid", this.newEmployee.pid.toString())
       }
-      if(this.notNull(this.newEmployee.role['role'])){
+      if(this.notNull(this.newEmployee.role) && this.notNull(this.newEmployee.role['role'])){
         formData.append("role", this.newEmployee.role['role'].toString())
       }
       if(this.notNull(this.newEmployee.position)){
@@ -317,7 +317,7 @@ export class EmployeesComponent implements OnInit {
       if(this.notNull(this.newEmployee.list)){
         formData.append("buildings", this.newEmployee.list.map(value => value['building']['id']).toString())
       }
-      if(this.notNull(this.newEmployee.sectionAll['id'])){
+      if(this.notNull(this.newEmployee.sectionAll) && this.notNull(this.newEmployee.sectionAll['id'])){
         formData.append("section", this.newEmployee.sectionAll['id'].toString())
       }
       if(this.notNull(this.newEmployee.buildingAll)){

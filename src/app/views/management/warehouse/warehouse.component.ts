@@ -14,6 +14,7 @@ import {InventorTransfer} from '../../../models/inventorTransfer';
 import {ValidatorService} from '../../../services/validator/validator.service';
 import {TreeNode} from '../../../models/tree-node';
 import {RequestService} from '../../../services/request.service';
+import {CustomDateComponent} from "../../../components/custom-date/custom-date.component";
 interface Default {
   id?: number;
   name?: string;
@@ -140,6 +141,9 @@ export class WarehouseComponent implements OnInit {
   uploadFiles: Array<any> = [];
   dialogName: any = '';
   prod: any='';
+  private frameworkComponents;
+
+
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService,  private confirmationService: ConfirmationService, private Request: RequestService) {
     this.prod=this.Request.prod;
     this.gridOptions = {
@@ -335,6 +339,7 @@ export class WarehouseComponent implements OnInit {
         filterParams: { defaultOption: 'startsWith' }
       }
     ];
+    this.frameworkComponents = { agDateInput: CustomDateComponent };
     this.getRowStyle = {
 
       'ag-red': function(params) {

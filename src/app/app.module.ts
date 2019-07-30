@@ -62,6 +62,7 @@ import {ComponentsModule} from "./components/components.module";
 import { IncameOperationComponent } from './views/incame-operation/incame-operation.component';
 import { TestComponent } from './views/test/test.component';
 import { Test1Component } from './views/test1/test1.component';
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
   imports: [
@@ -90,6 +91,7 @@ import { Test1Component } from './views/test1/test1.component';
     CheckboxModule,
     DialogModule,
     AutoCompleteModule,
+    NgbModule
   ],
   declarations: [
     AppComponent,

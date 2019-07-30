@@ -193,6 +193,7 @@ export class MultipleTableComponent implements OnInit, OnChanges {
   }
 
   additionEmployee() {
+    console.log(this.selectedRow)
     if(this.notNull(this.selectedRow['id'])) {
       this.onEmployeeAction.emit(this.selectedRow);
     }
