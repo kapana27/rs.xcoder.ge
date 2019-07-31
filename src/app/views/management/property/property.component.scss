@@ -1,4 +1,28 @@
  /deep/ app-property{
+
+   .actionButton {
+     display: flex;
+     justify-content: space-between;
+     margin-bottom: 10px;
+     align-items: center;
+     .buttonBox {
+       &:nth-child(1){display: flex; justify-content: flex-start;}
+       &:nth-child(2){display: flex; justify-content: center;}
+       &:nth-child(3){display: flex; justify-content: flex-end;}
+       button {height: 28.28px}
+       .cart {
+         display: flex;
+         line-height: 28px;
+         fa-icon {
+           margin-right: 5px;
+         }
+       }
+     }
+   }
+
+   svg[data-icon="cart-plus"] {font-size: 1.7em;color: #007ad9;}
+
+
     p-table {
       table{
        // table-layout: auto !important;
@@ -26,6 +50,10 @@
      overflow: hidden;
      font-family: 'lbet-mt',sans-serif !important;
      font-size: 13px !important;
+   }
+
+   p-tabmenu ul li a {
+     padding: 0.27em 1em !important;
    }
 
    div[role="dialog"] {

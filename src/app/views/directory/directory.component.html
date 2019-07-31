@@ -68,7 +68,7 @@
       >
       </app-table-tree>
     </div>
-      <div class="col">
+      <div class="col" style="overflow-x:scroll;">
         <app-employees
           [disableClass]="false"
           [checkEditionStatus]="false"
@@ -95,6 +95,7 @@
         update: '/api/secured/Staff/Update',
         insert: '/api/secured/Staff/Insert?parentId='+this.selectedEmp.selected['id']
     }"
+          style="min-width: 1000px; display: inline-block;"
         >
         </app-employees>
       </div>

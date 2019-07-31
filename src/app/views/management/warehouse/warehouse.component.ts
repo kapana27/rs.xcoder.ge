@@ -141,7 +141,7 @@ export class WarehouseComponent implements OnInit {
   uploadFiles: Array<any> = [];
   dialogName: any = '';
   prod: any='';
-  private frameworkComponents;
+  public frameworkComponents;
 
 
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService,  private confirmationService: ConfirmationService, private Request: RequestService) {
@@ -181,14 +181,14 @@ export class WarehouseComponent implements OnInit {
         suppressMenu: false,
 
       },
-      {
+      /*{
         headerName: 'ID',
         width: 50,
         field: 'id',
         cellRenderer: 'loadingCellRenderer',
         sortable: false,
         suppressMenu: true
-      },
+      },*/
       {
         headerName: 'თარიღი',
         field: 'trDate',
@@ -1515,8 +1515,8 @@ console.log(this.newInventor);
       }, 20);
     }
   }
-  changeLang() {
-    this.lang = (this.lang === 'ge') ? 'uk' : 'ge';
+  changeLang(lng) {
+    this.lang = lng; //(this.lang === 'ge') ? 'uk' : 'ge';
   }
   onRowClicked($event: any) {
     console.log($event);

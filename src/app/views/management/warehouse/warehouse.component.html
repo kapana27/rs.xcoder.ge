@@ -37,15 +37,9 @@
         <p-autoComplete  field="name" [size]="30" placeholder="მოდელი" [minLength]="1"></p-autoComplete>
       </div>
     </div>
-    <div class="col-m-12 col-lg-6" style="max-width: 280px">
-      <label>ფასი: დან-მდე</label>
-      <div>
-        <p-spinner size="7" placeholder="დან" style="width: 150px"></p-spinner>
-        <p-spinner size="7" placeholder="მდე"></p-spinner>
-      </div>
-    </div>
-    <div class="col-m-12 col-lg-3" style="max-width: 230px">
-      <label>განზომილების ერთეული:</label>
+
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>განზ. ერთეული:</label>
       <p-chips></p-chips>
     </div>
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
@@ -57,12 +51,12 @@
       <label>ერთეული:</label>
       <p-chips></p-chips>
     </div>
-    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+    <!--div class="col-m-12 col-lg-3" style="max-width: 200px">
       <label>შტრიხ კოდი:</label>
       <div>
         <p-autoComplete  field="name" [size]="30" placeholder="შტრიხ კოდი" [minLength]="1"></p-autoComplete>
       </div>
-    </div>
+    </div-->
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
       <label>ტიპი:</label>
       <div>
@@ -90,7 +84,14 @@
         <p-calendar dateFormat="dd-mm-yy" [showIcon]="true" placeholder="მდე"></p-calendar>
       </div>
     </div>
-    <div class="col-m-6 col-lg-6" style="max-width: 320px">
+    <div class="col-m-12 col-lg-6" style="max-width: 280px">
+      <label>ფასი: დან-მდე</label>
+      <div>
+        <p-spinner size="7" placeholder="დან" style="width: 150px"></p-spinner>
+        <p-spinner size="7" placeholder="მდე"></p-spinner>
+      </div>
+    </div>
+    <div class="col-m-6 col-lg-6" style="width: 445px">
       <label>შტრიხკოდი: დან-მდე</label>
       <div style="display: flex">
         <div style="flex: 0.4">
@@ -100,6 +101,7 @@
         <input type="text"  pInputText placeholder="მდე" style="width: 120px;"  >
       </div>
     </div>
+
     <div  style="min-width:350px; max-width: 100%; padding-right: 20px; padding-top: 21px; flex: 1;">
       <div style="float: right">
         <button pButton icon="pi pi-search" label="ძებნა" class="ui-button-warning"></button>
@@ -722,8 +724,13 @@
   <p-footer style="width: 100%">
     <span class="lastCode">ბოლო შტრიხკოდი: {{newInventor.fullBarCode}}</span>
     <span class="lastCode" *ngIf="frustrate" style="margin-left: 400px; font-size: 20px">ბოლო კოდი - {{lastCode}}</span>
-    <button style="position: relative; right: 50px" pButton type="button" icon="pi pi-file" label="ფაილები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
-    <button  type="button" style="position: relative; top:-2px;" (click)="changeLang()"><img src="./assets/img/icons/{{lang}}.png" width="25" alt=""></button>
+    <button style="position: relative; right: 100px" pButton type="button" icon="pi pi-file" label="ფაილები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
+
+    <span class="inv_lang" style="margin-right: 100px">
+      <button type="button" [ngClass]="(lang === 'ge')? 'active':''" style="position: relative; top:-2px;" (click)="changeLang('ge')"><img src="./assets/img/icons/ge.png" width="25" alt=""></button>
+      <button type="button" [ngClass]="(lang === 'uk')? 'active':''" style="position: relative; top:-2px;" (click)="changeLang('uk')"><img src="./assets/img/icons/uk.png" width="25" alt=""></button>
+    </span>
+
     <button type="button" pButton icon="pi pi-save" *ngIf="frustrate && inventorOperation=='new'" (click)="saveNewInventor()" label="შენახვა" ></button>
     <button type="button" pButton icon="pi pi-save" *ngIf="inventorOperation=='edit' || inventorOperation ==='multiple'" (click)="editNewInventor()" label="დამახსოვრება" ></button>
     <button type="button" pButton icon="pi pi-save" *ngIf="!frustrate && inventorOperation=='new'" (click)="frustrateInventor()" label="ჩაშლა" ></button>
