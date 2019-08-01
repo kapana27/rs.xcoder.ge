@@ -12,6 +12,7 @@ import * as moment from 'moment';
 import {InventorTransfer} from '../../../models/inventorTransfer';
 import {ForPerson} from '../../../models/forPerson';
 import {RequestService} from '../../../services/request.service';
+import {CustomDateComponent} from "../../../components/custom-date/custom-date.component";
 interface Data {
   TotalCount: number;
   data: Item[];
@@ -28,6 +29,8 @@ interface Data {
 export class PropertyComponent implements OnInit {
   private lastCode: any = 0;
   prod: any='';
+  public frameworkComponents;
+
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService, private Request: RequestService) {
     this.getCartItems();
     this.prod=this.Request.prod;
@@ -225,6 +228,8 @@ export class PropertyComponent implements OnInit {
         filterParams: {defaultOption: 'startsWith'}
       }
     ];
+    this.frameworkComponents = { agDateInput: CustomDateComponent };
+
     this.columnDefs1 = [
       {
         headerName: '#',
@@ -451,6 +456,7 @@ export class PropertyComponent implements OnInit {
         filterParams: {defaultOption: 'startsWith'}
       }
     ];
+
     this.defaultColDef = {
       sortable: true,
       resizable: true

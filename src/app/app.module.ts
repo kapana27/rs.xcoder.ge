@@ -91,7 +91,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
     CheckboxModule,
     DialogModule,
     AutoCompleteModule,
-    NgbModule
+    NgbModule,
   ],
   declarations: [
     AppComponent,

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Injectable, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import 'ag-grid-enterprise';
 import {OperationsService} from '../../../services/operations/operations.service';
@@ -15,6 +15,8 @@ import {ValidatorService} from '../../../services/validator/validator.service';
 import {TreeNode} from '../../../models/tree-node';
 import {RequestService} from '../../../services/request.service';
 import {CustomDateComponent} from "../../../components/custom-date/custom-date.component";
+import {NgbDateParserFormatter, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+
 interface Default {
   id?: number;
   name?: string;
@@ -27,11 +29,23 @@ interface Data {
   success: boolean;
   totalCount: number;
 }
+
+@Injectable()
+export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
+  parse(value: string): NgbDateStruct {
+      return { day: 21, month:10, year: 2010}
+  }
+
+  format(date: NgbDateStruct): string {
+    return date ?
+      `${(date.day) ? (date.day) : ''}-${(date.month) ? (date.month) : ''}-${date.year}` :'';
+  }
+}
 @Component({
   selector: 'app-warehouse',
   templateUrl: './warehouse.component.html',
   styleUrls: ['./warehouse.component.scss'],
-  providers: [ConfirmationService]
+  providers: [ConfirmationService,{provide: NgbDateParserFormatter, useClass: NgbDateCustomParserFormatter}]
 
 })
 export class WarehouseComponent implements OnInit {

@@ -4,17 +4,16 @@ import {NgbCalendar, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 @Component({
   selector: 'app-loading-overlay',
   template: `
-    <form class="form-inline">
-      <div class="form-group">
-        <div class="input-group">
-          <input class="form-control ag-input-wrapper custom-date-filter ag-custom-component-popup"  placeholder="yyyy-mm-dd"
-                 name="dp" [(ngModel)]="model" ngbDatepicker #d="ngbDatepicker">
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
-          </div>
+    <div class="form-group">
+      <div class="input-group">
+        <input class="form-control ag-input-wrapper custom-date-filter ag-custom-component-popup"
+               name="dp" [(ngModel)]="model" ngbDatepicker #d="ngbDatepicker"  (ngModelChange)="selected()" >
+        <div class="input-group-append">
+          <p-button (click)="d.toggle()" icon="pi pi-calendar"></p-button>
+      
         </div>
       </div>
-    </form>
+    </div>
   `,
   styles:[
     `
@@ -50,10 +49,11 @@ export class CustomDateComponent implements OnInit {
   constructor(private calendar: NgbCalendar) {
   }
 
-  selectToday() {
-    this.model = this.calendar.getToday();
-  }
 
   ngOnInit(): void {
+  }
+
+  selected() {
+    console.log()
   }
 }

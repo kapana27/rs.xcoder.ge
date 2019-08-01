@@ -120,7 +120,6 @@
     style="width: 100%;height: calc(100vh - 135px);"
     id="myGrid"
     class="ag-theme-balham"
-    [frameworkComponents]="frameworkComponents"
     [columnDefs]="columnDefs"
     [floatingFilter]="true"
     [debug]="true"
@@ -144,6 +143,7 @@
     [getContextMenuItems]="getContextMenuItems"
     (rowClicked)='onRowClicked($event)'
     (gridReady)="onGridReady($event)"
+    [frameworkComponents]="frameworkComponents"
   ></ag-grid-angular>
 </div>
 

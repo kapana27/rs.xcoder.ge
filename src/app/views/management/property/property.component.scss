@@ -1,5 +1,42 @@
  /deep/ app-property{
+   ag-grid-angular {
+     .ag-header {
+       overflow: visible !important;
+       .ag-header-viewport {
+         overflow: visible !important;
+         .ag-header-row {
+           overflow: visible !important;
+           .ag-header-cell {
+             overflow: visible !important;
+             .ag-input-text-wrapper {
+               overflow: visible !important;
+               div[ref="eDateWrapper"] {
+                 overflow: visible !important;
+                 .form-group {
+                   margin-bottom: 0;
+                   input {
+                     height: 20px;
+                     width: 78px;
+                     border-radius: 0;
+                     padding: 0;
+                     font-size: 12px;
+                     padding-left: 3px;
+                   }
+                   .input-group-append {
+                     button {
+                       height: 20px;
+                       width: 20px;
+                     }
+                   }
 
+                 }
+               }
+             }
+           }
+         }
+       }
+     }
+   }
    .actionButton {
      display: flex;
      justify-content: space-between;
