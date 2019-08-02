@@ -14,8 +14,8 @@ import {InventorTransfer} from '../../../models/inventorTransfer';
 import {ValidatorService} from '../../../services/validator/validator.service';
 import {TreeNode} from '../../../models/tree-node';
 import {RequestService} from '../../../services/request.service';
-import {CustomDateComponent} from "../../../components/custom-date/custom-date.component";
-import {NgbDateParserFormatter, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {CustomDateComponent} from '../../../components/custom-date/custom-date.component';
+import {NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 
 interface Default {
   id?: number;
@@ -30,22 +30,26 @@ interface Data {
   totalCount: number;
 }
 
+function format(f) {
+  return f.toString().length === 1 ? '0' + f : f;
+}
+
 @Injectable()
 export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
   parse(value: string): NgbDateStruct {
-      return { day: 21, month:10, year: 2010}
+      return { day: 21, month: 10, year: 2010};
   }
 
   format(date: NgbDateStruct): string {
     return date ?
-      `${(date.day) ? (date.day) : ''}-${(date.month) ? (date.month) : ''}-${date.year}` :'';
+      `${(date.day) ? (format(date.day)) : ''}-${(date.month) ? format(date.month) : ''}-${date.year}` : '';
   }
 }
 @Component({
   selector: 'app-warehouse',
   templateUrl: './warehouse.component.html',
   styleUrls: ['./warehouse.component.scss'],
-  providers: [ConfirmationService,{provide: NgbDateParserFormatter, useClass: NgbDateCustomParserFormatter}]
+  providers: [ConfirmationService, {provide: NgbDateParserFormatter, useClass: NgbDateCustomParserFormatter}]
 
 })
 export class WarehouseComponent implements OnInit {
@@ -72,7 +76,7 @@ export class WarehouseComponent implements OnInit {
     context?: any,
     rowSelection: string,
     getSelectedRows: string,
-    api?:any
+    api?: any
   };
   items: MenuItem[];
   activeItem: MenuItem;
@@ -139,6 +143,7 @@ export class WarehouseComponent implements OnInit {
   stockList: Array<Default> = [];
   propertyData: Array<any> = [];
   staffList: Array<any> = [];
+  propertyList: Array<any> = [];
   roomsList: Array<any> = [];
   transferToSectionInvoiceGenerator: boolean = false;
   formErrors: Array<string> = [];
@@ -154,12 +159,12 @@ export class WarehouseComponent implements OnInit {
   filesDialog: boolean = false;
   uploadFiles: Array<any> = [];
   dialogName: any = '';
-  prod: any='';
+  prod: any = '';
   public frameworkComponents;
 
 
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService,  private confirmationService: ConfirmationService, private Request: RequestService) {
-    this.prod=this.Request.prod;
+    this.prod = this.Request.prod;
     this.gridOptions = {
       context: {
         thisComponent : this,
@@ -428,11 +433,12 @@ export class WarehouseComponent implements OnInit {
     return [
       'copy', 'copyWithHeaders', 'paste', 'separator',
       {
-        name: 'ექსელში ექსპორტი',
+        name: 'ექსელში ექსპორტი .xlsx',
         action: function () {
-          window.open(params.context.thisComponent.prod+'/api/secured/Item/Stock/Export', '_blank');
+          window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export', '_blank');
         }
       },
+      'separator',
       {
         name: 'რედაქტირება',
         action: function () {
@@ -459,12 +465,15 @@ export class WarehouseComponent implements OnInit {
           params.context.thisComponent.showDialog();
         }
       },
+      'separator',
       {
         name: 'მონიშნულის გაუქმება',
         action: function () {
           params.context.thisComponent.gridOptions.api.deselectAll();
         }
       },
+      'separator',
+
       {
         name: 'კალათაში ჩაყრილი ნივთები',
         action: function () {
@@ -484,24 +493,24 @@ export class WarehouseComponent implements OnInit {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
     const operation = this.operation;
-    const selectedTabId =this.selectedTabId;
+    const selectedTabId = this.selectedTabId;
     const cartItems = this.cartItems;
     const datasource = {
       getRows(params) {
         const parameters = [];
-        for(let f in params['request']['filterModel']){
-          const name = (f.split(".").length>0)? f.split(".")[0]: f;
+        for (const f in params['request']['filterModel']) {
+          const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
            parameters.push({
              property: name,
-             value:params['request']['filterModel'][f]['filter'],
-             operator:"like"
+             value: params['request']['filterModel'][f]['filter'],
+             operator: 'like'
            });
         }
         operation.getData(selectedTabId, params['request']['startRow'], params['request']['endRow'], encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             console.log(cartItems);
-            params.successCallback(response['data'].map((v,k)=>{
-              v['rowId']=(params['request']['startRow']+1+k );
+            params.successCallback(response['data'].map((v, k) => {
+              v['rowId'] = (params['request']['startRow'] + 1 + k );
               if (v['barcode'].toString().length <= v['barCodeType']['length']) {
                 v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
               }
@@ -516,7 +525,7 @@ export class WarehouseComponent implements OnInit {
           .catch(error => {
             console.error(error);
             params.failCallback();
-          })
+          });
       }
     };
     params.api.setServerSideDatasource(datasource);
@@ -1008,7 +1017,7 @@ console.log(this.newInventor);
     if (this.newInventor.spend === 1) {
 
     } else {
-      if(this.newInventor.isCar !==1){
+      if (this.newInventor.isCar !== 1) {
         filter.push( 'selectedBarcode');
       }
     }
@@ -1033,11 +1042,11 @@ console.log(this.newInventor);
       this.newInventor.model = (this.newInventor.selectedModel !== undefined) ? this.newInventor.selectedModel['id'] : null;
       this.newInventor.selectedModel = (this.newInventor.selectedModel !== undefined) ? this.newInventor.selectedModel : { id: null, name: ''};
 
-      this.operation.getAddonNumber({type: 'Stock/Income', subType:""})
+      this.operation.getAddonNumber({type: 'Stock/Income', subType: ''})
         .then(response => {
           if (response['status'] === 200) {
               this.addon = response['data'];
-            if (this.newInventor.itemGroup !== undefined && this.newInventor.consumption === false && this.newInventor.isCar !==1) {
+            if (this.newInventor.itemGroup !== undefined && this.newInventor.consumption === false && this.newInventor.isCar !== 1) {
 
 
                 this.operation.getFreeCodes({
@@ -1176,7 +1185,7 @@ console.log(this.newInventor);
       this.transferToSection.listData = this.cartItemsData;
       this.transferToSection.fromStock = this.transferToSection.fromDetails['id'];
       this.transferToSection.list = this.cartItemsData.map(value => {
-        return {itemId: value['id'], amount: value['count']};
+        return {itemId: value['id'], amount: value['count'], list: this.notNull(value['fileList']) ? value['fileList'].toString() : ''};
       });
       this.transferToSection.files = this.uploadFiles.map(value => value['id']).toString();
       this.operation.getAddonNumber({type: 'Stock/Change'})
@@ -1228,6 +1237,26 @@ console.log(this.newInventor);
         });
 
   }
+
+  filterPropertyList($event: any) {
+      console.log($event);
+      this.operation.getPropertyList($event.query)
+        .then((response: {data: Array<any>}) => {
+          this.propertyList = (response['status'] === 200) ? response.data.map(v => {
+            return {
+              id: v['id'],
+              name:  v['fullname'] + ' , ' + v['position']['name'] + ' ,' + v['department']['name'],
+              fname: v['fullname'],
+              position: v['position']['name'],
+              department:  v['department']['name']
+            };
+          }) : [];
+        })
+        .catch(response => {
+          this.error('შეცდომა', response['error']);
+        });
+
+  }
   activeTransferToSection() {
       const formData =  new FormData();
       for (const key in this.transferToSection) {
@@ -1262,6 +1291,7 @@ console.log(this.newInventor);
        filter.push('selectedSection');
        filter.push('selectedRequestPerson');
     }
+    console.log(this.cartItemsData);
     this.formErrors = this.validator.checkObject(this.inventorTransfer, filter);
 
     if (this.formErrors.length === 0 && this.dataChecker) {
@@ -1294,8 +1324,9 @@ console.log(this.newInventor);
               this.inventorTransfer.requestPerson = this.inventorTransfer.selectedPerson['id'];
             }
             this.inventorTransfer.toWhomSection = this.inventorTransfer.selectedProperty['id'];
+
             this.inventorTransfer.list = this.cartItemsData.map(value => {
-              return {itemId: value['id'], amount: value['count']};
+              return {itemId: value['id'], amount: value['count'], list: this.notNull(value['fileList']) ? value['fileList'].toString() : ''};
             });
              this.inventorTransfer.files = this.uploadFiles.map(value => value['id']).toString();
           } else {
@@ -1530,7 +1561,7 @@ console.log(this.newInventor);
     }
   }
   changeLang(lng) {
-    this.lang = lng; //(this.lang === 'ge') ? 'uk' : 'ge';
+    this.lang = lng; // (this.lang === 'ge') ? 'uk' : 'ge';
   }
   onRowClicked($event: any) {
     console.log($event);

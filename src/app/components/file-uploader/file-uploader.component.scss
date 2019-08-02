@@ -1,4 +1,14 @@
-/deep/ .ui-fileupload-content{
-  overflow-y:scroll ;
-  max-height: 300px;
+/deep/ {
+
+  .ui-fileupload-choose {
+    .ui-button-text{
+      font-family: 'lbet-mt',sans-serif !important;
+
+    }
+  }
+  .ui-fileupload-content{
+    overflow-y:scroll ;
+    max-height: 300px;
+  }
+
 }

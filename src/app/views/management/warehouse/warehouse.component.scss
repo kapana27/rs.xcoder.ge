@@ -60,6 +60,9 @@
     margin-bottom: 10px;
     align-items: center;
     .buttonBox {
+      &.tf {
+        font-family: 'lbet-mt',sans-serif !important;
+      }
       &:nth-child(1){display: flex; justify-content: flex-start;}
       &:nth-child(2){display: flex; justify-content: center;}
       &:nth-child(3){display: flex; justify-content: flex-end;}

@@ -164,8 +164,8 @@
           <p-dropdown  [ngClass]="{ 'red':if_error(formErrors,'fromDetails')?'1px solid red': '' }" [options]="stockList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="transferToSection.fromDetails" (ngModelChange)="getTransferProperty()"></p-dropdown>
         </div>
         <div class="ui-g-12 ui-md-6">
-          <p>ფროფერთი</p>
-          <p-dropdown  [ngClass]="{ 'red':if_error(formErrors,'toWhomStockDetails')?'1px solid red': '' }" [options]="propertyData" optionLabel="fullname" placeholder="ფროფერთი" [(ngModel)]="transferToSection.toWhomStockDetails" ></p-dropdown>
+          <p>ქონების მართვა</p>
+          <p-dropdown  [ngClass]="{ 'red':if_error(formErrors,'toWhomStockDetails')?'1px solid red': '' }" [options]="propertyData" optionLabel="fullname" placeholder="ქონების მართვა" [(ngModel)]="transferToSection.toWhomStockDetails" ></p-dropdown>
         </div>
         <div class="ui-g-12 ui-md-6">
           <p>ტრანსპორტ. პასხ. პირი:</p>
@@ -189,7 +189,7 @@
     </div>
   </div>
   <p-footer>
-    <button style="position: absolute; left: 230px" pButton type="button" icon="pi pi-file" label="ფაილები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
+    <button style="position: absolute; left: 230px" pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
     <app-cart-button (removeCartItem)="removeCartItem()" ></app-cart-button>
     <span style="width: 20px; margin-right: 20px" *ngIf="transferToSectionInvoiceGenerator">
       ბოლო კოდი - {{lastCode}}
@@ -200,7 +200,7 @@
   </p-footer>
 </p-dialog>
 
-<p-dialog header=" " *ngIf="cartDialogShow" [(visible)]="cartDialogShow" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+<p-dialog header=" " *ngIf="cartDialogShow" [(visible)]="cartDialogShow" [modal]="true" [responsive]="true" [style]="{width: '850px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
   <div style="width: 100%;height: 500px;">
     <app-cart-button (removeCartItem)="removeCartItem()" (checker)="checker($event)"></app-cart-button>
     <app-cart style="position: relative; top:30px;"  [data]="cartItemsData" (removeCartItem)="removeCartItem()" (checker)="checker($event)"></app-cart>
@@ -224,8 +224,8 @@
               </div>
 
               <div class="ui-g-12 ui-md-6">
-                <p>ფროფერთი</p>
-                <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
+                <p>ქონების მართვა</p>
+                <p-autoComplete [suggestions]="propertyList" (completeMethod)="filterPropertyList($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
                                 [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
                   <ng-template let-brand pTemplate="item">
                     <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
@@ -276,8 +276,8 @@
                 <p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
               </div>
               <div class="ui-g-12 ui-md-6">
-                <p>ფროფერთი</p>
-                <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
+                <p>ქონების მართვა</p>
+                <p-autoComplete [suggestions]="propertyList" (completeMethod)="filterPropertyList($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
                                 [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
                   <ng-template let-brand pTemplate="item">
                     <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
@@ -344,7 +344,7 @@
     <app-cart [data]="cartItemsData" (checker)="checker($event)"></app-cart>
   </div>
   <p-footer>
-    <button style="position: absolute; left: 230px" pButton type="button" icon="pi pi-file" label="ფაილები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
+    <button style="position: absolute; left: 230px" pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
     <app-cart-button (removeCartItem)="removeCartItem()"></app-cart-button>
     <span style="width: 20px; margin-right: 20px" *ngIf="inventorTransfer.generator">
       ბოლო კოდი - {{lastCode}}
@@ -722,24 +722,33 @@
   </div>
 
   <p-footer style="width: 100%">
-    <span class="lastCode">ბოლო შტრიხკოდი: {{newInventor.fullBarCode}}</span>
-    <span class="lastCode" *ngIf="frustrate" style="margin-left: 400px; font-size: 20px">ბოლო კოდი - {{lastCode}}</span>
-    <button style="position: relative; right: 100px" pButton type="button" icon="pi pi-file" label="ფაილები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
+    <div class="actionButton">
+      <div class="buttonBox tf">
+        <span>ბოლო შტრიხკოდი: {{newInventor.fullBarCode}}</span>
+        <span *ngIf="frustrate" style="margin-left: 30px;">ბოლო კოდი - {{lastCode}}</span>
+      </div>
+      <div class="buttonBox">
+        <button pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
+      </div>
+      <div class="buttonBox">
+        <span class="inv_lang">
+          <button type="button" [ngClass]="(lang === 'ge')? 'active':''" style="position: relative; top:-2px;" (click)="changeLang('ge')"><img src="./assets/img/icons/ge.png" width="25" alt=""></button>
+          <button type="button" [ngClass]="(lang === 'uk')? 'active':''" style="position: relative; top:-2px;" (click)="changeLang('uk')"><img src="./assets/img/icons/uk.png" width="25" alt=""></button>
+        </span>
+      </div>
+      <div class="buttonBox">
+        <button type="button" pButton icon="pi pi-save" *ngIf="frustrate && inventorOperation=='new'" (click)="saveNewInventor()" label="შენახვა" ></button>
+        <button type="button" pButton icon="pi pi-save" *ngIf="inventorOperation=='edit' || inventorOperation ==='multiple'" (click)="editNewInventor()" label="დამახსოვრება" ></button>
+        <button type="button" pButton icon="pi pi-save" *ngIf="!frustrate && inventorOperation=='new'" (click)="frustrateInventor()" label="ჩაშლა" ></button>
+        <button type="button" pButton icon="pi pi-close" *ngIf="frustrate" (click)="frustrate=false" label="დაბრუნება" class="ui-button-secondary"></button>
+        <button type="button" pButton icon="pi pi-close" (click)="inventorDialogShow=false" label="დახურვა" class="ui-button-secondary"></button>
+      </div>
+    </div>
 
-    <span class="inv_lang" style="margin-right: 100px">
-      <button type="button" [ngClass]="(lang === 'ge')? 'active':''" style="position: relative; top:-2px;" (click)="changeLang('ge')"><img src="./assets/img/icons/ge.png" width="25" alt=""></button>
-      <button type="button" [ngClass]="(lang === 'uk')? 'active':''" style="position: relative; top:-2px;" (click)="changeLang('uk')"><img src="./assets/img/icons/uk.png" width="25" alt=""></button>
-    </span>
-
-    <button type="button" pButton icon="pi pi-save" *ngIf="frustrate && inventorOperation=='new'" (click)="saveNewInventor()" label="შენახვა" ></button>
-    <button type="button" pButton icon="pi pi-save" *ngIf="inventorOperation=='edit' || inventorOperation ==='multiple'" (click)="editNewInventor()" label="დამახსოვრება" ></button>
-    <button type="button" pButton icon="pi pi-save" *ngIf="!frustrate && inventorOperation=='new'" (click)="frustrateInventor()" label="ჩაშლა" ></button>
-    <button type="button" pButton icon="pi pi-close" *ngIf="frustrate" (click)="frustrate=false" label="დაბრუნება" class="ui-button-secondary"></button>
-    <button type="button" pButton icon="pi pi-close" (click)="inventorDialogShow=false" label="დახურვა" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>
 
-<p-dialog header="ფაილების მიმაგრება" *ngIf="filesDialog" [(visible)]="filesDialog" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+<p-dialog header="დოკუმენტების მიმაგრება" *ngIf="filesDialog" [(visible)]="filesDialog" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
   <div style="width: 100%;min-height: 250px;">
       <app-file-uploader (onFiles)="uploadedFiles($event)" [files]="uploadFiles"></app-file-uploader>
   </div>

@@ -80,6 +80,9 @@ export class OperationsService {
   getStaffList(query: any) {
     return this.Request.Post(Config.baseURI + Config.List.post.staff + '?name=' + query, {});
   }
+  getPropertyList(query: any) {
+    return this.Request.Post(Config.baseURI + Config.List.post.properyList + '?name=' + query, {});
+  }
   getAddonNumber(params: {type: string, subType?: string}) {
 
     return this.Request.Post(Config.baseURI + Config.List.post.addon + '?type=' + params.type + '&subType=' + params.subType, {});

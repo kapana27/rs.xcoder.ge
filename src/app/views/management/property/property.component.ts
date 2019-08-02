@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Injectable, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import 'ag-grid-enterprise';
 import {OperationsService} from '../../../services/operations/operations.service';
@@ -12,7 +12,8 @@ import * as moment from 'moment';
 import {InventorTransfer} from '../../../models/inventorTransfer';
 import {ForPerson} from '../../../models/forPerson';
 import {RequestService} from '../../../services/request.service';
-import {CustomDateComponent} from "../../../components/custom-date/custom-date.component";
+import {CustomDateComponent} from '../../../components/custom-date/custom-date.component';
+import {NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 interface Data {
   TotalCount: number;
   data: Item[];
@@ -20,20 +21,37 @@ interface Data {
   success: boolean;
   totalCount: number;
 }
+
+function format(f) {
+  return f.toString().length === 1 ? '0' + f : f;
+}
+
+@Injectable()
+export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
+  parse(value: string): NgbDateStruct {
+    return { day: 21, month: 10, year: 2010};
+  }
+
+  format(date: NgbDateStruct): string {
+    return date ?
+      `${(date.day) ? (format(date.day)) : ''}-${(date.month) ? format(date.month) : ''}-${date.year}` : '';
+  }
+}
 @Component({
   selector: 'app-property',
   templateUrl: './property.component.html',
   styleUrls: ['./property.component.scss'],
-  providers: [ConfirmationService]
+  providers: [ConfirmationService, {provide: NgbDateParserFormatter, useClass: NgbDateCustomParserFormatter}]
+
 })
 export class PropertyComponent implements OnInit {
   private lastCode: any = 0;
-  prod: any='';
+  prod: any = '';
   public frameworkComponents;
-
+  propertyList: Array<any> = [];
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService, private Request: RequestService) {
     this.getCartItems();
-    this.prod=this.Request.prod;
+    this.prod = this.Request.prod;
     this.inOut = 'out';
     this.gridOptions = {
       context: {
@@ -67,14 +85,14 @@ export class PropertyComponent implements OnInit {
         suppressMenu: false,
 
       },
-      {
+      /*{
         headerName: 'ID',
         width: 50,
         field: 'id',
         cellRenderer: 'loadingCellRenderer',
         sortable: false,
         suppressMenu: true
-      },
+      },*/
       {
         headerName: 'თარიღი',
         field: 'trDate',
@@ -248,14 +266,14 @@ export class PropertyComponent implements OnInit {
         suppressMenu: false,
 
       },
-      {
+      /*{
         headerName: 'ID',
         width: 50,
         field: 'id',
         cellRenderer: 'loadingCellRenderer',
         sortable: false,
         suppressMenu: true
-      },
+      },*/
       {
         headerName: 'თარიღი',
         field: 'trDate',
@@ -721,19 +739,19 @@ export class PropertyComponent implements OnInit {
     const datasource = {
       getRows(params) {
         const parameters = [];
-        for(let f in params['request']['filterModel']){
-          const name = (f.split(".").length>0)? f.split(".")[0]: f;
+        for (const f in params['request']['filterModel']) {
+          const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
           parameters.push({
             property: name,
-            value:params['request']['filterModel'][f]['filter'],
-            operator:"like"
+            value: params['request']['filterModel'][f]['filter'],
+            operator: 'like'
           });
         }
         operation.getAllData(inOut === 'v2' ? 'in' : inOut, params['request']['startRow'], params['request']['endRow'], encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             console.log(cartItems);
-            params.successCallback(response['data'].map((v,k)=>{
-              v['rowId']=(params['request']['startRow']+1+k );
+            params.successCallback(response['data'].map((v, k) => {
+              v['rowId'] = (params['request']['startRow'] + 1 + k );
               if (v['barcode'].toString().length <= v['barCodeType']['length']) {
                 v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
               }
@@ -748,7 +766,7 @@ export class PropertyComponent implements OnInit {
           .catch(error => {
             console.error(error);
             params.failCallback();
-          })
+          });
       }
     };
     params.api.setServerSideDatasource(datasource);
@@ -757,16 +775,18 @@ export class PropertyComponent implements OnInit {
     return [
       'copy', 'copyWithHeaders', 'paste', 'separator',
       {
-        name: 'ექსელში ექსპორტი',
+        name: 'ექსელში ექსპორტი .xlsx',
         action: function () {
           if (params.context.thisComponent.selectedTabId === -2) {
-            window.open(params.context.thisComponent.prod+'/api/secured/Item/Section/In/Export', '_blank');
+            window.open(params.context.thisComponent.prod + '/api/secured/Item/Section/In/Export', '_blank');
           } else {
-            window.open(params.context.thisComponent.prod+'/api/secured/Item/Section/Out/Export', '_blank');
+            window.open(params.context.thisComponent.prod + '/api/secured/Item/Section/Out/Export', '_blank');
           }
 
         }
       },
+      'separator',
+
       {
         name: 'განპიროვნება',
         action: function () {
@@ -794,12 +814,16 @@ export class PropertyComponent implements OnInit {
           params.context.thisComponent.inventoryToBuildingDialog();
         }
       },
+      'separator',
+
       {
         name: 'მონიშნულის გაუქმება',
         action: function () {
           params.context.thisComponent.gridOptions.api.deselectAll();
         }
       },
+      'separator',
+
       {
         name: 'კალათაში ჩაყრილი ნივთები',
         action: function () {
@@ -933,8 +957,9 @@ export class PropertyComponent implements OnInit {
             this.inventorReturnModel.carrierPerson = this.inventorReturnModel.selectedCarrier['id'];
 
             this.inventorReturnModel.listData = this.cartItemsData;
-            this.inventorReturnModel.list = this.cartItemsData.map(v => {
-              return {itemId: v['id'], amount: v['count']};
+            this.inventorReturnModel.list = this.cartItemsData.map(value => {
+              return {itemId: value['id'], amount: value['count'], list: this.notNull(value['fileList']) ? value['fileList'].toString() : ''};
+
             });
             this.inventorReturnModel.files = this.uploadFiles.map(value => value['id']).toString();
 
@@ -947,6 +972,26 @@ export class PropertyComponent implements OnInit {
           this.error('შეცდომა', response['error']);
         });
     }
+  }
+
+  filterPropertyList($event: any) {
+    console.log($event);
+    this.operation.getPropertyList($event.query)
+      .then((response: {data: Array<any>}) => {
+        this.propertyList = (response['status'] === 200) ? response.data.map(v => {
+          return {
+            id: v['id'],
+            name:  v['fullname'] + ' , ' + v['position']['name'] + ' ,' + v['department']['name'],
+            fname: v['fullname'],
+            position: v['position']['name'],
+            department:  v['department']['name']
+          };
+        }) : [];
+      })
+      .catch(response => {
+        this.error('შეცდომა', response['error']);
+      });
+
   }
   activateInventarReturn() {
     const formData = new FormData();
@@ -1045,7 +1090,7 @@ export class PropertyComponent implements OnInit {
               return value;
             });
             this.inventorTransfer.list = this.cartItemsData.map(value => {
-              return {itemId: value['id'], amount: value['count']};
+              return {itemId: value['id'], amount: value['count'], list: this.notNull(value['fileList']) ? value['fileList'].toString() : ''};
             });
             this.inventorTransfer.files = this.uploadFiles.map(value => value['id']).toString();
 
@@ -1065,6 +1110,9 @@ export class PropertyComponent implements OnInit {
 
         });
     }
+  }
+  notNull(value) {
+    return (value !== undefined && value !== null);
   }
   activeInventorTransfer() {
     const formData = new FormData();
@@ -1134,7 +1182,8 @@ export class PropertyComponent implements OnInit {
               this.forPerson.receiverPerson = this.forPerson.selectedPerson['id'];
               this.forPerson.roomId = this.forPerson.selectedRoom['id'];
               this.forPerson.list = this.cartItemsData.map(value => {
-                return {itemId: value['id'], amount: value['count']};
+                return {itemId: value['id'], amount: value['count'], list: this.notNull(value['fileList']) ? value['fileList'].toString() : ''};
+
               });
               this.forPerson.files = this.uploadFiles.map(value => value['id']).toString();
               this.forPerson.listData = this.cartItemsData;

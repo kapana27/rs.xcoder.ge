@@ -7,6 +7,7 @@
           <th>შტრიხკოდი</th>
           <th>რაოდენობა</th>
           <th>რაოდენობა</th>
+          <th>რაოდენობა</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-d>
@@ -15,6 +16,7 @@
           <td>{{(d['spend']===1)? '': d['barcode']}}</td>
           <td><input type="text" [(ngModel)]="d['count']" [ngClass]="{ 'red': d['count'] *1>(d['amount'] *1 -d['tmpAmount'] * 1) || d['count']<1 }" style="width: 100%" (ngModelChange)="check(d)" ></td>
           <td>{{d["amount"] *1 -d["tmpAmount"] * 1}}</td>
+          <td> <button  pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ countFiles(d)}})" (click)="filesDialogOpen(d)"> </button></td>
         </tr>
       </ng-template>
 
@@ -23,3 +25,8 @@
 
   </div>
 </div>
+<p-dialog header="ფაილების მიმაგრება" *ngIf="filesDialog" [(visible)]="filesDialog" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+  <div style="width: 100%;min-height: 250px;">
+    <app-file-uploader (onFiles)="uploadedFiles($event)" [files]="uploadFiles" ></app-file-uploader>
+  </div>
+</p-dialog>

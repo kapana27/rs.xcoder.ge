@@ -60,6 +60,7 @@ export  const Config = {
         deleteFile: '/api/secured/Document/Delete'
       },
       post:{
+        properyList: '/api/secured/Staff/Filter/ByProperty',
         lastBarCode: '/api/secured/List/BarCode/Get/LastCode',
         marker:'/api/secured/List/Maker/Insert',
         supplier:'/api/secured/Supplier/Insert',

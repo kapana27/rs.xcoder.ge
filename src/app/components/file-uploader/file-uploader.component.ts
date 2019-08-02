@@ -12,6 +12,7 @@ import {ConfirmationService} from 'primeng/api';
 export class FileUploaderComponent implements OnInit {
   uploadedFiles: any[] = [];
   @Output() onFiles = new EventEmitter();
+  @Output() onDeleteFile = new EventEmitter();
   @Input() files: Array<any>;
   prod: any;
 
@@ -48,7 +49,6 @@ export class FileUploaderComponent implements OnInit {
   }
 
   onUploadedFiles() {
-    console.log(this.uploadedFiles);
      this.onFiles.emit(this.uploadedFiles);
   }
 }
