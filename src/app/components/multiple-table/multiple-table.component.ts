@@ -18,6 +18,7 @@ export class MultipleTableComponent implements OnInit, OnChanges {
   @Input() changer: any;
   @Input() parent: any ;
   @Input() header: any = '&nbsp';
+  @Input() tooltip: any = '';
   @Input() additionButton: boolean = false;
   @Input() title: any = '&nbsp';
   @Input() filter: boolean = false;
@@ -60,9 +61,12 @@ export class MultipleTableComponent implements OnInit, OnChanges {
     this.loading = true;
     this.thisProperty=this;
 
+
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(this.tooltip);
+  }
 
   loadLazy(event: LazyLoadEvent, param?: string) {
     this.event = this.notNull(event)? event: {first: 0, rows: 30};

@@ -15,7 +15,7 @@ import {ValidatorService} from '../../../services/validator/validator.service';
 import {TreeNode} from '../../../models/tree-node';
 import {RequestService} from '../../../services/request.service';
 import {CustomDateComponent} from '../../../components/custom-date/custom-date.component';
-import {NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDate, NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 
 interface Default {
   id?: number;
@@ -54,7 +54,7 @@ export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
 })
 export class WarehouseComponent implements OnInit {
   public lastCode: number = 0;
-  public lang = 'ge';
+  public lang = localStorage.getItem("lang");
   eventData: any = null;
   public gridApi;
   public gridColumnApi;
@@ -110,7 +110,7 @@ export class WarehouseComponent implements OnInit {
   itemGroupDialogShow: boolean  = false;
   ItemGroup: TreeNode[] = [];
   newInventor: Inventor = {
-    date: new Date(),
+    date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
     consumption: false,
     price: 0,
     amount: 0,
@@ -132,10 +132,9 @@ export class WarehouseComponent implements OnInit {
   cartItemsData: Array<any> = [];
   cartMultipleItemsData: Array<any> = [];
   transferToSection: TransferToSection = {
-    Datetime: new Date()
+    date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())}
   };
   inventorTransfer: InventorTransfer = {
-    date: new Date(),
     selectedIndex: 0,
     generator: false,
     roomId: 89
@@ -151,7 +150,8 @@ export class WarehouseComponent implements OnInit {
   private dataChecker = false;
   tmpData: any = {};
   private inventorOperation: string = 'new';
-  public minDate: Date = new Date();
+  //public minDate: Date = new Date();
+  public minDate: NgbDateStruct = { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())} ;
   addon: {
     Left?: string,
     Right?: string
@@ -435,7 +435,7 @@ export class WarehouseComponent implements OnInit {
       {
         name: 'ექსელში ექსპორტი .xlsx',
         action: function () {
-          window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export', '_blank');
+          window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export'+localStorage.getItem("filter"), '_blank');
         }
       },
       'separator',
@@ -497,15 +497,18 @@ export class WarehouseComponent implements OnInit {
     const cartItems = this.cartItems;
     const datasource = {
       getRows(params) {
+        console.log(params)
         const parameters = [];
         for (const f in params['request']['filterModel']) {
           const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
+
            parameters.push({
              property: name,
-             value: params['request']['filterModel'][f]['filter'],
-             operator: 'like'
+             value: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? params['request']['filterModel'][f]['dateFrom'] : params['request']['filterModel'][f]['filter'],
+             operator: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' )? '=':'like'
            });
         }
+
         operation.getData(selectedTabId, params['request']['startRow'], params['request']['endRow'], encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             console.log(cartItems);
@@ -598,7 +601,7 @@ export class WarehouseComponent implements OnInit {
         this.uploadFiles = [];
         this.inventoryToBuildingDialogShow = true;
         this.inventorTransfer = {
-          date: new Date(),
+          date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
           selectedIndex: 0,
           generator: false,
           roomId: 89
@@ -618,7 +621,10 @@ export class WarehouseComponent implements OnInit {
           (new Date(moment(bDate[2] + '-' + bDate[1] + '-' + bDate[0]).format('YYYY-MM-DD'))).getTime()
         );
       })[0].split('-');
-      this.minDate = new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD'));
+      //this.minDate = new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD'));
+      this.minDate = new NgbDate(date[2], date[1],date[0]);
+      console.log(this.minDate)
+
     }
   }
   showDialog() {
@@ -629,7 +635,7 @@ export class WarehouseComponent implements OnInit {
             this.dialogName = 'ელექტორნული ზედდებული №';
             this.uploadFiles = [];
             this.transferToSection = {
-              Datetime: new Date()
+              date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())}
             };
             this.display = true;
             this.checkMinDate();
@@ -665,7 +671,7 @@ export class WarehouseComponent implements OnInit {
           this.inventorDialogShow = true;
           this.frustrate = false;
           this.newInventor = {
-            date: new Date(),
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
             consumption: false,
             fullname: {
               name: ''
@@ -730,9 +736,11 @@ export class WarehouseComponent implements OnInit {
 
        if (this.inventorOperation === 'edit') {
          const date = this.tmpData['trDate'].split('-');
+         console.log(date)
          this.newInventor = {
            id: this.tmpData.id,
-           date: new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD')) ,
+           //date: new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD')) ,
+           date: { year: parseInt(date[2]), month: parseInt(date[1]), day: parseInt(date[0])},
            consumption: false,
            fullname: this.tmpData,
            price: this.tmpData.price,
@@ -761,6 +769,7 @@ export class WarehouseComponent implements OnInit {
            invoiceAddon: this.tmpData.invoiceAddon,
            factoryNumber: this.tmpData['factoryNumber']
          };
+         console.log(this.newInventor);
        } else {
          this.newInventor.date = null;
          this.newInventor.amount = null;
@@ -773,7 +782,8 @@ export class WarehouseComponent implements OnInit {
              fullname: tmpData,
              price: tmpData['price'],
              amount: tmpData['amount'],
-             entryDate: new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD')),
+             //entryDate: new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD')),
+             entryDate: { year: date[2], month: date[1], day: date[0]},
              selectedBarcode: tmpData['barCodeType'],
              barCode: tmpData['barcode'].replace(tmpData['barCodeType']['value'], ''),
              fullBarCode: tmpData['barcode'],
@@ -967,7 +977,7 @@ console.log(this.newInventor);
       .then(response => {
          if (response['status'] == 200) {
            this.newInventor = {
-             date: new Date(),
+             date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
              consumption: false,
              fullname: {
                name: ''
@@ -1025,7 +1035,8 @@ console.log(this.newInventor);
     console.log(filter, this.newInventor, this.formErrors);
 
     if (this.formErrors.length === 0) {
-      this.newInventor.entryDate = moment(this.newInventor.date).format('DD-MM-YYYY');
+      //this.newInventor.entryDate = moment(this.newInventor.date).format('DD-MM-YYYY');
+      this.newInventor.entryDate = this.newInventor.date.day+"-"+this.newInventor.date.month+"-"+this.newInventor.date.year;
       this.newInventor.name = (typeof this.newInventor.fullname === 'string') ? this.newInventor.fullname : this.newInventor.fullname['name'];
       this.newInventor.itemType = (this.newInventor.selectedItemType != undefined) ? this.newInventor.selectedItemType['id'] : null;
 
@@ -1169,7 +1180,7 @@ console.log(this.newInventor);
         });
   }
   generaTeTransferToSection() {
-    const filter = ['Datetime', 'fromDetails', 'toWhomStockDetails', 'carrierPersonDetails'];
+    const filter = ['date', 'fromDetails', 'toWhomStockDetails', 'carrierPersonDetails'];
     this.formErrors = this.validator.checkObject(this.transferToSection, filter);
 
     if (this.formErrors.length === 0 && this.dataChecker) {
@@ -1179,7 +1190,9 @@ console.log(this.newInventor);
         }
         return value;
       });
-      this.transferToSection.trDate = moment(this.transferToSection.Datetime).format('DD-MM-YYYY');
+      this.transferToSection.trDate =this.transferToSection.date.day+"-"+this.transferToSection.date.month+"-"+this.transferToSection.date.year;
+      //moment(this.transferToSection.Datetime).format('DD-MM-YYYY');
+      //this.inventorTransfer.trDate =this.inventorTransfer.date.day+"-"+this.inventorTransfer.date.month+"-"+this.inventorTransfer.date.year; // moment().format('DD-MM-YYYY');
       this.transferToSection.carrierPerson = this.transferToSection.carrierPersonDetails['id'];
       this.transferToSection.toWhomStock = this.transferToSection.toWhomStockDetails['id'];
       this.transferToSection.listData = this.cartItemsData;
@@ -1286,12 +1299,12 @@ console.log(this.newInventor);
   }
   filterBrands($event: any) {}
   generaTeInventorTransfer() {
+    console.log(this.inventorTransfer);
     const filter = ['date', 'selectedProperty', 'selectedPerson', 'selectedCarrier'];
     if (this.inventorTransfer.selectedIndex === 1) {
        filter.push('selectedSection');
        filter.push('selectedRequestPerson');
     }
-    console.log(this.cartItemsData);
     this.formErrors = this.validator.checkObject(this.inventorTransfer, filter);
 
     if (this.formErrors.length === 0 && this.dataChecker) {
@@ -1310,9 +1323,10 @@ console.log(this.newInventor);
               }
               return value;
             });
+
             this.inventorTransfer.addon = response['data'];
             this.inventorTransfer.generator = true;
-            this.inventorTransfer.trDate = moment(this.inventorTransfer.date).format('DD-MM-YYYY');
+            this.inventorTransfer.trDate =this.inventorTransfer.date.day+"-"+this.inventorTransfer.date.month+"-"+this.inventorTransfer.date.year; // moment().format('DD-MM-YYYY');
 
             this.inventorTransfer.fromStock = 11;
             this.inventorTransfer.listData = this.cartItemsData;
@@ -1354,7 +1368,7 @@ console.log(this.newInventor);
       .then(response => {
         if (response['status'] === 200) {
           this.inventorTransfer = {
-            date: new Date(),
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
             selectedIndex: 0,
             generator: false
           };
@@ -1405,6 +1419,8 @@ console.log(this.newInventor);
   }
   editNewInventor() {
     if (this.inventorOperation === 'edit') {
+      this.newInventor.entryDate = this.newInventor.date.day+"-"+this.newInventor.date.month+"-"+this.newInventor.date.year;
+
       const formdata = new FormData();
       for (const key in this.newInventor) {
         if (this.newInventor[key] !== null && this.newInventor[key] !== undefined) {
@@ -1419,7 +1435,7 @@ console.log(this.newInventor);
         .then(response => {
           if (response['status'] == 200) {
             this.newInventor = {
-              date: new Date(),
+              date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
               consumption: false,
               fullname: {
                 name: ''
@@ -1561,7 +1577,8 @@ console.log(this.newInventor);
     }
   }
   changeLang(lng) {
-    this.lang = lng; // (this.lang === 'ge') ? 'uk' : 'ge';
+    localStorage.setItem("lang",lng);
+    this.lang = localStorage.getItem("lang"); // (this.lang === 'ge') ? 'uk' : 'ge';
   }
   onRowClicked($event: any) {
     console.log($event);

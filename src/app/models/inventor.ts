@@ -1,11 +1,13 @@
 import {Default} from "./default";
+import {NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 
 export interface Inventor {
+
   vin?: any,
   isCar?: number,
   id?: number,
-  selectedMeasureUnitName?: Default;
-  date?: Date,
+  selectedMeasureUnitName?: Default,
+  date?: NgbDateStruct,
   inCart?: boolean,
   entryDate?: string,
   name?: string,

@@ -1,7 +1,8 @@
 import {Default} from "./default";
+import {NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 
 export interface ForPerson {
-  date?: Date;
+  date?: NgbDateStruct;
   trDate?: string;
   receiverPerson?:number;
   selectedPerson?: Default;

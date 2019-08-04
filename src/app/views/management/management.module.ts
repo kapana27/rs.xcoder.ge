@@ -20,6 +20,7 @@ import {
 import {DynamicDialogModule} from "primeng/dynamicdialog";
 import {FormsModule} from "@angular/forms";
 import {ComponentsModule} from "../../components/components.module";
+import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
   declarations: [PropertyComponent, WarehouseComponent],
@@ -47,7 +48,8 @@ import {ComponentsModule} from "../../components/components.module";
     ComponentsModule,
     ConfirmDialogModule,
     ChipsModule,
-    TreeTableModule
+    TreeTableModule,
+    NgbDatepickerModule
   ]
 })
 export class ManagementModule { }

@@ -12,8 +12,12 @@ export class DefaultLayoutComponent implements OnDestroy {
   public sidebarMinimized = true;
   private changes: MutationObserver;
   public element: HTMLElement;
+  lang: string = localStorage.getItem("lang");
   constructor(@Inject(DOCUMENT) _document?: any) {
-
+     if(!this.notNull(this.lang)){
+       localStorage.setItem("lang","uk");
+        this.lang=localStorage.getItem("lang");
+     }
     this.changes = new MutationObserver((mutations) => {
       this.sidebarMinimized = _document.body.classList.contains('sidebar-minimized');
     });
@@ -26,5 +30,13 @@ export class DefaultLayoutComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.changes.disconnect();
+  }
+
+  changeLang(lang: string) {
+    localStorage.setItem("lang",lang);
+    this.lang=localStorage.getItem("lang");
+  }
+  notNull(value) {
+    return (value !== undefined && value !== null && value.trim() != '');
   }
 }

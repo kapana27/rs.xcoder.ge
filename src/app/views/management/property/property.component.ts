@@ -13,7 +13,7 @@ import {InventorTransfer} from '../../../models/inventorTransfer';
 import {ForPerson} from '../../../models/forPerson';
 import {RequestService} from '../../../services/request.service';
 import {CustomDateComponent} from '../../../components/custom-date/custom-date.component';
-import {NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDate, NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 interface Data {
   TotalCount: number;
   data: Item[];
@@ -567,17 +567,17 @@ export class PropertyComponent implements OnInit {
   formErrors: Array<string> = [];
   inOut: string = 'out';
   forPerson: ForPerson = {
-    date: new Date(),
+    date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
     generator: false
   };
   inventorReturnModel: InventorReturn = {
     inventarReturnGenerator: false,
-    date: new Date(),
+    date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
   };
   propertyData: Array<any> = [];
   staffList: Array<any> = [];
   inventorTransfer: InventorTransfer = {
-    date: new Date(),
+    date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
     selectedIndex: 0,
     generator: false,
     roomId: 89
@@ -588,7 +588,7 @@ export class PropertyComponent implements OnInit {
   };
   private sectionFields: any;
   uploadFiles: Array<any> = [];
-  minDate: Date = new Date();
+  public minDate: NgbDateStruct = { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())} ;
   filesDialog: boolean = false;
   dialogName: any =  'ელექტრონული ზედდებული №';
   static inCart(inCard) {
@@ -743,8 +743,8 @@ export class PropertyComponent implements OnInit {
           const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
           parameters.push({
             property: name,
-            value: params['request']['filterModel'][f]['filter'],
-            operator: 'like'
+            value: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? params['request']['filterModel'][f]['dateFrom'] : params['request']['filterModel'][f]['filter'],
+            operator: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' )? '=':'like'
           });
         }
         operation.getAllData(inOut === 'v2' ? 'in' : inOut, params['request']['startRow'], params['request']['endRow'], encodeURIComponent(JSON.stringify(parameters)))
@@ -778,9 +778,9 @@ export class PropertyComponent implements OnInit {
         name: 'ექსელში ექსპორტი .xlsx',
         action: function () {
           if (params.context.thisComponent.selectedTabId === -2) {
-            window.open(params.context.thisComponent.prod + '/api/secured/Item/Section/In/Export', '_blank');
+            window.open(params.context.thisComponent.prod + '/api/secured/Item/Section/In/Export'+localStorage.getItem("filter"), '_blank');
           } else {
-            window.open(params.context.thisComponent.prod + '/api/secured/Item/Section/Out/Export', '_blank');
+            window.open(params.context.thisComponent.prod + '/api/secured/Item/Section/Out/Export'+localStorage.getItem("filter"), '_blank');
           }
 
         }
@@ -877,7 +877,7 @@ export class PropertyComponent implements OnInit {
           this.uploadFiles = [];
           this.inventoryToBuildingDialogShow = true;
           this.inventorTransfer = {
-            date: new Date(),
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
             selectedIndex: 0,
             generator: false,
             roomId: 89
@@ -897,7 +897,7 @@ export class PropertyComponent implements OnInit {
           this.uploadFiles = [];
           this.inventorReturnModel = {
             inventarReturnGenerator: false,
-            date: new Date()
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
           };
           this.display = true;
           this.checkMinDate();
@@ -912,7 +912,7 @@ export class PropertyComponent implements OnInit {
         this.uploadFiles = [];
         this.personDialogShow = true;
         this.forPerson = {
-          date: new Date(),
+          date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
           generator: false
         };
         this.checkMinDate();
@@ -940,6 +940,10 @@ export class PropertyComponent implements OnInit {
     const filter = ['date', 'selectedSection', 'selectedProperty', 'selectedCarrier'];
     this.formErrors = this.validator.checkObject(this.inventorReturnModel, filter);
     if (this.formErrors.length === 0 && this.dataChecker) {
+      if (this.cartItemsData.length === 0) {
+        alert('კალათა ცარიელია');
+        return;
+      }
       this.operation.getAddonNumber({type: 'Stock/Return'})
         .then(response => {
           if (response['status'] === 200) {
@@ -949,7 +953,9 @@ export class PropertyComponent implements OnInit {
               }
               return value;
             });
-            this.inventorReturnModel.trDate = moment(this.inventorReturnModel.date).format('DD-MM-YYYY');
+            //this.inventorReturnModel.trDate = moment(this.inventorReturnModel.date).format('DD-MM-YYYY');
+            this.inventorReturnModel.trDate = this.inventorReturnModel.date.day+"-"+this.inventorReturnModel.date.month+"-"+this.inventorReturnModel.date.year;
+            //this.inventorTransfer.trDate =this.inventorTransfer.date.day+"-"+this.inventorTransfer.date.month+"-"+this.inventorTransfer.date.year; // moment().format('DD-MM-YYYY');
             this.inventorReturnModel.addon = response['data'];
             this.inventorReturnModel.inventarReturnGenerator = true;
             this.inventorReturnModel.toStock = this.inventorReturnModel.selectedSection['id'];
@@ -1065,7 +1071,9 @@ export class PropertyComponent implements OnInit {
           (new Date(moment(bDate[2] + '-' + bDate[1] + '-' + bDate[0]).format('YYYY-MM-DD'))).getTime()
         );
       })[0].split('-');
-      this.minDate = new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD'));
+      //this.minDate = new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD'));
+      this.minDate = new NgbDate(date[2], date[1],date[0]);
+
     }
   }
   generaTeInventorTransfer() {
@@ -1101,7 +1109,8 @@ export class PropertyComponent implements OnInit {
             this.inventorTransfer.listData = this.cartItemsData;
             this.inventorTransfer.carrierPerson = this.inventorTransfer.selectedCarrier['id'];
             this.inventorTransfer.toWhomSection = this.inventorTransfer.selectedProperty['id'];
-            this.inventorTransfer.trDate = moment(this.inventorTransfer.date).format('DD-MM-YYYY');
+            //this.inventorTransfer.trDate = moment(this.inventorTransfer.date).format('DD-MM-YYYY');
+            this.inventorTransfer.trDate =this.inventorTransfer.date.day+"-"+this.inventorTransfer.date.month+"-"+this.inventorTransfer.date.year;
             this.inventorTransfer.receiverPerson = this.inventorTransfer.selectedPerson['id'];
           }
 
@@ -1130,7 +1139,7 @@ export class PropertyComponent implements OnInit {
       .then(response => {
         if (response['status'] === 200) {
           this.inventorTransfer = {
-            date: new Date(),
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
             selectedIndex: 0,
             generator: false
           };
@@ -1178,7 +1187,7 @@ export class PropertyComponent implements OnInit {
               });
               this.forPerson.addon = response['data'];
               this.forPerson.generator = true;
-              this.forPerson.trDate = moment(this.forPerson.date).format('DD-MM-YYYY');
+              this.forPerson.trDate = this.forPerson.date.day+"-"+this.forPerson.date.month+"-"+this.forPerson.date.year;
               this.forPerson.receiverPerson = this.forPerson.selectedPerson['id'];
               this.forPerson.roomId = this.forPerson.selectedRoom['id'];
               this.forPerson.list = this.cartItemsData.map(value => {
@@ -1212,7 +1221,7 @@ export class PropertyComponent implements OnInit {
       .then(response => {
         if (response['status'] === 200) {
           this.forPerson = {
-            date: new Date(),
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
             generator: false
           };
           this.removeCartItem();

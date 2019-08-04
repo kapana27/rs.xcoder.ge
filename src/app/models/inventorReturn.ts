@@ -1,8 +1,9 @@
 import {Default} from "./default";
+import {NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 
 export interface InventorReturn {
   inventarReturnGenerator: boolean;
-  date?: Date;
+  date?: NgbDateStruct;
   note?: string;
   trDate?: string;
   selectedCarrier?: Default;

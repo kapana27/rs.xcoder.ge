@@ -1,7 +1,8 @@
 import {Default} from "./default";
+import {NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 
 export interface TransferToSection {
-  Datetime?: Date;
+  date?: NgbDateStruct;
   trDate?: string;
   toStock?: number;
   toWhomStock?: number;

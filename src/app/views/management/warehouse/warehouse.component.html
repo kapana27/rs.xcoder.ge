@@ -157,7 +157,18 @@
       <div class="ui-g-12 ui-md-8">
         <div class="ui-g-12 ui-md-6">
           <p>თარიღი</p>
-          <p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="transferToSection.Datetime" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+          <!--p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="transferToSection.Datetime" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar-->
+          <form class="form-inline">
+            <div class="form-group">
+              <div class="input-group">
+                <input class="form-control" [minDate]="minDate"  placeholder="yyyy-mm-dd" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+                       name="dp" [(ngModel)]="transferToSection.date" ngbDatepicker #d2="ngbDatepicker">
+                <div class="input-group-append">
+                  <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d2.toggle()" ></button>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
         <div class="ui-g-12 ui-md-6">
           <p>სექცია</p>
@@ -220,7 +231,19 @@
             <div class="ui-g-12 ui-md-8">
               <div class="ui-g-12 ui-md-6">
                 <p>თარიღი</p>
-                <p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+                <!--p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar-->
+                <form class="form-inline">
+                  <div class="form-group">
+                    <div class="input-group">
+                      <input class="form-control" [minDate]="minDate"  placeholder="yyyy-mm-dd" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+                             name="dp" [(ngModel)]="inventorTransfer.date" ngbDatepicker #d="ngbDatepicker">
+                      <div class="input-group-append">
+                        <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d.toggle()" ></button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+
               </div>
 
               <div class="ui-g-12 ui-md-6">
@@ -273,7 +296,18 @@
             <div class="ui-g-12 ui-md-8">
               <div class="ui-g-12 ui-md-6">
                 <p>თარიღი</p>
-                <p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+                <!--p-calendar  dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar-->
+                <form class="form-inline">
+                  <div class="form-group">
+                    <div class="input-group">
+                      <input class="form-control" [minDate]="minDate" placeholder="yyyy-mm-dd" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+                             name="dp" [(ngModel)]="inventorTransfer.date" ngbDatepicker #d1="ngbDatepicker">
+                      <div class="input-group-append">
+                        <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d1.toggle()" ></button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
               </div>
               <div class="ui-g-12 ui-md-6">
                 <p>ქონების მართვა</p>
@@ -417,7 +451,19 @@
     <div class="ui-g ui-fluid">
       <div class="ui-g-12 ui-md-2" >
         <p>მიღების თარიღი</p>
-        <p-calendar [(ngModel)]="newInventor.date" dateFormat="dd-mm-yy" [showIcon]="true"  [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+        <!--p-calendar [(ngModel)]="newInventor.date" dateFormat="dd-mm-yy" [showIcon]="true"  [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar-->
+
+        <form class="form-inline">
+          <div class="form-group" style="width: 100%">
+            <div class="input-group">
+              <input class="form-control" placeholder="" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+                     name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d7="ngbDatepicker">
+              <div class="input-group-append">
+                <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d7.toggle()" ></button>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
       <div class="ui-g-12 ui-md-4" *ngIf="newInventor.isCar !==1">
         <div class="ui-inputgroup">
@@ -608,7 +654,18 @@
     <div class="ui-g ui-fluid">
       <div class="ui-g-12 ui-md-3" >
         <p>მიღების თარიღი</p>
-        <p-calendar [(ngModel)]="newInventor.date" dateFormat="dd-mm-yy" [showIcon]="true"  [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar>
+        <!--p-calendar [(ngModel)]="newInventor.date" dateFormat="dd-mm-yy" [showIcon]="true"  [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar-->
+        <form class="form-inline">
+          <div class="form-group" style="width: 100%">
+            <div class="input-group">
+              <input class="form-control" placeholder="" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+                     name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker">
+              <div class="input-group-append">
+                <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
       <div class="ui-g-12 ui-md-3" >
         <p>რაოდენობა</p>

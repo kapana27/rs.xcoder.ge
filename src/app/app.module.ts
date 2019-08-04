@@ -47,7 +47,6 @@ import { ReportComponent } from './views/report/report.component';
 import {HttpClientModule} from "@angular/common/http";
 import {AgGridModule} from "ag-grid-angular";
 import {TableModule} from "primeng/table";
-import { CartComponent } from './components/cart/cart.component';
 import {
   AutoCompleteModule,
   CheckboxModule,
@@ -62,7 +61,8 @@ import {ComponentsModule} from "./components/components.module";
 import { IncameOperationComponent } from './views/incame-operation/incame-operation.component';
 import { TestComponent } from './views/test/test.component';
 import { Test1Component } from './views/test1/test1.component';
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbDatepickerModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   imports: [
@@ -92,6 +92,9 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
     DialogModule,
     AutoCompleteModule,
     NgbModule,
+    NgbDatepickerModule,
+    FormsModule,                               // <========== Add this line!
+    ReactiveFormsModule
   ],
   declarations: [
     AppComponent,

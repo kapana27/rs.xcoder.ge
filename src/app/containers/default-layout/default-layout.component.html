@@ -4,8 +4,8 @@
   [navbarBrandFull]="{src: 'assets/img/brand/logo.png', width: 142, height: 41, alt: 'ლოგო'}"
   [navbarBrandMinimized]="{src: 'assets/img/brand/sygnet.png', width: 30, height: 30, alt: 'ლოგო'}"
   [sidebarToggler]="'lg'"
-  [asideMenuToggler]="'lg'"
-
+  [asideMenuToggler]="false"
+  [mobileAsideMenuToggler]="false"
 >
   <!--ul class="nav navbar-nav d-md-down-none">
     <li class="nav-item px-3">
@@ -18,7 +18,10 @@
       <a class="nav-link" href="#">Settings</a>
     </li>
   </ul-->
-
+  <span class="inv_lang" style="position: absolute; right: 10px;">
+    <button type="button" [ngClass]="(lang === 'ge')? 'active':''" style="position: relative; top:-2px;" (click)="changeLang('ge')"><img src="./assets/img/icons/ge.png" width="25" alt=""></button>
+    <button type="button" [ngClass]="(lang === 'uk')? 'active':''" style="position: relative; top:-2px;" (click)="changeLang('uk')"><img src="./assets/img/icons/uk.png" width="25" alt=""></button>
+  </span>
   <ul class="nav navbar-nav ml-auto">
 
     <!--li class="nav-item dropdown" dropdown placement="bottom right">
@@ -80,7 +83,7 @@
       <router-outlet></router-outlet>
     </div><!-- /.container-fluid -->
   </main>
-  <app-aside [fixed]="true" [display]="false">
+<!--  <app-aside [fixed]="true" [display]="false">
     <tabset>
       <tab>
         <ng-template tabHeading><i class="icon-list"></i></ng-template>
@@ -330,6 +333,6 @@
         </div>
       </tab>
     </tabset>
-  </app-aside>
+  </app-aside>-->
 </div>
 

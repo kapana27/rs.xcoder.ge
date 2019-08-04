@@ -1,7 +1,8 @@
 import {Default} from "./default";
+import {NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 
 export interface InventorTransfer {
-  date: Date;
+  date?: NgbDateStruct;
   trDate?: string;
   selectedProperty?: Default;
   selectedPerson?: Default;
