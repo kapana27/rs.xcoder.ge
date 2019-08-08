@@ -25,9 +25,10 @@ import { TableTreeComponent } from './table-tree/table-tree.component';
 import { EmployeesComponent } from './employees/employees.component';
 import { CustomDateComponent } from './custom-date/custom-date.component';
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
+import { LanguageComponent } from './language/language.component';
 
 @NgModule({
-  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent, AttachmentsComponent, MultipleTableComponent, TableTreeComponent, EmployeesComponent, CustomDateComponent],
+  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent, AttachmentsComponent, MultipleTableComponent, TableTreeComponent, EmployeesComponent, CustomDateComponent, LanguageComponent],
   imports: [
     DropdownModule,
     CommonModule,
@@ -41,7 +42,8 @@ import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
     DialogModule,
     TooltipModule,
     CalendarModule,
-    NgbDatepickerModule
+    NgbDatepickerModule,
+
   ],
   exports: [
     CartComponent,
@@ -54,7 +56,8 @@ import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
     MultipleTableComponent,
     TableTreeComponent,
     EmployeesComponent,
-    CustomDateComponent
+    CustomDateComponent,
+    LanguageComponent
   ],
   entryComponents: [
     CustomDateComponent

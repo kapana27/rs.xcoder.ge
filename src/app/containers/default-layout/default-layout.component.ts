@@ -1,23 +1,38 @@
-import { Component, OnDestroy, Inject } from '@angular/core';
+import {Component, OnDestroy, Inject, OnInit} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { navItems } from '../../_nav';
+import{ ChangeDetectorRef } from '@angular/core';
 
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './default-layout.component.html'
+  templateUrl: './default-layout.component.html',
+  styles:[
+     ` 
+      /deep/ .inv_lang button {
+        background: none;
+        border:none;
+        opacity: 0.5;
+      }
+      .inv_lang button.active {
+         opacity: 1;
+         background: #007ad9;
+         border-radius: 25%;
+       }
+     
+    `
+  ]
 })
-export class DefaultLayoutComponent implements OnDestroy {
+export class DefaultLayoutComponent implements OnInit, OnDestroy {
+
   public navItems = navItems;
   public sidebarMinimized = true;
   private changes: MutationObserver;
   public element: HTMLElement;
-  lang: string = localStorage.getItem("lang");
+  lang: string;
+  changer: any = '';
   constructor(@Inject(DOCUMENT) _document?: any) {
-     if(!this.notNull(this.lang)){
-       localStorage.setItem("lang","uk");
-        this.lang=localStorage.getItem("lang");
-     }
+
     this.changes = new MutationObserver((mutations) => {
       this.sidebarMinimized = _document.body.classList.contains('sidebar-minimized');
     });
@@ -28,15 +43,20 @@ export class DefaultLayoutComponent implements OnDestroy {
     });
   }
 
+
   ngOnDestroy(): void {
     this.changes.disconnect();
   }
 
-  changeLang(lang: string) {
-    localStorage.setItem("lang",lang);
-    this.lang=localStorage.getItem("lang");
-  }
   notNull(value) {
     return (value !== undefined && value !== null && value.trim() != '');
   }
+
+  ngOnInit(): void {
+  }
+
+  onChange($event: any) {
+      this.lang = $event;
+  }
 }
+

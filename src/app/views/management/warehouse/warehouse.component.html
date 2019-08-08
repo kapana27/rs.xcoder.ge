@@ -788,10 +788,7 @@
         <button pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
       </div>
       <div class="buttonBox">
-        <span class="inv_lang">
-          <button type="button" [ngClass]="(lang === 'ge')? 'active':''" style="position: relative; top:-2px;" (click)="changeLang('ge')"><img src="./assets/img/icons/ge.png" width="25" alt=""></button>
-          <button type="button" [ngClass]="(lang === 'uk')? 'active':''" style="position: relative; top:-2px;" (click)="changeLang('uk')"><img src="./assets/img/icons/uk.png" width="25" alt=""></button>
-        </span>
+        <app-language (onChange)="onChange($event)"></app-language>
       </div>
       <div class="buttonBox">
         <button type="button" pButton icon="pi pi-save" *ngIf="frustrate && inventorOperation=='new'" (click)="saveNewInventor()" label="შენახვა" ></button>

@@ -1,0 +1,10 @@
+/deep/ .inv_lang button {
+  background: none;
+  border:none;
+  opacity: 0.5;
+}
+.inv_lang button.active {
+  opacity: 1;
+  background: #007ad9;
+  border-radius: 25%;
+}

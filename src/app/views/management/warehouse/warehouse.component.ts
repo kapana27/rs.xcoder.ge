@@ -54,7 +54,8 @@ export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
 })
 export class WarehouseComponent implements OnInit {
   public lastCode: number = 0;
-  public lang = localStorage.getItem("lang");
+  public lang ;
+  public changer: any ='';
   eventData: any = null;
   public gridApi;
   public gridColumnApi;
@@ -1576,10 +1577,7 @@ console.log(this.newInventor);
       }, 20);
     }
   }
-  changeLang(lng) {
-    localStorage.setItem("lang",lng);
-    this.lang = localStorage.getItem("lang"); // (this.lang === 'ge') ? 'uk' : 'ge';
-  }
+
   onRowClicked($event: any) {
     console.log($event);
     this.tmpData = $event['data'];
@@ -1595,6 +1593,10 @@ console.log(this.newInventor);
   }
   uploadedFiles($event: any) {
       this.uploadFiles = $event;
+  }
+
+  onChange($event: any) {
+    this.lang = $event;
   }
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {
