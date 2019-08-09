@@ -26,9 +26,10 @@ import { EmployeesComponent } from './employees/employees.component';
 import { CustomDateComponent } from './custom-date/custom-date.component';
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import { LanguageComponent } from './language/language.component';
+import { CustomInputComponent } from './custom-input/custom-input.component';
 
 @NgModule({
-  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent, AttachmentsComponent, MultipleTableComponent, TableTreeComponent, EmployeesComponent, CustomDateComponent, LanguageComponent],
+  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent, AttachmentsComponent, MultipleTableComponent, TableTreeComponent, EmployeesComponent, CustomDateComponent, LanguageComponent, CustomInputComponent],
   imports: [
     DropdownModule,
     CommonModule,
@@ -57,7 +58,8 @@ import { LanguageComponent } from './language/language.component';
     TableTreeComponent,
     EmployeesComponent,
     CustomDateComponent,
-    LanguageComponent
+    LanguageComponent,
+    CustomInputComponent
   ],
   entryComponents: [
     CustomDateComponent

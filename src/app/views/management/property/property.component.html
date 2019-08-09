@@ -5,9 +5,9 @@
     <p-tabMenu [model]="items" [activeItem]="items[0]" ></p-tabMenu>
   </div>
   <div class="buttonBox">
+    <button (click)="personDialog()" *ngIf="distributed" pButton type="button" label="განპიროვნება" class="ui-button-danger"></button>&nbsp;&nbsp;
     <button (click)="showDialog()" *ngIf="!distributed" pButton type="button" label="ინვ. შებრუნება" class="ui-button-raised"></button> &nbsp;&nbsp;
     <button (click)="inventoryToBuildingDialog()" *ngIf="distributed" pButton type="button" label="ინვ. მოძრაობა შენობებს შორის" class="ui-button-raised"></button>&nbsp;&nbsp;
-    <button (click)="personDialog()" *ngIf="distributed" pButton type="button" label="განპიროვნება" class="ui-button-danger"></button>&nbsp;&nbsp;
     <span class="cart">
       <fa-icon [icon]="faCartPlus"  (click)="cartDialog()" size="2x"  ></fa-icon>
       {{this.cartItems.length}}
@@ -143,7 +143,7 @@
         <div class="ui-g-12 ui-md-6">
           <p>ტრანსპორტ. პასხ. პირი:</p>
           <p-autoComplete [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }"  [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorReturnModel.selectedCarrier"
-                          [minLength]="1" placeholder=""  field="fname" [dropdown]="true">
+                          [minLength]="1" placeholder=""  field="fname" [dropdown]="false">
             <ng-template let-brand pTemplate="item">
               <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                 <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -208,7 +208,7 @@
             <div class="ui-g-12 ui-md-6">
               <p>ქონების მართვა</p>
               <p-autoComplete [suggestions]="propertyList" (completeMethod)="filterPropertyList($event)"[size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -221,7 +221,7 @@
             <div class="ui-g-12 ui-md-6">
               <p>მომთხოვნი პიროვნება</p>
               <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedRequestPerson"
-                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true"  [ngClass]="{ 'red':if_error(formErrors,'selectedRequestPerson')?'1px solid red': '' }">
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="false"  [ngClass]="{ 'red':if_error(formErrors,'selectedRequestPerson')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -234,7 +234,7 @@
             <div class="ui-g-12 ui-md-6">
               <p>ტრანსპორტ. პასხ. პირი:</p>
               <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedCarrier"
-                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }" >
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }" >
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -271,7 +271,7 @@
             <div class="ui-g-12 ui-md-6">
               <p>ქონების მართვა</p>
               <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -283,7 +283,7 @@
             <div class="ui-g-12 ui-md-6">
               <p>პიროვნება</p>
               <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
-                              (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
+                              (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -296,7 +296,7 @@
             <div class="ui-g-12 ui-md-6">
               <p>ტრანსპორტ. პასხ. პირი:</p>
               <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedCarrier"
-                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }">
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -314,7 +314,7 @@
             <div class="ui-g-12 ui-md-12">
               <p>მომთხოვნი პიროვნება</p>
               <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedRequestPerson"
-                              [minLength]="1" placeholder=""   field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedRequestPerson')?'1px solid red': '' }">
+                              [minLength]="1" placeholder=""   field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedRequestPerson')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -373,7 +373,7 @@
             <div class="ui-g-12 ui-md-6">
               <p>პიროვნება</p>
               <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="forPerson.selectedPerson"
-                              (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
+                              (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>

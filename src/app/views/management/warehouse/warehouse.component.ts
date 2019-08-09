@@ -16,6 +16,8 @@ import {TreeNode} from '../../../models/tree-node';
 import {RequestService} from '../../../services/request.service';
 import {CustomDateComponent} from '../../../components/custom-date/custom-date.component';
 import {NgbDate, NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
+import {CustomInputComponent} from "../../../components/custom-input/custom-input.component";
+import {Filter} from "../../../models/filter";
 
 interface Default {
   id?: number;
@@ -89,6 +91,7 @@ export class WarehouseComponent implements OnInit {
   inventoryToBuildingDialogShow: boolean = false;
   cartDialogShow: boolean = false;
   inventorDialogShow: boolean = false;
+  zednadebiDialogShow: boolean = false;
   filteredCountriesSingle: any[];
   itemTypes: Default[] = [];
   itemStatus: Default[] = [];
@@ -162,9 +165,10 @@ export class WarehouseComponent implements OnInit {
   dialogName: any = '';
   prod: any = '';
   public frameworkComponents;
-
+  public filter: Filter = {};
 
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService,  private confirmationService: ConfirmationService, private Request: RequestService) {
+     this.lang =  localStorage.getItem("lang");
     this.prod = this.Request.prod;
     this.gridOptions = {
       context: {
@@ -213,34 +217,16 @@ export class WarehouseComponent implements OnInit {
         headerName: 'თარიღი',
         field: 'trDate',
         width: 150,
-        filter: 'agDateColumnFilter',
-        filterParams: {
-          comparator: function (filterLocalDateAtMidnight, cellValue) {
-            const dateAsString = cellValue;
-            if (dateAsString == null) { return 0; }
-            const dateParts = dateAsString.split('/');
-            const day = Number(dateParts[2]);
-            const month = Number(dateParts[1]) - 1;
-            const year = Number(dateParts[0]);
-            const cellDate = new Date(day, month, year);
-            // Now that both parameters are Date objects, we can compare
-            if (cellDate < filterLocalDateAtMidnight) {
-              return -1;
-            } else if (cellDate > filterLocalDateAtMidnight) {
-              return 1;
-            } else {
-              return 0;
-            }
-          }
-        }
+        suppressMenu: false,
+        filter: 'agDateColumnFilter'
       },
       {
         headerName: 'დასახელება',
         field: 'name',
         width: 150,
-        suppressMenu: true,
+        suppressMenu: false,
         filter: 'agTextColumnFilter',
-        filterParams: { defaultOption: 'startsWith' }
+        cellEditor: 'customInput',
       },
       {
         headerName: 'მარკა',
@@ -359,7 +345,10 @@ export class WarehouseComponent implements OnInit {
         filterParams: { defaultOption: 'startsWith' }
       }
     ];
-    this.frameworkComponents = { agDateInput: CustomDateComponent };
+    this.frameworkComponents = {
+        agDateInput: CustomDateComponent,
+        customInput: CustomInputComponent,
+    };
     this.getRowStyle = {
 
       'ag-red': function(params) {
@@ -489,10 +478,11 @@ export class WarehouseComponent implements OnInit {
       }
     ];
   }
-  onGridReady(params) {
+  onGridReady(params, filter: boolean=false) {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
+    const filterData = this.filter;
     const operation = this.operation;
     const selectedTabId = this.selectedTabId;
     const cartItems = this.cartItems;
@@ -502,12 +492,24 @@ export class WarehouseComponent implements OnInit {
         const parameters = [];
         for (const f in params['request']['filterModel']) {
           const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
-
            parameters.push({
              property: name,
              value: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? params['request']['filterModel'][f]['dateFrom'] : params['request']['filterModel'][f]['filter'],
              operator: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' )? '=':'like'
            });
+        }
+        if(filter){
+          console.log(filterData);
+          for (let f in filterData){
+            const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
+            if(filterData[f] != '' && filterData[f] != undefined && filterData[f] !==null){
+              parameters.push({
+                property: name,
+                value: filterData[f],
+                operator: 'like'
+              });
+            }
+          }
         }
 
         operation.getData(selectedTabId, params['request']['startRow'], params['request']['endRow'], encodeURIComponent(JSON.stringify(parameters)))
@@ -1542,6 +1544,29 @@ console.log(this.newInventor);
 
     }
   }
+
+
+  onKeyUpMaker($event: any) {
+    if (typeof $event === 'object') {
+      return;
+    }
+    if (this.lang === 'ge') {
+      this.newInventor.selectedMaker = {
+        name: en2geo((typeof this.newInventor.selectedMaker === 'string') ? this.newInventor.selectedMaker : this.newInventor.selectedMaker['name']),
+      };
+    } else {
+      this.newInventor.selectedMaker = {
+        name: (typeof this.newInventor.selectedMaker === 'string') ? this.newInventor.selectedMaker : this.newInventor.selectedMaker['name']
+      };
+      this.filterInventorsByName({query: ((typeof this.newInventor.selectedMaker === 'string') ? this.newInventor.selectedMaker : this.newInventor.selectedMaker['name'])});
+    }
+
+    if (this.lang === 'ge') {
+      setTimeout(() => {
+        this.filterItemSingle({query: en2geo((typeof this.newInventor.selectedMaker === 'string') ? this.newInventor.selectedMaker : this.newInventor.selectedMaker['name'])}, 'marker');
+      }, 20);
+    }
+  }
   onKeyUp($event: any) {
     if (typeof $event === 'object') {
       return;
@@ -1563,6 +1588,9 @@ console.log(this.newInventor);
       }, 20);
     }
   }
+
+
+
   onKeyUpSupplier($event: any) {
     if (this.lang === 'ge') {
       this.newInventor.selectedSupplier = { id: this.newInventor.selectedSupplier['id'], name: this.newInventor.selectedSupplier['name'], generatedName: en2geo((typeof this.newInventor.selectedSupplier === 'string') ? this.newInventor.selectedSupplier : this.newInventor.selectedSupplier['name']) };
@@ -1586,10 +1614,43 @@ console.log(this.newInventor);
     console.log($event, this.transferToSection);
   }
   inventorSearch() {
+    this.newInventor = {
+      date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+      consumption: false,
+      price: 0,
+      amount: 0,
+      fullname: {
+        name: ''
+      }
+    };
     this.searchBox = true;
+    this.operation.getListBarcodes()
+      .then(response => {
+        this.barcodes = response['data'].map(v => {
+          delete v.endPoint;
+          return v;
+        });
+      }).catch();
+    this.operation.getMeasureUnits()
+      .then(response => {
+        this.measureUnits = response['data'];
+        console.log(this.measureUnits);
+      }).catch();
   }
   CloseInventorSearch() {
     this.searchBox = false;
+    this.newInventor = {
+      date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+      consumption: false,
+      price: 0,
+      amount: 0,
+      fullname: {
+        name: ''
+      }
+    };
+    this.filter = {
+
+    };
   }
   uploadedFiles($event: any) {
       this.uploadFiles = $event;
@@ -1597,6 +1658,57 @@ console.log(this.newInventor);
 
   onChange($event: any) {
     this.lang = $event;
+  }
+
+  zednadebiDialog() {
+    this.zednadebiDialogShow = true;
+  }
+
+  onKeyUpModel($event: any) {
+    if (typeof $event === 'object') {
+      return;
+    }
+    if (this.lang === 'ge') {
+      this.newInventor.selectedModel = {
+        name: en2geo((typeof this.newInventor.selectedModel === 'string') ? this.newInventor.selectedModel : this.newInventor.selectedModel['name']),
+      };
+    } else {
+      this.newInventor.selectedModel = {
+        name: (typeof this.newInventor.selectedModel === 'string') ? this.newInventor.selectedModel : this.newInventor.selectedModel['name']
+      };
+    }
+
+    if (this.lang === 'ge') {
+      setTimeout(() => {
+        this.filterItemSingle({query: en2geo((typeof this.newInventor.selectedModel === 'string') ? this.newInventor.selectedModel : this.newInventor.selectedModel['name'])}, 'model');
+      }, 20);
+    }
+  }
+
+  filterGrid() {
+    try {
+      if(this.notNull(this.newInventor.fullname)){
+        this.filter.name=this.notNull(this.newInventor.fullname['id'])? this.newInventor.fullname['id']: this.newInventor.fullname['name'];
+      }
+      if(this.notNull(this.newInventor.selectedMaker)){
+        this.filter.maker = this.notNull(this.newInventor.selectedMaker['id'])?this.newInventor.selectedMaker['id']: this.newInventor.selectedMaker['name'];
+      }
+      if(this.newInventor.selectedModel){
+        this.filter.model = this.notNull(this.newInventor.selectedModel['id'])?this.newInventor.selectedModel['id']: this.newInventor.selectedModel['name'];
+      }
+      if(this.notNull(this.newInventor.selectedMeasureUnitName)){
+        this.filter.measureUnit = this.notNull(this.newInventor.selectedMeasureUnitName['id'])?this.newInventor.selectedMeasureUnitName['id']: this.newInventor.selectedMeasureUnitName['name'];
+      }
+
+      if(this.notNull(this.newInventor.selectedSupplier)){
+        this.filter.supplier = this.notNull(this.newInventor.selectedSupplier['id'])?this.newInventor.selectedSupplier['id']: this.newInventor.selectedSupplier['name'];
+      }
+      this.filter.barCodeType = this.notNull(this.newInventor.selectedBarcode)? this.newInventor.selectedBarcode['id']:'';
+
+      this.onGridReady(this.eventData,true)
+    }catch (e) {}
+       console.log( this.filter)
+
   }
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {
