@@ -9,7 +9,7 @@
           <th>ოპერაციის ტიპი</th>
           <th>
             <div *ngIf="selectedParams.id !== 0 && params.approved === 0" style="display: flex; justify-content: space-around; ">
-              <button pButton type="button" icon="pi  pi-times"   tooltipPosition="top"  label="გაუქმება"  class="ui-button-danger" (click)="confirm(1)"></button>
+              <button pButton type="button" icon="pi  pi-times"   tooltipPosition="top"  class="ui-button-danger" (click)="confirm(1)"></button>
             </div>
             <span *ngIf="selectedParams.id === 0 || params.approved !== 0">თარიღი</span>
           </th>

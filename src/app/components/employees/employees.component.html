@@ -22,8 +22,8 @@
       </tr>
       <tr >
         <th  [colSpan]="columns.length">
-          <span [innerHTML]="header"></span>
-          <div  *ngIf="enableActions" style="text-align: right; border-left: 0px; float: right">
+          <span [innerHTML]="header" style="line-height: 22px"></span>
+          <div  *ngIf="enableActions" style="text-align: right; border-left: 0px; float: left; margin-right: 50px">
             <i class="pi pi-users" *ngIf="this.additionButton" style="font-size: 20px;margin-left:  10px; cursor: pointer" (click)="additionEmployee()"  pTooltip="თანამშრომლის დამატება" tooltipPosition="top" ></i>
             <i class="pi pi-table" *ngIf="this.additionButton" style="font-size: 20px;margin-left:  10px; cursor: pointer" (click)="addition()"  pTooltip="{{header}}ს დამატება" tooltipPosition="top" ></i>
             <i class="pi pi-plus" style="font-size: 20px;margin-left:  10px; cursor: pointer" (click)="newItem()"  pTooltip="{{header}}ს დამატება" tooltipPosition="top" ></i>
