@@ -2,6 +2,7 @@ import {Component, OnDestroy, Inject, OnInit} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { navItems } from '../../_nav';
 import{ ChangeDetectorRef } from '@angular/core';
+import {LgService} from "../../services/lg.service";
 
 
 @Component({
@@ -9,11 +10,14 @@ import{ ChangeDetectorRef } from '@angular/core';
   templateUrl: './default-layout.component.html',
   styles:[
      ` 
+     
       /deep/ .inv_lang button {
         background: none;
         border:none;
         opacity: 0.5;
       }
+    
+     
       .inv_lang button.active {
          opacity: 1;
          background: #007ad9;
@@ -31,7 +35,8 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public element: HTMLElement;
   lang: string;
   changer: any = '';
-  constructor(@Inject(DOCUMENT) _document?: any) {
+  // @ts-ignore
+  constructor(@Inject(DOCUMENT) _document?: any, public lgService: LgService) {
 
     this.changes = new MutationObserver((mutations) => {
       this.sidebarMinimized = _document.body.classList.contains('sidebar-minimized');
@@ -42,7 +47,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       attributeFilter: ['class']
     });
   }
-
+ 
 
   ngOnDestroy(): void {
     this.changes.disconnect();
@@ -56,6 +61,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   onChange($event: any) {
+    this.lgService.changeLanguage($event);
       this.lang = $event;
   }
 }

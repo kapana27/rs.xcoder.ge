@@ -18,6 +18,7 @@ import {CustomDateComponent} from '../../../components/custom-date/custom-date.c
 import {NgbDate, NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 import {CustomInputComponent} from "../../../components/custom-input/custom-input.component";
 import {Filter} from "../../../models/filter";
+import {LgService} from "../../../services/lg.service";
 
 interface Default {
   id?: number;
@@ -141,7 +142,10 @@ export class WarehouseComponent implements OnInit {
   inventorTransfer: InventorTransfer = {
     selectedIndex: 0,
     generator: false,
-    roomId: 89
+    roomId: 89,
+    selectedProperty: {
+      name: ""
+    }
   };
   stockList: Array<Default> = [];
   propertyData: Array<any> = [];
@@ -153,7 +157,7 @@ export class WarehouseComponent implements OnInit {
   public getRowStyle;
   private dataChecker = false;
   tmpData: any = {};
-  private inventorOperation: string = 'new';
+  public inventorOperation: string = 'new';
   //public minDate: Date = new Date();
   public minDate: NgbDateStruct = { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())} ;
   addon: {
@@ -166,8 +170,14 @@ export class WarehouseComponent implements OnInit {
   prod: any = '';
   public frameworkComponents;
   public filter: Filter = {};
-
-  constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService,  private confirmationService: ConfirmationService, private Request: RequestService) {
+   changeLanguage(lang){
+      this.lgService.changeLanguage(lang)
+   } 
+  constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService,  private confirmationService: ConfirmationService, private Request: RequestService, private lgService: LgService) {
+    this.lgService.changeLanguage$.subscribe((data) => {
+        this.lang = data; // And he have data here too!
+      }
+    );
      this.lang =  localStorage.getItem("lang");
     this.prod = this.Request.prod;
     this.gridOptions = {
@@ -607,7 +617,10 @@ export class WarehouseComponent implements OnInit {
           date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
           selectedIndex: 0,
           generator: false,
-          roomId: 89
+          roomId: 89,
+          selectedProperty:{
+            name:"" 
+          }
         };
         this.checkMinDate();
       }).catch();
@@ -1255,7 +1268,6 @@ console.log(this.newInventor);
   }
 
   filterPropertyList($event: any) {
-      console.log($event);
       this.operation.getPropertyList($event.query)
         .then((response: {data: Array<any>}) => {
           this.propertyList = (response['status'] === 200) ? response.data.map(v => {
@@ -1606,6 +1618,32 @@ console.log(this.newInventor);
     }
   }
 
+
+
+  onKeyUpProperty($event: any) {
+    /*if (typeof $event === 'object') {
+      return;
+    }
+    if (this.lang === 'ge') {
+      console.log(en2geo((typeof this.inventorTransfer.selectedProperty === 'string') ? this.inventorTransfer.selectedProperty : this.inventorTransfer.selectedProperty['name']));
+      this.inventorTransfer.selectedProperty = {
+        'name': en2geo($event)
+
+      }
+     
+    } else {
+      this.filterPropertyList({query: ((typeof this.inventorTransfer.selectedProperty === 'string') ? this.inventorTransfer.selectedProperty : this.inventorTransfer.selectedProperty['name'])});
+    }
+
+    if (this.lang === 'ge') {
+      setTimeout(() => {
+        this.filterPropertyList({query: en2geo((typeof this.inventorTransfer.selectedProperty === 'string') ? this.inventorTransfer.selectedProperty : this.inventorTransfer.selectedProperty['name'])}) 
+      }, 20);
+    }*/
+    this.filterPropertyList({query: ((typeof this.inventorTransfer.selectedProperty === 'string') ? this.inventorTransfer.selectedProperty : this.inventorTransfer.selectedProperty['name'])});
+
+  }
+
   onRowClicked($event: any) {
     console.log($event);
     this.tmpData = $event['data'];
@@ -1687,22 +1725,13 @@ console.log(this.newInventor);
 
   filterGrid() {
     try {
-      if(this.notNull(this.newInventor.fullname)){
-        this.filter.name=this.notNull(this.newInventor.fullname['id'])? this.newInventor.fullname['id']: this.newInventor.fullname['name'];
-      }
-      if(this.notNull(this.newInventor.selectedMaker)){
-        this.filter.maker = this.notNull(this.newInventor.selectedMaker['id'])?this.newInventor.selectedMaker['id']: this.newInventor.selectedMaker['name'];
-      }
-      if(this.newInventor.selectedModel){
-        this.filter.model = this.notNull(this.newInventor.selectedModel['id'])?this.newInventor.selectedModel['id']: this.newInventor.selectedModel['name'];
-      }
+     
+    
       if(this.notNull(this.newInventor.selectedMeasureUnitName)){
-        this.filter.measureUnit = this.notNull(this.newInventor.selectedMeasureUnitName['id'])?this.newInventor.selectedMeasureUnitName['id']: this.newInventor.selectedMeasureUnitName['name'];
+        this.filter.measureUnit = this.notNull(this.newInventor.selectedMeasureUnitName['id'])?this.newInventor.selectedMeasureUnitName['name']: this.newInventor.selectedMeasureUnitName['name'];
       }
 
-      if(this.notNull(this.newInventor.selectedSupplier)){
-        this.filter.supplier = this.notNull(this.newInventor.selectedSupplier['id'])?this.newInventor.selectedSupplier['id']: this.newInventor.selectedSupplier['name'];
-      }
+      
       this.filter.barCodeType = this.notNull(this.newInventor.selectedBarcode)? this.newInventor.selectedBarcode['id']:'';
 
       this.onGridReady(this.eventData,true)
@@ -1833,9 +1862,7 @@ function parseTree(data: TreeNode[]): Array<TreeNode> {
     });
     return data;
 }
-function en2geo(data) {
-  console.log('input', data);
- try {
+function en2geo(data: any) {
    const arr = data.split('') ||  data['name'].split('');
    const newArr = [];
    if (arr.length > 0) {
@@ -1846,8 +1873,7 @@ function en2geo(data) {
        newArr.push((index > -1) ? geoList[index] : v);
      });
    }
-   console.log(newArr.length > 0 ? newArr.join('') : arr.join(''));
+
    return newArr.length > 0 ? newArr.join('') : arr.join('');
- } catch (e) {
- }
+
 }

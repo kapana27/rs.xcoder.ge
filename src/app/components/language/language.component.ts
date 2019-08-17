@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output} from '@angular/core';
+import {LgService} from "../../services/lg.service";
 
 @Component({
   selector: 'app-language',
@@ -10,7 +11,10 @@ export class LanguageComponent implements OnInit,OnChanges {
   @Output() onChange = new EventEmitter();
   @Input() changer: any;
 
-  constructor() {
+  constructor(public lgService: LgService) {
+    this.lgService.changeLanguage$.subscribe(r=>{
+      this.lang=r;
+    })
     if(!this.notNull(this.lang)){
       localStorage.setItem("lang","uk");
       this.lang=localStorage.getItem("lang");
@@ -19,6 +23,7 @@ export class LanguageComponent implements OnInit,OnChanges {
   ngOnInit() {
   }
   changeLang(lang: string) {
+    this.lgService.changeLanguage(lang);
     localStorage.setItem("lang",lang);
     this.lang=localStorage.getItem("lang");
     this.onChange.emit(lang)

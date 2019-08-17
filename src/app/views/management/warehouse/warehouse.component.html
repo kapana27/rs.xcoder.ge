@@ -23,22 +23,17 @@
   <div class="row">
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
       <label>დასახელება:</label>
-      <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"   field="name" [size]="30"
-                        placeholder="დასახელება" [minLength]="1"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" >
-      </p-autoComplete>
+      <input type="text"  pInputText placeholder="" [(ngModel)]="filter.name" />
+
     </div>
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
       <label>მარკა:</label>
-      <div>
-        <p-autoComplete  [(ngModel)]="newInventor.selectedMaker"    [suggestions]="ItemData" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" field="name" type="marker" [size]="30"
-                         placeholder="მარკა" [minLength]="1" (ngModelChange)="onKeyUpMaker($event)" ></p-autoComplete>
-      </div>
+      <input type="text"  pInputText placeholder="" [(ngModel)]="filter.maker" />
     </div>
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
       <label>მოდელი:</label>
       <div>
-        <p-autoComplete [(ngModel)]="newInventor.selectedModel" [disabled]="!newInventor.selectedMaker"  [ngClass]="{ 'red':if_error(formErrors,'selectedModel')?'1px solid red': '' }" [suggestions]="ItemData" field="name" [size]="30"
-                        placeholder="მოდელი" [minLength]="1"  (ngModelChange)="onKeyUpModel($event)"></p-autoComplete>
+          <input type="text"  pInputText placeholder="" [(ngModel)]="filter.model" />
       </div>
     </div>
 
@@ -56,7 +51,7 @@
 
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
       <label>ერთეული:</label>
-      <input type="text"  pInputText placeholder="" [(ngModel)]="filter.unit" />
+      <input type="text"  pInputText placeholder="" [(ngModel)]="filter.measureUnit" />
     </div>
     <!--div class="col-m-12 col-lg-3" style="max-width: 200px">
       <label>შტრიხ კოდი:</label>
@@ -65,9 +60,9 @@
       </div>
     </div-->
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
-      <label>ტიპი:</label>
+      <label>ტიპი:</label> 
       <div>
-        <input type="text"  pInputText placeholder="" [(ngModel)]="filter.type" />
+        <input type="text"  pInputText placeholder="" [(ngModel)]="filter.itemType" />
       </div>
     </div>
 
@@ -80,10 +75,7 @@
     </div>
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
       <label>მწარმოებელი:</label>
-      <div>
-        <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData"  field="generatedName" [size]="30"
-                         placeholder="მწარმოებელი" [minLength]="1" [(ngModel)]="newInventor.selectedSupplier" (ngModelChange)="onKeyUpSupplier($event)"></p-autoComplete>
-      </div>
+          <input type="text"  pInputText placeholder="" [(ngModel)]="filter.supplier" />
     </div>
 
     <div class="col-m-6 col-lg-6" style="max-width: 320px">
@@ -132,7 +124,7 @@
     <div  style="min-width:350px; max-width: 100%; padding-right: 20px; padding-top: 21px; flex: 1;">
       <div style="float: right">
         <button pButton icon="pi pi-search" label="ძებნა" class="ui-button-warning" (click)="filterGrid()"></button>
-        <button  pButton type="button" label="გასუფთავება" icon="pi pi-times" class="ui-button-danger" style="margin-left: 10px"></button> &nbsp;&nbsp;
+        <button  pButton type="button" label="გასუფთავება" icon="pi pi-times" class="ui-button-danger" style="margin-left: 10px" (click)="filter={}"></button> &nbsp;&nbsp;
         <button pButton type="button" label="დახურვა" class="ui-button-secondary" (click)="CloseInventorSearch()" style="float: right; margin-left: 20px;"></button>
       </div>
     </div>
@@ -249,6 +241,9 @@
 <p-dialog header="ინვენტარის გაცემა" *ngIf="inventoryToBuildingDialogShow" [(visible)]="inventoryToBuildingDialogShow" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
 
+          <p-header>
+              <app-language (onChange)="onChange($event)" style="margin-right: 100px"></app-language>
+          </p-header>
   <div style="width: 100%;height: 500px;" *ngIf="inventorTransfer.generator">
     <app-generator [transferToSection]="inventorTransfer" [name]="dialogName" ></app-generator>
   </div>
@@ -275,16 +270,10 @@
               </div>
 
               <div class="ui-g-12 ui-md-6">
-                <p>ქონების მართვა</p>
-                <p-autoComplete [suggestions]="propertyList" (completeMethod)="filterPropertyList($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                                [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
-                  <ng-template let-brand pTemplate="item">
-                    <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
-                      <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
-                      <div style="font-size:12px;">{{brand['position']}}</div>
-                    </div>
-                  </ng-template>
-                </p-autoComplete>
+                    <p>ქონების მართვა</p>
+                <p-autoComplete  [(ngModel)]="inventorTransfer.selectedProperty"    [suggestions]="propertyList" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" field="fname" type="marker" [size]="30"
+                placeholder="" [minLength]="1" (ngModelChange)="onKeyUpProperty($event)" ></p-autoComplete>
+                
               </div>
 
               <div class="ui-g-12 ui-md-6">
@@ -468,8 +457,12 @@
   </p-footer>
 </p-dialog>
 
-<p-dialog header="{{inventorOperation=='edit'? 'ინვენტარის რედაქტირება':(inventorOperation ==='multiple')? 'პაკეტური რედაქტირება':'ინვენტარის მიღება'}}" *ngIf="inventorDialogShow" [(visible)]="inventorDialogShow" [modal]="true" [responsive]="true" [style]="{width: '1200px', minWidth: '200px'}" [minY]="500"
+<p-dialog  header="{{inventorOperation=='edit'? 'ინვენტარის რედაქტირება':(inventorOperation ==='multiple')? 'პაკეტური რედაქტირება':'ინვენტარის მიღება'}}" *ngIf="inventorDialogShow" [(visible)]="inventorDialogShow" [modal]="true" [responsive]="true" [style]="{width: '1200px', minWidth: '200px'}" [minY]="500"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+         
+          <p-header>
+              <app-language (onChange)="onChange($event)" style="margin-right: 100px"></app-language>
+          </p-header>
   <div class="row" style="text-align: center" *ngIf="addon !== undefined">
     <div class="col-md-12" style="text-align: center" *ngIf="frustrate">
       <h3>საწყობის შემოსავლის ელ. ზედდებული  № {{ addon['Left'] }} - {{ addon['Right'] }}</h3>
@@ -542,7 +535,7 @@
         <div class="ui-g-4" >
           <p>დასახელება</p>
           <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"   field="name" [size]="30"
-                            placeholder="დასახელება" [minLength]="1"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" >
+                            placeholder="დასახელება" [minLength]="1"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" (click)="changeLanguage('ge')">
           </p-autoComplete>
         </div>
         <div class="ui-g-4">
@@ -551,7 +544,7 @@
             <tr>
               <td>
                 <p-autoComplete  [(ngModel)]="newInventor.selectedMaker"    [suggestions]="ItemData" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" field="name" type="marker" [size]="30"
-                                placeholder="მარკა" [minLength]="1" (ngModelChange)="onKeyUpMaker($event)" ></p-autoComplete>
+                                placeholder="მარკა" [minLength]="1" (ngModelChange)="onKeyUpMaker($event)"  (click)="changeLanguage('uk')"></p-autoComplete>
               </td>
               <td>
                 <p-button icon="pi pi-plus" (click)="newRecordDialog('marker', newInventor.selectedMaker)"></p-button>
@@ -565,7 +558,7 @@
             <tr>
               <td>
                 <p-autoComplete [(ngModel)]="newInventor.selectedModel" [disabled]="!newInventor.selectedMaker"  [ngClass]="{ 'red':if_error(formErrors,'selectedModel')?'1px solid red': '' }" [suggestions]="ItemData" field="name" [size]="30"
-                                placeholder="მოდელი" [minLength]="1"  (ngModelChange)="onKeyUpModel($event)"></p-autoComplete>
+                                placeholder="მოდელი" [minLength]="1"  (ngModelChange)="onKeyUpModel($event)"  (click)="changeLanguage('uk')"></p-autoComplete>
               </td>
               <td>
                 <p-button icon="pi pi-plus" (click)="newRecordDialog('model', newInventor.selectedModel)"></p-button>
@@ -588,7 +581,7 @@
             <tr>
               <td>
                 <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData"  field="generatedName" [size]="30"
-                                 placeholder="მიმწოდებელი" [minLength]="1" [(ngModel)]="newInventor.selectedSupplier" (ngModelChange)="onKeyUpSupplier($event)"></p-autoComplete>
+                                 placeholder="მიმწოდებელი" [minLength]="1" [(ngModel)]="newInventor.selectedSupplier" (ngModelChange)="onKeyUpSupplier($event)"  (click)="changeLanguage('ge')"></p-autoComplete>
               </td>
               <td>
                 <p-button icon="pi pi-plus" (click)="newRecordDialog('supplier', newInventor.selectedSupplier)"></p-button>
@@ -816,7 +809,6 @@
         <button pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
       </div>
       <div class="buttonBox">
-        <app-language (onChange)="onChange($event)"></app-language>
       </div>
       <div class="buttonBox">
         <button type="button" pButton icon="pi pi-save" *ngIf="frustrate && inventorOperation=='new'" (click)="saveNewInventor()" label="შენახვა" ></button>

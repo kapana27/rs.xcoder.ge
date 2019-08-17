@@ -5,7 +5,7 @@ import {HttpClient} from "@angular/common/http";
   providedIn: 'root'
 })
 export class RequestService {
-  public prod: string = '';
+  public prod: string = '/rs';
   constructor(private http: HttpClient) {
 
   }

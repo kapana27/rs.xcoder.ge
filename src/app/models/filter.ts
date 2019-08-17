@@ -15,4 +15,6 @@ export interface Filter {
   barcodeTo?: any;
   priceFrom?: any;
   priceTo?: any;
+  amount?: any;
+  itemType?: any;
 }

@@ -29,3 +29,10 @@ app-sidebar-nav-link a {
   display: none;
 }
 // width: calc(100% - 10px);
+app-header{
+  .inv_lang{
+    position: absolute;
+    right: 10px;
+    top:16px;
+  }  
+}
