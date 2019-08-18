@@ -11,6 +11,7 @@ import {DirectoryComponent} from './views/directory/directory.component';
 import {IncameOperationComponent} from './views/incame-operation/incame-operation.component';
 import {TestComponent} from "./views/test/test.component";
 import {Test1Component} from "./views/test1/test1.component";
+import { DocumentTurnoverComponent } from './views/document-turnover/document-turnover.component';
 
 export const routes: Routes = [
   {
@@ -96,6 +97,11 @@ export const routes: Routes = [
         data: {
           title: 'ტესტი'
         }
+      },
+      {
+        path: 'documentTurnover',
+        loadChildren: './views/document-turnover/document.module#DocumentModule'
+        
       },
     ]
   },

@@ -1,0 +1,10 @@
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-12">
+        ვის:  <span style="float: right; cursor: pointer" (click)="ccBcc = !ccBcc">cc/bcc</span>
+        <p-autoComplete [(ngModel)]="text" [suggestions]="toUsers" (completeMethod)="searchToUser($event)"></p-autoComplete>
+    </div>
+    <div class="ui-g-12 ui-md-12" *ngIf="ccBcc">
+        cc:  
+        <p-autoComplete [(ngModel)]="text" [suggestions]="toUsers" (completeMethod)="searchToUser($event)"></p-autoComplete>
+    </div>
+</div>    

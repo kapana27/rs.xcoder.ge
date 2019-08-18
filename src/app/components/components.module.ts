@@ -16,7 +16,9 @@ import {
   DropdownModule,
   FileUploadModule,
   TooltipModule,
-  TreeTableModule
+  TreeTableModule,
+  AutoComplete,
+  AutoCompleteModule
 } from 'primeng/primeng';
 import { FileUploaderComponent } from './file-uploader/file-uploader.component';
 import { AttachmentsComponent } from './attachments/attachments.component';
@@ -27,9 +29,25 @@ import { CustomDateComponent } from './custom-date/custom-date.component';
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import { LanguageComponent } from './language/language.component';
 import { CustomInputComponent } from './custom-input/custom-input.component';
+import { DocumentTurnOverDialogComponent } from './document-turn-over-dialog/document-turn-over-dialog.component';
 
 @NgModule({
-  declarations: [CartComponent, GeneratorComponent,CartButtonComponent, TreeComponent, TreeTableComponent, FileUploaderComponent, AttachmentsComponent, MultipleTableComponent, TableTreeComponent, EmployeesComponent, CustomDateComponent, LanguageComponent, CustomInputComponent],
+  declarations: [
+      CartComponent,
+      GeneratorComponent,
+      CartButtonComponent,
+      TreeComponent, 
+      TreeTableComponent, 
+      FileUploaderComponent, 
+      AttachmentsComponent, 
+      MultipleTableComponent,
+      TableTreeComponent,
+      EmployeesComponent, 
+      CustomDateComponent, 
+      LanguageComponent, 
+      CustomInputComponent, 
+      DocumentTurnOverDialogComponent
+      ],
   imports: [
     DropdownModule,
     CommonModule,
@@ -44,7 +62,7 @@ import { CustomInputComponent } from './custom-input/custom-input.component';
     TooltipModule,
     CalendarModule,
     NgbDatepickerModule,
-
+    AutoCompleteModule
   ],
   exports: [
     CartComponent,
@@ -62,7 +80,8 @@ import { CustomInputComponent } from './custom-input/custom-input.component';
     CustomInputComponent
   ],
   entryComponents: [
-    CustomDateComponent
+    CustomDateComponent,
+    DocumentTurnOverDialogComponent
   ]
 })
 export class ComponentsModule { }

@@ -79,6 +79,23 @@ export const navItems: NavData[] = [
     url: '/directory',
     icon: 'icon-speedometer',
   },
+  {
+    name: 'დოკუმენტბრუნვა',
+    url: '/documentTurnover',
+    icon: 'icon-speedometer',
+    children: [
+      {
+        name: 'შემოსული',
+        url: '/documentTurnover/in',
+        icon: 'icon-puzzle'
+      },
+      {
+        name: 'გასული',
+        url: '/documentTurnover/out',
+        icon: 'icon-puzzle'
+      }
+    ]
+  },
   /*{
     name: 'ტესტი',
     url: '/test',

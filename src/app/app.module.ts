@@ -63,6 +63,7 @@ import { TestComponent } from './views/test/test.component';
 import { Test1Component } from './views/test1/test1.component';
 import {NgbDatepickerModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import { DocumentTurnoverComponent } from './views/document-turnover/document-turnover.component';
 
 @NgModule({
   imports: [
@@ -110,6 +111,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     IncameOperationComponent,
     TestComponent,
     Test1Component,
+    DocumentTurnoverComponent,
   ],
   exports:[
     TestComponent,
