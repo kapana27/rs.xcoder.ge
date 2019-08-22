@@ -9,7 +9,13 @@ import { OperationsService } from '../../services/operations/operations.service'
 })
 export class DocumentTurnOverDialogComponent implements OnInit {
   toUsers: any[] = [];
+  list: any[] = [];
   ccBcc: boolean = false;
+  item: {
+    name?: any;
+    count?: number
+  } = {};
+  text: any = '';
   constructor(private Request: RequestService,  private operation: OperationsService) { }
 
   ngOnInit() {
@@ -21,5 +27,12 @@ export class DocumentTurnOverDialogComponent implements OnInit {
       });
   } 
 
+  add(){
+    this.list.push(this.item);
+    this.item = {};
+  }
 
+  deleteItem(index) {
+    this.list= this.list.filter(((value, index1) => index1 !== index ));
+  }
 }

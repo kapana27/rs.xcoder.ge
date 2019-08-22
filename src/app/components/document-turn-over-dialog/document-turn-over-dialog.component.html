@@ -1,10 +1,111 @@
-<div class="ui-g ui-fluid">
+
+
+<div class="ui-g ui-fluid doc-brunva">
+  <div class="ui-g-8 ui-md-8">
     <div class="ui-g-12 ui-md-12">
-        ვის:  <span style="float: right; cursor: pointer" (click)="ccBcc = !ccBcc">cc/bcc</span>
-        <p-autoComplete [(ngModel)]="text" [suggestions]="toUsers" (completeMethod)="searchToUser($event)"></p-autoComplete>
+      ვის:  <span style="float: right; cursor: pointer" (click)="ccBcc = !ccBcc">cc/bcc</span>
+      <p-autoComplete [(ngModel)]="text" [suggestions]="toUsers" (completeMethod)="searchToUser($event)"></p-autoComplete>
     </div>
     <div class="ui-g-12 ui-md-12" *ngIf="ccBcc">
-        cc:  
-        <p-autoComplete [(ngModel)]="text" [suggestions]="toUsers" (completeMethod)="searchToUser($event)"></p-autoComplete>
+      cc:
+      <p-autoComplete [(ngModel)]="text" [suggestions]="toUsers" (completeMethod)="searchToUser($event)"></p-autoComplete>
     </div>
-</div>    
+    <div class="ui-g-12 ui-md-12">
+    <ul class="doc-b-attech-box">
+      <li>
+        <p>document name <span>(size)</span></p>
+        <i class="pi pi-times"></i>
+      </li>
+      <li>
+        <p>document name <span>(size)</span></p>
+        <i class="pi pi-times"></i>
+      </li>
+      <li>
+        <p>document name <span>(size)</span></p>
+        <i class="pi pi-times"></i>
+      </li>
+    </ul>
+  </div>
+    <div class="ui-g-12 ui-md-12">
+      <label>შეტყობინება:</label>
+      <textarea [rows]="5" [cols]="30" pInputTextarea ></textarea>
+    </div>
+
+    <div class="ui-g-12 ui-md-12">
+    <ul class="doc-b-attech-box">
+      <li>
+        <p>document name <span>(size)</span></p>
+        <i class="pi pi-times"></i>
+      </li>
+      <li>
+        <p>document name <span>(size)</span></p>
+        <i class="pi pi-times"></i>
+      </li>
+      <li>
+        <p>document name <span>(size)</span></p>
+        <i class="pi pi-times"></i>
+      </li>
+    </ul>
+    </div>
+  </div>
+
+  <div class="ui-g-4 ui-md-4">
+    <div class="ui-g-12 ui-md-12" style="height: 250px">
+      <label>საგნები:</label>
+      <p-table [value]="list" [scrollable]="true" scrollHeight="120px">
+        <ng-template pTemplate="header">
+          <tr>
+            <th width="50%" >საგანი</th>
+            <th>რაოდენობა</th>
+            <th width="50;"></th>
+          </tr>
+          <tr>
+            <th>
+              <p-autoComplete [(ngModel)]="item.name" [suggestions]="toUsers" (completeMethod)="searchToUser($event)"></p-autoComplete>
+            </th>
+            <th>
+              <input type="number"  style="width: 100%;padding: 5px " [min]="1" [(ngModel)]="item.count"/>
+            </th>
+            <th>
+              <p-button icon="pi pi-plus" (click)="add()"></p-button>
+            </th>
+          </tr>
+        </ng-template>
+        <div class="pre-scrollable">
+          <ng-template pTemplate="body" let-item  let-index="rowIndex">
+            <tr>
+              <td width="50%">{{item.name}}</td>
+              <td>{{item.count}}</td>
+              <td width="50">
+                <i class="pi pi-times" (click)="deleteItem(index)"></i>
+              </td>
+            </tr>
+          </ng-template>
+        </div>
+
+      </p-table>
+    </div>
+
+    <div class="ui-g-12 ui-md-12">
+      <label>კომენტარები:</label>
+    </div>
+
+    <div class="doc-b-coment">
+      <div class="doc-b-sms"></div>
+      <div class=""></div>
+
+    </div>
+  </div>
+
+  <div class="doc-b-footer">
+    <button pButton type="button" label="SEND" class="ui-button-secondary" style="width: 90px;margin-right: 10px;"></button>
+    <i class="pi pi-paperclip"></i>
+    <i class="pi pi-trash"></i>
+  </div>
+
+
+</div>
+
+
+
+

@@ -1,4 +1,6 @@
 <button type="button" (click)="show()" pButton icon="pi pi-info-circle" label="Show"></button>
+<button  pButton icon="pi pi-plus"  label="ახალი მოთხოვნა" class="ui-button-raised" (click)="newMessage()"></button> &nbsp;
+<button  pButton icon="pi pi-plus"  label="საგნების არჩევა" class="ui-button-raised" (click)="choseSubject()"></button> &nbsp;
 
 <div class="ui-g ui-fluid">
   <div class="ui-g-12 col-md-12">
@@ -28,4 +30,100 @@
         </ng-template>
     </p-table>
     </div>
-</div> 
+</div>
+
+
+
+
+<p-dialog header="ახალი შეტყობინება" [(visible)]="newMessageBox" [modal]="true" [responsive]="true" [style]="{width: '1000px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+  <div class="invred_box" style="min-height: 400px">
+    <div class="ui-g ui-fluid">
+      <div class="ui-g-12 ui-md-12">
+        <p>დეპარტამენტის უფროსი</p>
+        <p-autoComplete  field="fname" type="marker" [size]="30" placeholder="" [minLength]="1"  ></p-autoComplete>
+      </div>
+
+      <div class="ui-g-12 ui-md-12">
+        <p>მიუთითეთ ინვენტარი</p>
+        <p-table [value]="list" [scrollable]="true" scrollHeight="120px">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>დასახელება</th>
+              <th>მარკა</th>
+              <th>მოდელი</th>
+              <th>რაოდენობა</th>
+              <th style="position: relative">
+                <p-button icon="pi pi-plus" (click)="add()" style="position: absolute;top: 1px;right: 1px;"></p-button>
+              </th>
+            </tr>
+          </ng-template>
+          <div class="pre-scrollable">
+            <ng-template pTemplate="body" let-item  let-index="rowIndex">
+              <tr>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td> <i class="pi pi-times" (click)="deleteItem(index)"></i></td>
+              </tr>
+            </ng-template>
+          </div>
+        </p-table>
+      </div>
+      <div class="ui-g-12 ui-md-12">
+        <p>შეტყობინება:</p>
+        <textarea [rows]="5" [cols]="30" pInputTextarea ></textarea>
+      </div>
+    </div>
+</div>
+  <p-footer style="width: 100%">
+    <div class="actionButton">
+      <div class="buttonBox">
+        <button pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
+      </div>
+      <div class="buttonBox">
+        <button type="button" pButton icon="pi pi-close" label="გაგზავნა" class="ui-button-secondary"></button>
+        <button type="button" pButton icon="pi pi-close" (click)="newMessageBox=false" label="გაუქმება" class="ui-button-secondary"></button>
+      </div>
+    </div>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="საქონლის ჯგუფი" [(visible)]="choseSubjectBox" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+  <div class="invred_box" style="min-height: 400px">
+    <div class="ui-g ui-fluid">
+      <div class="col-md-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon"><i class="pi pi-search"></i></span>
+          <input type="text" pInputText placeholder="ძებნა">
+        </div>
+      </div>
+      <div class="col-md-8">
+        <p-table>
+          <ng-template pTemplate="header">
+            <tr>
+              <th>დასახელება</th>
+              <th>მარკა</th>
+              <th>მოდელი</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body">
+            <tr>
+              <td>1</td>
+              <td>2</td>
+              <td>3</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+  <p-footer style="width: 100%">
+    <div class="actionButton">
+      <div class="buttonBox"></div>
+      <div class="buttonBox">
+        <button type="button" pButton icon="pi pi-close" label="დამატება" class="ui-button-secondary"></button>
+        <button type="button" pButton icon="pi pi-close" (click)="choseSubjectBox=false" label="გაუქმება" class="ui-button-secondary"></button>
+      </div>
+    </div>
+  </p-footer>
+</p-dialog>

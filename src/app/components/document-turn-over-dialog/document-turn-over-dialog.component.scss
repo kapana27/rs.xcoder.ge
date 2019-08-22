@@ -1,0 +1,59 @@
+/deep/ {
+  div[role="dialog"] {
+    .ui-dialog-title,
+    .ui-dialog-titlebar {
+      font-family: 'lbet-mt',sans-serif !important;
+    }
+    p {
+      font-family: 'lbet-st',sans-serif !important;
+    }
+    ul[role="tablist"] li a {font-family: 'lbet-mt',sans-serif !important;}
+  }
+
+  .doc-b-attech-box {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    list-style: none;
+
+    li {
+      width: 20%;
+      min-width: 230px;
+      position: relative;
+      height: 40px;
+      border-radius: 25px;
+      border: 1px solid #ccc;
+      padding: 0 20px;
+      margin: 8px 5px;
+      display: inline-block;
+      p{
+        line-height: 36px;
+        span {
+          color: #888585;
+          margin-left: 5px;
+        }
+      }
+      i {
+        position: absolute;
+        right: 12px;
+        top: calc(50% - 12px);
+        font-size: 25px;
+        color: #616161;
+
+        &:hover {
+          cursor: pointer;
+          color: red;
+        }
+      }
+    }
+  }
+
+  .doc-b-footer {
+    width: 100%;
+    margin-top: 30px;
+
+    .pi-paperclip {
+      display: inline-block;
+    }
+  }
+}

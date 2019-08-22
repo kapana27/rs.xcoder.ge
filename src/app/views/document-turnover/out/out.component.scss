@@ -1,0 +1,45 @@
+/deep/ {
+  div[role="dialog"] {
+    .ui-dialog-title {
+      font-family: 'lbet-mt',sans-serif !important;
+    }
+    p {
+      font-family: 'lbet-st',sans-serif !important;
+    }
+    ul[role="tablist"] li a {font-family: 'lbet-mt',sans-serif !important;}
+  }
+
+
+  .actionButton {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    align-items: center;
+    .buttonBox {
+      &.tf {
+        font-family: 'lbet-mt',sans-serif !important;
+      }
+      &:nth-child(1){display: flex; justify-content: flex-start;}
+      &:nth-child(2){display: flex; justify-content: center;}
+      &:nth-child(3){
+        app-language {
+          span{
+            position: relative !important;
+          }
+        }
+        display: flex; justify-content: flex-end;
+      }
+      button {height: 28.28px}
+      .cart {
+        display: flex;
+        line-height: 28px;
+        fa-icon {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+
+
+
+}

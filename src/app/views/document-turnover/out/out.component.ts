@@ -22,6 +22,17 @@ export class OutComponent implements OnInit {
   cols: any[];
 
   loading: boolean;
+  newMessageBox: boolean = false;
+  choseSubjectBox: boolean = false;
+  item: {
+    name?: any;
+    mark?: any;
+    model?: any;
+    count?: number
+  } = {};
+  list: any[] = [];
+  uploadFiles: any[] = [];
+  filesDialog: boolean = false;
 
 
   constructor(private mailService: MailService, public dialogService: DialogService) { }
@@ -60,7 +71,25 @@ export class OutComponent implements OnInit {
   show() {
     const ref = this.dialogService.open(DocumentTurnOverDialogComponent, {
         header: 'მოთხოვნის დამატება',
-        width: '70%'
+        width: '1200px',
+        baseZIndex : 10000
     });
 }
+
+  newMessage() {
+    this.newMessageBox = true;
+  }
+
+  add() {
+    this.list.push(this.item);
+    this.item = {};
+  }
+
+  deleteItem(index) {
+    this.list= this.list.filter(((value, index1) => index1 !== index ));
+  }
+
+  choseSubject() {
+    this.choseSubjectBox = true;
+  }
 }

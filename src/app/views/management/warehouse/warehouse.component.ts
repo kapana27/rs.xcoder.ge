@@ -16,9 +16,9 @@ import {TreeNode} from '../../../models/tree-node';
 import {RequestService} from '../../../services/request.service';
 import {CustomDateComponent} from '../../../components/custom-date/custom-date.component';
 import {NgbDate, NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
-import {CustomInputComponent} from "../../../components/custom-input/custom-input.component";
-import {Filter} from "../../../models/filter";
-import {LgService} from "../../../services/lg.service";
+import {CustomInputComponent} from '../../../components/custom-input/custom-input.component';
+import {Filter} from '../../../models/filter';
+import {LgService} from '../../../services/lg.service';
 
 interface Default {
   id?: number;
@@ -58,7 +58,7 @@ export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
 export class WarehouseComponent implements OnInit {
   public lastCode: number = 0;
   public lang ;
-  public changer: any ='';
+  public changer: any = '';
   eventData: any = null;
   public gridApi;
   public gridColumnApi;
@@ -115,7 +115,7 @@ export class WarehouseComponent implements OnInit {
   itemGroupDialogShow: boolean  = false;
   ItemGroup: TreeNode[] = [];
   newInventor: Inventor = {
-    date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+    date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
     consumption: false,
     price: 0,
     amount: 0,
@@ -137,14 +137,14 @@ export class WarehouseComponent implements OnInit {
   cartItemsData: Array<any> = [];
   cartMultipleItemsData: Array<any> = [];
   transferToSection: TransferToSection = {
-    date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())}
+    date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())}
   };
   inventorTransfer: InventorTransfer = {
     selectedIndex: 0,
     generator: false,
     roomId: 89,
     selectedProperty: {
-      name: ""
+      name: ''
     }
   };
   stockList: Array<Default> = [];
@@ -158,8 +158,8 @@ export class WarehouseComponent implements OnInit {
   private dataChecker = false;
   tmpData: any = {};
   public inventorOperation: string = 'new';
-  //public minDate: Date = new Date();
-  public minDate: NgbDateStruct = { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())} ;
+  // public minDate: Date = new Date();
+  public minDate: NgbDateStruct = { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())} ;
   addon: {
     Left?: string,
     Right?: string
@@ -170,15 +170,16 @@ export class WarehouseComponent implements OnInit {
   prod: any = '';
   public frameworkComponents;
   public filter: Filter = {};
-   changeLanguage(lang){
-      this.lgService.changeLanguage(lang)
-   } 
+   changeLanguage(lang) {
+      //this.lgService.changeLanguage(lang);
+   }
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService,  private confirmationService: ConfirmationService, private Request: RequestService, private lgService: LgService) {
-    this.lgService.changeLanguage$.subscribe((data) => {
+    /*this.lgService.changeLanguage$.subscribe((data) => {
         this.lang = data; // And he have data here too!
       }
-    );
-     this.lang =  localStorage.getItem("lang");
+    );*/
+     // this.lang =  localStorage.getItem("lang");
+     this.lang =  'uk';
     this.prod = this.Request.prod;
     this.gridOptions = {
       context: {
@@ -435,7 +436,7 @@ export class WarehouseComponent implements OnInit {
       {
         name: 'ექსელში ექსპორტი .xlsx',
         action: function () {
-          window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export'+localStorage.getItem("filter"), '_blank');
+          window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export' + localStorage.getItem('filter'), '_blank');
         }
       },
       'separator',
@@ -488,7 +489,7 @@ export class WarehouseComponent implements OnInit {
       }
     ];
   }
-  onGridReady(params, filter: boolean=false) {
+  onGridReady(params, filter: boolean= false) {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
@@ -498,21 +499,21 @@ export class WarehouseComponent implements OnInit {
     const cartItems = this.cartItems;
     const datasource = {
       getRows(params) {
-        console.log(params)
+        console.log(params);
         const parameters = [];
         for (const f in params['request']['filterModel']) {
           const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
            parameters.push({
              property: name,
              value: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? params['request']['filterModel'][f]['dateFrom'] : params['request']['filterModel'][f]['filter'],
-             operator: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' )? '=':'like'
+             operator: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? '=' : 'like'
            });
         }
-        if(filter){
+        if (filter) {
           console.log(filterData);
-          for (let f in filterData){
+          for (const f in filterData) {
             const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
-            if(filterData[f] != '' && filterData[f] != undefined && filterData[f] !==null){
+            if (filterData[f] != '' && filterData[f] != undefined && filterData[f] !== null) {
               parameters.push({
                 property: name,
                 value: filterData[f],
@@ -614,12 +615,12 @@ export class WarehouseComponent implements OnInit {
         this.uploadFiles = [];
         this.inventoryToBuildingDialogShow = true;
         this.inventorTransfer = {
-          date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+          date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
           selectedIndex: 0,
           generator: false,
           roomId: 89,
-          selectedProperty:{
-            name:"" 
+          selectedProperty: {
+            name: ''
           }
         };
         this.checkMinDate();
@@ -637,9 +638,9 @@ export class WarehouseComponent implements OnInit {
           (new Date(moment(bDate[2] + '-' + bDate[1] + '-' + bDate[0]).format('YYYY-MM-DD'))).getTime()
         );
       })[0].split('-');
-      //this.minDate = new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD'));
-      this.minDate = new NgbDate(date[2], date[1],date[0]);
-      console.log(this.minDate)
+      // this.minDate = new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD'));
+      this.minDate = new NgbDate(date[2], date[1], date[0]);
+      console.log(this.minDate);
 
     }
   }
@@ -651,7 +652,7 @@ export class WarehouseComponent implements OnInit {
             this.dialogName = 'ელექტორნული ზედდებული №';
             this.uploadFiles = [];
             this.transferToSection = {
-              date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())}
+              date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())}
             };
             this.display = true;
             this.checkMinDate();
@@ -687,7 +688,7 @@ export class WarehouseComponent implements OnInit {
           this.inventorDialogShow = true;
           this.frustrate = false;
           this.newInventor = {
-            date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
             consumption: false,
             fullname: {
               name: ''
@@ -752,10 +753,10 @@ export class WarehouseComponent implements OnInit {
 
        if (this.inventorOperation === 'edit') {
          const date = this.tmpData['trDate'].split('-');
-         console.log(date)
+         console.log(date);
          this.newInventor = {
            id: this.tmpData.id,
-           //date: new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD')) ,
+           // date: new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD')) ,
            date: { year: parseInt(date[2]), month: parseInt(date[1]), day: parseInt(date[0])},
            consumption: false,
            fullname: this.tmpData,
@@ -798,7 +799,7 @@ export class WarehouseComponent implements OnInit {
              fullname: tmpData,
              price: tmpData['price'],
              amount: tmpData['amount'],
-             //entryDate: new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD')),
+             // entryDate: new Date(moment(date[2] + '-' + date[1] + '-' + date[0]).format('YYYY-MM-DD')),
              entryDate: { year: date[2], month: date[1], day: date[0]},
              selectedBarcode: tmpData['barCodeType'],
              barCode: tmpData['barcode'].replace(tmpData['barCodeType']['value'], ''),
@@ -993,7 +994,7 @@ console.log(this.newInventor);
       .then(response => {
          if (response['status'] == 200) {
            this.newInventor = {
-             date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+             date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
              consumption: false,
              fullname: {
                name: ''
@@ -1051,8 +1052,8 @@ console.log(this.newInventor);
     console.log(filter, this.newInventor, this.formErrors);
 
     if (this.formErrors.length === 0) {
-      //this.newInventor.entryDate = moment(this.newInventor.date).format('DD-MM-YYYY');
-      this.newInventor.entryDate = this.newInventor.date.day+"-"+this.newInventor.date.month+"-"+this.newInventor.date.year;
+      // this.newInventor.entryDate = moment(this.newInventor.date).format('DD-MM-YYYY');
+      this.newInventor.entryDate = this.newInventor.date.day + '-' + this.newInventor.date.month + '-' + this.newInventor.date.year;
       this.newInventor.name = (typeof this.newInventor.fullname === 'string') ? this.newInventor.fullname : this.newInventor.fullname['name'];
       this.newInventor.itemType = (this.newInventor.selectedItemType != undefined) ? this.newInventor.selectedItemType['id'] : null;
 
@@ -1206,9 +1207,9 @@ console.log(this.newInventor);
         }
         return value;
       });
-      this.transferToSection.trDate =this.transferToSection.date.day+"-"+this.transferToSection.date.month+"-"+this.transferToSection.date.year;
-      //moment(this.transferToSection.Datetime).format('DD-MM-YYYY');
-      //this.inventorTransfer.trDate =this.inventorTransfer.date.day+"-"+this.inventorTransfer.date.month+"-"+this.inventorTransfer.date.year; // moment().format('DD-MM-YYYY');
+      this.transferToSection.trDate = this.transferToSection.date.day + '-' + this.transferToSection.date.month + '-' + this.transferToSection.date.year;
+      // moment(this.transferToSection.Datetime).format('DD-MM-YYYY');
+      // this.inventorTransfer.trDate =this.inventorTransfer.date.day+"-"+this.inventorTransfer.date.month+"-"+this.inventorTransfer.date.year; // moment().format('DD-MM-YYYY');
       this.transferToSection.carrierPerson = this.transferToSection.carrierPersonDetails['id'];
       this.transferToSection.toWhomStock = this.transferToSection.toWhomStockDetails['id'];
       this.transferToSection.listData = this.cartItemsData;
@@ -1341,7 +1342,7 @@ console.log(this.newInventor);
 
             this.inventorTransfer.addon = response['data'];
             this.inventorTransfer.generator = true;
-            this.inventorTransfer.trDate =this.inventorTransfer.date.day+"-"+this.inventorTransfer.date.month+"-"+this.inventorTransfer.date.year; // moment().format('DD-MM-YYYY');
+            this.inventorTransfer.trDate = this.inventorTransfer.date.day + '-' + this.inventorTransfer.date.month + '-' + this.inventorTransfer.date.year; // moment().format('DD-MM-YYYY');
 
             this.inventorTransfer.fromStock = 11;
             this.inventorTransfer.listData = this.cartItemsData;
@@ -1383,7 +1384,7 @@ console.log(this.newInventor);
       .then(response => {
         if (response['status'] === 200) {
           this.inventorTransfer = {
-            date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
             selectedIndex: 0,
             generator: false
           };
@@ -1434,7 +1435,7 @@ console.log(this.newInventor);
   }
   editNewInventor() {
     if (this.inventorOperation === 'edit') {
-      this.newInventor.entryDate = this.newInventor.date.day+"-"+this.newInventor.date.month+"-"+this.newInventor.date.year;
+      this.newInventor.entryDate = this.newInventor.date.day + '-' + this.newInventor.date.month + '-' + this.newInventor.date.year;
 
       const formdata = new FormData();
       for (const key in this.newInventor) {
@@ -1450,7 +1451,7 @@ console.log(this.newInventor);
         .then(response => {
           if (response['status'] == 200) {
             this.newInventor = {
-              date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+              date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
               consumption: false,
               fullname: {
                 name: ''
@@ -1570,7 +1571,7 @@ console.log(this.newInventor);
       this.newInventor.selectedMaker = {
         name: (typeof this.newInventor.selectedMaker === 'string') ? this.newInventor.selectedMaker : this.newInventor.selectedMaker['name']
       };
-      this.filterInventorsByName({query: ((typeof this.newInventor.selectedMaker === 'string') ? this.newInventor.selectedMaker : this.newInventor.selectedMaker['name'])});
+      this.filterItemSingle({query: ((typeof this.newInventor.selectedMaker === 'string') ? this.newInventor.selectedMaker : this.newInventor.selectedMaker['name'])}, 'marker');
     }
 
     if (this.lang === 'ge') {
@@ -1630,14 +1631,14 @@ console.log(this.newInventor);
         'name': en2geo($event)
 
       }
-     
+
     } else {
       this.filterPropertyList({query: ((typeof this.inventorTransfer.selectedProperty === 'string') ? this.inventorTransfer.selectedProperty : this.inventorTransfer.selectedProperty['name'])});
     }
 
     if (this.lang === 'ge') {
       setTimeout(() => {
-        this.filterPropertyList({query: en2geo((typeof this.inventorTransfer.selectedProperty === 'string') ? this.inventorTransfer.selectedProperty : this.inventorTransfer.selectedProperty['name'])}) 
+        this.filterPropertyList({query: en2geo((typeof this.inventorTransfer.selectedProperty === 'string') ? this.inventorTransfer.selectedProperty : this.inventorTransfer.selectedProperty['name'])})
       }, 20);
     }*/
     this.filterPropertyList({query: ((typeof this.inventorTransfer.selectedProperty === 'string') ? this.inventorTransfer.selectedProperty : this.inventorTransfer.selectedProperty['name'])});
@@ -1653,7 +1654,7 @@ console.log(this.newInventor);
   }
   inventorSearch() {
     this.newInventor = {
-      date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+      date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
       consumption: false,
       price: 0,
       amount: 0,
@@ -1678,7 +1679,7 @@ console.log(this.newInventor);
   CloseInventorSearch() {
     this.searchBox = false;
     this.newInventor = {
-      date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+      date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
       consumption: false,
       price: 0,
       amount: 0,
@@ -1714,6 +1715,8 @@ console.log(this.newInventor);
       this.newInventor.selectedModel = {
         name: (typeof this.newInventor.selectedModel === 'string') ? this.newInventor.selectedModel : this.newInventor.selectedModel['name']
       };
+      this.filterItemSingle({query: ((typeof this.newInventor.selectedModel === 'string') ? this.newInventor.selectedModel : this.newInventor.selectedModel['name'])}, 'model');
+
     }
 
     if (this.lang === 'ge') {
@@ -1725,18 +1728,18 @@ console.log(this.newInventor);
 
   filterGrid() {
     try {
-     
-    
-      if(this.notNull(this.newInventor.selectedMeasureUnitName)){
-        this.filter.measureUnit = this.notNull(this.newInventor.selectedMeasureUnitName['id'])?this.newInventor.selectedMeasureUnitName['name']: this.newInventor.selectedMeasureUnitName['name'];
+
+
+      if (this.notNull(this.newInventor.selectedMeasureUnitName)) {
+        this.filter.measureUnit = this.notNull(this.newInventor.selectedMeasureUnitName['id']) ? this.newInventor.selectedMeasureUnitName['name'] : this.newInventor.selectedMeasureUnitName['name'];
       }
 
-      
-      this.filter.barCodeType = this.notNull(this.newInventor.selectedBarcode)? this.newInventor.selectedBarcode['id']:'';
 
-      this.onGridReady(this.eventData,true)
-    }catch (e) {}
-       console.log( this.filter)
+      this.filter.barCodeType = this.notNull(this.newInventor.selectedBarcode) ? this.newInventor.selectedBarcode['id'] : '';
+
+      this.onGridReady(this.eventData, true);
+    } catch (e) {}
+       console.log( this.filter);
 
   }
 }

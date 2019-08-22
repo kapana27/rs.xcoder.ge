@@ -5,10 +5,10 @@
     <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
   </div>
   <div class="buttonBox">
-    <button pButton icon="pi pi-plus"  label="ინვენტარის მიღება" class="ui-button-success" (click)="inventorDialog()"></button> &nbsp; &nbsp;
-    <button pButton icon="pi pi-plus"  label="ზედ. მიღება" class="ui-button-success" (click)="zednadebiDialog()"></button> &nbsp; &nbsp;
-    <button pButton icon="pi pi-pencil" label="რედაქტირება" class="ui-button-raised" (click)="inventorEditDialog()"></button>&nbsp;&nbsp;&nbsp;
-    <button pButton icon="pi pi-search" label="ძებნა" class="ui-button-warning" (click)="inventorSearch()" *ngIf="searchBox !== true"></button>
+    <button style="width: 120px" pButton icon="pi pi-plus"  label="ინვ. მიღება" class="ui-button-raised" (click)="inventorDialog()"></button> &nbsp; &nbsp;
+    <button style="width: 120px" pButton icon="pi pi-plus"  label="ზედ. მიღება" class="ui-button-raised" (click)="zednadebiDialog()"></button> &nbsp; &nbsp;
+    <button style="width: 120px" pButton icon="pi pi-pencil" label="რედაქტირება" class="ui-button-raised" (click)="inventorEditDialog()"></button>&nbsp;&nbsp;&nbsp;
+    <button style="width: 120px" pButton icon="pi pi-search" label="ძებნა" class="ui-button-raised" (click)="inventorSearch()" *ngIf="searchBox !== true"></button>
   </div>
   <div class="buttonBox">
     <button (click)="inventoryToBuildingDialog()" pButton type="button" label="ინვენტარის გაცემა" icon="pi pi-arrow-up" class="ui-button-danger"></button> &nbsp;&nbsp;

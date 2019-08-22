@@ -18,7 +18,7 @@ import {
   TooltipModule,
   TreeTableModule,
   AutoComplete,
-  AutoCompleteModule
+  AutoCompleteModule, InputTextareaModule
 } from 'primeng/primeng';
 import { FileUploaderComponent } from './file-uploader/file-uploader.component';
 import { AttachmentsComponent } from './attachments/attachments.component';
@@ -62,7 +62,8 @@ import { DocumentTurnOverDialogComponent } from './document-turn-over-dialog/doc
     TooltipModule,
     CalendarModule,
     NgbDatepickerModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    InputTextareaModule
   ],
   exports: [
     CartComponent,
