@@ -30,23 +30,31 @@ import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import { LanguageComponent } from './language/language.component';
 import { CustomInputComponent } from './custom-input/custom-input.component';
 import { DocumentTurnOverDialogComponent } from './document-turn-over-dialog/document-turn-over-dialog.component';
+import { ItemGroupComponent } from './item-group/item-group.component';
+import { DocumentItemGroupComponent } from './document-item-group/document-item-group.component';
+import { TableComponent } from './table/table.component';
+import { DocumentTurnOverDisabledDialogComponent } from './document-turn-over-disabled-dialog/document-turn-over-disabled-dialog.component';
 
 @NgModule({
   declarations: [
       CartComponent,
       GeneratorComponent,
       CartButtonComponent,
-      TreeComponent, 
-      TreeTableComponent, 
-      FileUploaderComponent, 
-      AttachmentsComponent, 
+      TreeComponent,
+      TreeTableComponent,
+      FileUploaderComponent,
+      AttachmentsComponent,
       MultipleTableComponent,
       TableTreeComponent,
-      EmployeesComponent, 
-      CustomDateComponent, 
-      LanguageComponent, 
-      CustomInputComponent, 
-      DocumentTurnOverDialogComponent
+      EmployeesComponent,
+      CustomDateComponent,
+      LanguageComponent,
+      CustomInputComponent,
+      DocumentTurnOverDialogComponent,
+      ItemGroupComponent,
+      DocumentItemGroupComponent,
+      TableComponent,
+      DocumentTurnOverDisabledDialogComponent
       ],
   imports: [
     DropdownModule,
@@ -78,7 +86,12 @@ import { DocumentTurnOverDialogComponent } from './document-turn-over-dialog/doc
     EmployeesComponent,
     CustomDateComponent,
     LanguageComponent,
-    CustomInputComponent
+    CustomInputComponent,
+    ItemGroupComponent,
+    DocumentItemGroupComponent,
+    DocumentTurnOverDialogComponent,
+    TableComponent,
+    DocumentTurnOverDisabledDialogComponent
   ],
   entryComponents: [
     CustomDateComponent,

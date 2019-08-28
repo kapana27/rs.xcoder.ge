@@ -80,28 +80,39 @@ export const navItems: NavData[] = [
     icon: 'icon-speedometer',
   },
   {
-    name: 'მოთხოვნები',
+    name: 'დოკუმენტბრუნვა',
     url: '/documentTurnover',
     icon: 'icon-speedometer',
     children: [
+
       {
-        name: 'შემოსული',
-        url: '/documentTurnover/in',
-        icon: 'icon-puzzle'
-      },
-      {
-        name: 'გასული',
+        name: 'ახალი მოთხოვნა',
         url: '/documentTurnover/out',
         icon: 'icon-puzzle'
       },
       {
-        name: 'დადასტურებული',
+        name: 'სამმართველო',
         url: '/documentTurnover/in',
         icon: 'icon-puzzle'
       },
       {
-        name: 'უარყოფილი',
-        url: '/documentTurnover/out',
+        name: 'დეპარტამენტი',
+        url: '/documentTurnover/department',
+        icon: 'icon-puzzle'
+      },
+
+      {
+        name: 'ფინანსები',
+        url: '/documentTurnover/finance',
+        icon: 'icon-puzzle'
+      },{
+        name: 'ლოჯისტიკის სამმსართველო',
+        url: '/documentTurnover/logistic',
+        icon: 'icon-puzzle'
+      },
+      {
+        name: 'საწყობი',
+        url: '/documentTurnover/warehouse',
         icon: 'icon-puzzle'
       }
     ]

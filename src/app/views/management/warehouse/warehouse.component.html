@@ -60,7 +60,7 @@
       </div>
     </div-->
     <div class="col-m-12 col-lg-3" style="max-width: 200px">
-      <label>ტიპი:</label> 
+      <label>ტიპი:</label>
       <div>
         <input type="text"  pInputText placeholder="" [(ngModel)]="filter.itemType" />
       </div>
@@ -201,7 +201,7 @@
         <div class="ui-g-12 ui-md-6">
           <p>ტრანსპორტ. პასხ. პირი:</p>
           <p-autoComplete [ngClass]="{ 'red':if_error(formErrors,'carrierPersonDetails')?'1px solid red': '' }"  [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="transferToSection.carrierPersonDetails"
-                          [minLength]="1" placeholder=""  field="fname" [dropdown]="false">
+                          [minLength]="1" placeholder=""  field="fname" [dropdown]="true">
             <ng-template let-brand pTemplate="item">
               <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                 <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -273,7 +273,7 @@
                     <p>ქონების მართვა</p>
                 <p-autoComplete  [(ngModel)]="inventorTransfer.selectedProperty"    [suggestions]="propertyList" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" field="fname" type="marker" [size]="30"
                 placeholder="" [minLength]="1" (ngModelChange)="onKeyUpProperty($event)" ></p-autoComplete>
-                
+
               </div>
 
               <div class="ui-g-12 ui-md-6">
@@ -329,7 +329,7 @@
               <div class="ui-g-12 ui-md-6">
                 <p>ქონების მართვა</p>
                 <p-autoComplete [suggestions]="propertyList" (completeMethod)="filterPropertyList($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                                [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                                [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
                   <ng-template let-brand pTemplate="item">
                     <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                       <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -459,7 +459,7 @@
 
 <p-dialog  header="{{inventorOperation=='edit'? 'ინვენტარის რედაქტირება':(inventorOperation ==='multiple')? 'პაკეტური რედაქტირება':'ინვენტარის მიღება'}}" *ngIf="inventorDialogShow" [(visible)]="inventorDialogShow" [modal]="true" [responsive]="true" [style]="{width: '1200px', minWidth: '200px'}" [minY]="500"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
-         
+
           <p-header>
               <app-language (onChange)="onChange($event)" style="margin-right: 100px"></app-language>
           </p-header>

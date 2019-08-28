@@ -1,0 +1,41 @@
+
+<p-dialog header="საქონლის ჯგუფი"  [(visible)]="dialog" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000" (onHide)="close()">
+  <div class="invred_box" style="min-height: 400px">
+    <div class="ui-g ui-fluid">
+      <div class="col-md-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon"><i class="pi pi-search"></i></span>
+          <input type="text" pInputText placeholder="ძებნა" [(ngModel)]="filter.name" (ngModelChange)="itemCatalogFilter('itemCatalogByName')">
+        </div>
+        <app-item-group (onSelect)="selectItemGroup($event)"></app-item-group>
+      </div>
+      <div class="col-md-8">
+        <p-table [value]="itemCatalog"  selectionMode="multiple" [(selection)]="selectedCatalogs"   [scrollable]="true" scrollHeight="430px">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>დასახელება</th>
+              <th>მარკა</th>
+              <th>მოდელი</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-d>
+            <tr [pSelectableRow]="d">
+              <td>{{d['name']}}</td>
+              <td>{{d['maker']}}</td>
+              <td>{{d['model']}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+  <p-footer style="width: 100%">
+    <div class="actionButton">
+      <div class="buttonBox"></div>
+      <div class="buttonBox">
+        <button type="button" pButton icon="pi pi-close" label="დამატება" class="ui-button-secondary" (click)="save()"></button>
+        <button type="button" pButton icon="pi pi-close" (click)="close()" label="გაუქმება" class="ui-button-secondary"></button>
+      </div>
+    </div>
+  </p-footer>
+</p-dialog>

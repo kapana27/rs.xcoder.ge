@@ -144,6 +144,16 @@ export  const Config = {
         delete: '/api/secured/List/Delete'
       },
       get:{}
+  },
+  document: {
+    post: {
+      itemCatalogByName: "/api/secured/ItemCatalog/Filter/ByName",
+      itemCatalogByGroup: "/api/secured/ItemCatalog/Filter/ByItemGroup",
+      create: "/api/secured/ItemRequest/Create"
+    },
+    get: {
+      chiefUsers: "/api/secured/ItemRequest/Filter/Positions/ByDepartment/Level1",
+      financeUsers: "/api/secured/ItemRequest/Filter/Positions/ByDepartment/Level2"
+    },
   }
-
 };

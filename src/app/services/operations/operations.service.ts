@@ -116,5 +116,26 @@ export class OperationsService {
   getAllAttachments(id) {
     return this.Request.Get(Config.List.get.attachments + '?id=' + id);
   }
+  getAllChiefUsers(name){
+    return  this.Request.Post(Config.document.get.chiefUsers+"?name="+name,{});
+  }
+  createDocuments(params) {
+    let formData = new FormData()
 
+    if(params){
+      for(let  p in params){
+        console.log(p);
+        if(p === 'items' && params[p]){
+          formData.append(p,JSON.stringify(params[p]))
+        }else{
+          formData.append(p,params[p])
+        }
+      }
+    }
+    return this.Request.Post(Config.document.post.create, formData)
+  }
+
+  getAllChiefUsersFinance($eventElement: any) {
+    return  this.Request.Post(Config.document.get.financeUsers+"?name="+name,{});
+  }
 }

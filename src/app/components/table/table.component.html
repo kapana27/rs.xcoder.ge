@@ -1,0 +1,18 @@
+<p-table [columns]="cols" [value]="dataSource" [lazy]="true" (onLazyLoad)="loadLazy($event)" [paginator]="true"
+         [rows]="50" [totalRecords]="totalRecords" [loading]="loading" [selectionMode]="selectionMode" [(selection)]="selected" (selectionChange)="selectionChange()">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th *ngFor="let col of columns">
+        {{col.header}}
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr [pSelectableRow]="rowData" >
+      <td *ngFor="let col of columns">
+
+        {{ (col['field'].indexOf(".")>-1)?  (  typeof(rowData[col['field'].split(".")[0]][col['field'].split(".")[1]]) ==='string')? rowData[col['field'].split(".")[0]][col['field'].split(".")[1]]: rowData[col['field'].split(".")[0]][col['field'].split(".")[1]][col['field'].split(".")[2]]  :  rowData[col['field']]}}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

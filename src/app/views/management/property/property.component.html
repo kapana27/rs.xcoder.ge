@@ -208,7 +208,7 @@
             <div class="ui-g-12 ui-md-6">
               <p>ქონების მართვა</p>
               <p-autoComplete [suggestions]="propertyList" (completeMethod)="filterPropertyList($event)"[size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                              [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -271,7 +271,7 @@
             <div class="ui-g-12 ui-md-6">
               <p>ქონების მართვა</p>
               <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                              [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>

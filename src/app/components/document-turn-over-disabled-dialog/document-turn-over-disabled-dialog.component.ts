@@ -1,15 +1,18 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import { RequestService } from '../../services/request.service';
-import { OperationsService } from '../../services/operations/operations.service';
+import {RequestService} from "../../services/request.service";
+import {OperationsService} from "../../services/operations/operations.service";
 
 @Component({
-  selector: 'app-document-turn-over-dialog',
-  templateUrl: './document-turn-over-dialog.component.html',
-  styleUrls: ['./document-turn-over-dialog.component.scss']
+  selector: 'app-document-turn-over-disabled-dialog',
+  templateUrl: './document-turn-over-disabled-dialog.component.html',
+  styleUrls: ['./document-turn-over-disabled-dialog.component.scss']
 })
-export class DocumentTurnOverDialogComponent implements OnInit {
+export class DocumentTurnOverDisabledDialogComponent implements OnInit {
   @Input() newMessageBox: boolean = false;
   @Input() list: string = "";
+  @Input() selectedUser: any;
+  @Input() note: any;
+  @Input() chains: any[] = [];
   @Output() onClose = new EventEmitter();
 
   toUsers: any[] = [];
@@ -30,17 +33,20 @@ export class DocumentTurnOverDialogComponent implements OnInit {
     items?: any[],
     note?: string
   } = {};
+  mails: any;
 
 
   constructor(private Request: RequestService,  private operation: OperationsService) { }
 
   ngOnInit() {
+    this.searchToUser({query: ''})
+    this.message.note = this.note;
   }
 
   searchToUser(event) {
     this.operation.getStaffList(event.query).then((data: any[]) => {
-          this.toUsers = data;
-      });
+      this.toUsers = data;
+    });
   }
 
   add(){
@@ -57,11 +63,11 @@ export class DocumentTurnOverDialogComponent implements OnInit {
   }
 
   filterUsers($event: any) {
-      this.onFilterName.emit($event)
+    this.onFilterName.emit($event)
   }
 
   selectUser($event: any) {
-      this.message.selectedUserId=$event['id'];
+    this.message.selectedUserId=$event['id'];
   }
 
   send() {
@@ -80,8 +86,8 @@ export class DocumentTurnOverDialogComponent implements OnInit {
         }
       })
     }).then(response=>{
-        alert("გაიგზავნა წარმატებით");
-        this.newMessageBox = false;
+      alert("გაიგზავნა წარმატებით");
+      this.newMessageBox = false;
     })
       .catch(reason => {
         alert("დაფიქსირდა შეცდომა "+ reason['data']);
@@ -90,10 +96,10 @@ export class DocumentTurnOverDialogComponent implements OnInit {
   }
 
   close() {
-      this.onClose.emit(false)
+    this.onClose.emit(false)
   }
 
   closeGroupDialog() {
-      this.itemGroupDialog = false;
+    this.itemGroupDialog = false;
   }
 }

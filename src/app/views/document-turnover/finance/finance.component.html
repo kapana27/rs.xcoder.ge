@@ -1,0 +1,20 @@
+<!--button  pButton icon="pi pi-plus"  label="ახალი მოთხოვნა" class="ui-button-raised" (click)="newMessage()"></button--> &nbsp;
+<button  pButton icon="pi pi-eye"  label="წერილის ნახვა" class="ui-button-raised" (click)="showMessage()"></button> &nbsp;
+<!--div class="ui-g ui-fluid">
+  <div class="ui-g-12 col-md-12">
+      <div class="ui-inputgroup">
+          <button pButton type="button" label="ძიება"></button>
+          <input type="text" pInputText placeholder="საძიებო სიტყვა" style="width: 100%">
+      </div>
+  </div>
+</div-->
+<div class="content-box row">
+  <div class="col-md-12">
+    <app-table [uri]="'/api/secured/ItemRequest/Level2/Select'" [cols]="cols" [update]="update" [selectionMode]="'single'" (onSelected)="selectedItems($event)"></app-table>
+  </div>
+</div>
+
+<app-document-turn-over-dialog *ngIf="newMessageBox" [newMessageBox]="newMessageBox" (onClose)="onClose($event)" [selectedItems]="selectedCatalogItems" (onFilterName)="onFilterName($event)" [users]="users" [list]="lists"></app-document-turn-over-dialog>
+<app-document-turn-over-disabled-dialog *ngIf="newMessageBoxShow" [newMessageBox]="newMessageBoxShow" (onClose)="onCloseShow($event)" [selectedItems]="selectedCatalogItem" (onFilterName)="onFilterName($event)" [users]="users" [list]="lists" [selectedUser]="receiver" [note]="note" [chains] = "chains"></app-document-turn-over-disabled-dialog>
+
+

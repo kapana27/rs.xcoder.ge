@@ -10,10 +10,15 @@ import {ButtonModule} from 'primeng/button';
 import {DynamicDialogModule} from 'primeng/dynamicdialog';
 import {AutoCompleteModule} from 'primeng/autocomplete';
 import {DialogModule} from 'primeng/dialog';
-import {InputTextareaModule} from 'primeng/primeng';
+import {InputTextareaModule, TreeTableModule} from 'primeng/primeng';
+import {ComponentsModule} from "../../components/components.module";
+import {FormsModule} from "@angular/forms";
+import { GenerationComponent } from './generation/generation.component';
+import { DepartmentComponent } from './department/department.component';
+import { FinanceComponent } from './finance/finance.component';
 
 @NgModule({
-  declarations: [OutComponent, InComponent],
+  declarations: [OutComponent, InComponent, GenerationComponent, DepartmentComponent, FinanceComponent],
   imports: [
     CommonModule,
     DocumentRoutingModule,
@@ -23,7 +28,10 @@ import {InputTextareaModule} from 'primeng/primeng';
     DynamicDialogModule,
     AutoCompleteModule,
     DialogModule,
-    InputTextareaModule
+    InputTextareaModule,
+    TreeTableModule,
+    ComponentsModule,
+    FormsModule
   ]
-}) 
+})
 export class DocumentModule { }

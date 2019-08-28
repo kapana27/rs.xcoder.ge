@@ -3,6 +3,9 @@ import { Mail } from '../../../models/mail';
 import { MailService } from '../../../services/mails/mail.service';
 import { LazyLoadEvent, DialogService } from 'primeng/api';
 import { DocumentTurnOverDialogComponent } from '../../../components/document-turn-over-dialog/document-turn-over-dialog.component';
+import {TreeNode} from "../../../models/tree-node";
+import {DocumentService} from "../../../services/document/document.service";
+import {OperationsService} from "../../../services/operations/operations.service";
 
 @Component({
   selector: 'app-out',
@@ -14,15 +17,10 @@ import { DocumentTurnOverDialogComponent } from '../../../components/document-tu
 export class OutComponent implements OnInit {
 
   datasource: Mail[];
-
   mails: Mail[];
-
   totalRecords: number;
-
   cols: any[];
-
   loading: boolean;
-  newMessageBox: boolean = false;
   choseSubjectBox: boolean = false;
   item: {
     name?: any;
@@ -31,11 +29,13 @@ export class OutComponent implements OnInit {
     count?: number
   } = {};
   list: any[] = [];
-  uploadFiles: any[] = [];
   filesDialog: boolean = false;
+  selectedCatalogs: any[] = [];
+  newMessageBox: boolean = false;
+  public update: number = 0;
+  private users: any[] = [];
 
-
-  constructor(private mailService: MailService, public dialogService: DialogService) { }
+  constructor(private mailService: MailService, public dialogService: DialogService, private operation: OperationsService) { }
 
   ngOnInit() {
      this.loading = true;
@@ -47,13 +47,16 @@ export class OutComponent implements OnInit {
     }).catch();
 
     this.cols = [
-        { field: 'files', header: '',  width: 50 },
-        { field: 'ready', header: '' , width: 50 },
-        { field: 'docNumber', header: 'დოკუმენტი' },
+        { field: 'id', header: 'მოთხოვნის N' },
         { field: 'date', header: 'თარიღი' },
-        { field: 'category', header: 'კატეგორია' },
-        { field: 'senders', header: 'გამომგზავნი' }
+        { field: 'sender.fullname', header: 'ვინ' },
+        { field: 'sender.department.name', header: 'უწყება' },
+        { field: 'sender.position.name', header: 'თანამდებობა' },
+        { field: 'receiver.fullname', header: 'ვის' },
+        { field: 'receiver.department.name', header: 'უწყება' },
+        { field: 'receiver.position.name', header: 'თანამდებობა' }
     ];
+    this.newMessage();
   }
 
   loadCarsLazy(event: LazyLoadEvent) {
@@ -76,9 +79,7 @@ export class OutComponent implements OnInit {
     });
 }
 
-  newMessage() {
-    this.newMessageBox = true;
-  }
+
 
   add() {
     this.list.push(this.item);
@@ -91,5 +92,23 @@ export class OutComponent implements OnInit {
 
   choseSubject() {
     this.choseSubjectBox = true;
+  }
+
+
+  newMessage() {
+    this.newMessageBox = true;
+  }
+
+  onClose($event: boolean) {
+      this.newMessageBox = $event;
+      this.update++;
+  }
+
+  onFilterName($event) {
+    this.operation.getAllChiefUsers($event['query'])
+      .then(response=>{
+        this.users = response['data'];
+      })
+      .catch()
   }
 }
