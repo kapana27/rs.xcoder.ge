@@ -1,4 +1,4 @@
-import {Component, Injectable, OnInit} from '@angular/core';
+import {Component, ElementRef, Injectable, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import 'ag-grid-enterprise';
 import {OperationsService} from '../../../services/operations/operations.service';
@@ -56,6 +56,8 @@ export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
 
 })
 export class WarehouseComponent implements OnInit {
+  @ViewChild("searchDiv", {static: false, read: ElementRef}) searchDiv;
+
   public lastCode: number = 0;
   public lang ;
   public changer: any = '';
@@ -588,6 +590,7 @@ export class WarehouseComponent implements OnInit {
 
  }
   ngOnInit(): void {
+     console.log(this.searchDiv);
     this.getCartItems();
     this.items = [
       {

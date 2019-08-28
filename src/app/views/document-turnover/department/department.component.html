@@ -16,6 +16,6 @@
 </div>
 
 <app-document-turn-over-dialog *ngIf="newMessageBox" [newMessageBox]="newMessageBox" (onClose)="onClose($event)" [selectedItems]="selectedCatalogItems" (onFilterName)="onFilterName($event)" [users]="users" [list]="lists"></app-document-turn-over-dialog>
-<app-document-turn-over-disabled-dialog *ngIf="newMessageBoxShow" [newMessageBox]="newMessageBoxShow" (onClose)="onCloseShow($event)" [selectedItems]="selectedCatalogItem" (onFilterName)="onFilterName($event)" [users]="users" [list]="lists" [selectedUser]="receiver" [note]="note" [chains] = "chains"></app-document-turn-over-disabled-dialog>
+<app-document-turn-over-disabled-dialog *ngIf="newMessageBoxShow" [newMessageBox]="newMessageBoxShow" (onClose)="onCloseShow($event)" [selected]="selected" [selectedItems]="selectedCatalogItem" (onFilterName)="onFilterName($event)" [users]="users" [list]="lists" [selectedUser]="receiver" [note]="note" [chains] = "chains"></app-document-turn-over-disabled-dialog>
 
 

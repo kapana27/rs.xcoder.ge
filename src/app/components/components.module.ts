@@ -34,6 +34,7 @@ import { ItemGroupComponent } from './item-group/item-group.component';
 import { DocumentItemGroupComponent } from './document-item-group/document-item-group.component';
 import { TableComponent } from './table/table.component';
 import { DocumentTurnOverDisabledDialogComponent } from './document-turn-over-disabled-dialog/document-turn-over-disabled-dialog.component';
+import { ErrorComponent } from './error/error.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { DocumentTurnOverDisabledDialogComponent } from './document-turn-over-di
       ItemGroupComponent,
       DocumentItemGroupComponent,
       TableComponent,
-      DocumentTurnOverDisabledDialogComponent
+      DocumentTurnOverDisabledDialogComponent,
+      ErrorComponent
       ],
   imports: [
     DropdownModule,

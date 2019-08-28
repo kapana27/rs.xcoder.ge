@@ -155,9 +155,10 @@
           header="მწარმოებელი"
           title="&nbsp;"
           [filter]="false"
+          scrollHeight="calc(100vh - 300px)"
           (onSelected)="selected($event,1)"
           [cols]="[
-     { field: 'id', header: 'ID' },
+     { field: 'id', header: 'ID' , width: '50px' },
      { field: 'name', header: 'დასახელება' }
     ]"
           [actions]="{
@@ -171,6 +172,7 @@
     </div>
     <div class="p-col" >
         <app-multiple-table
+          scrollHeight="calc(100vh - 300px)"
           [changer]="selectedItem[1]"
           [title]="selectedItem[1]['name']"
           header="მოდელი"

@@ -1,6 +1,17 @@
-<p-dialog header="ახალი შეტყობინება"   [(visible)]="newMessageBox" [modal]="true" [responsive]="true" [style]="{width: '1000px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000" (onHide)="close()">
-  <div class="invred_box" style="min-height: 400px">
+<p-dialog header="მოთხოვნის ნომერი {{selected[0]['id']}}"   [(visible)]="newMessageBox" [modal]="true" [responsive]="true" [style]="{width: '1000px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000" (onHide)="close()">
+
+  <div class="invred_box" style="min-height: 400px" *ngIf="!showDetails">
+  </div>
+  <div class="invred_box" style="min-height: 400px" *ngIf="showDetails">
     <div class="ui-g ui-fluid">
+      <div class="ui-g-12 ui-md-12">
+        <div class="actionButton">
+            <div class="buttonBox">
+              <button pButton type="button" icon="pi pi-inbox" label="მიმაგრებული წერილები ({{ chains.length}})" > </button> &nbsp; &nbsp;
+              <button pButton type="button" label="მოთხოვნილი ინვენტარი დეტალურად"  (click)="details()"></button>
+            </div>
+        </div>
+      </div>
       <div class="ui-g-12 ui-md-12">
         <p>დეპარტამენტის უფროსი ან მოადგილე</p>
         <p-autoComplete disabled  field="fullname" [size]="30" placeholder="" [minLength]="1" [dropdown]="true" [suggestions]="users" (completeMethod)="filterUsers($event)"  (onSelect)="selectUser($event)"  [(ngModel)]="selectedUser"></p-autoComplete>
@@ -8,7 +19,7 @@
 
       <div class="ui-g-12 ui-md-12">
         <p>მიუთითეთ ინვენტარი</p>
-        <p-table [value]="selectedItems" [scrollable]="true" scrollHeight="120px">
+        <p-table [value]="selectedItems" [scrollable]="true" scrollHeight="200px">
           <ng-template pTemplate="header" >
             <tr>
               <th>დასახელება</th>
@@ -17,7 +28,7 @@
               <th>რაოდენობა</th>
               <th>კომენტარი</th>
               <th style="position: relative">
-                <p-button icon="pi pi-plus" (click)="add()" style="position: absolute;top: 1px;right: 1px;"></p-button>
+                <!--p-button icon="pi pi-plus" (click)="add()" style="position: absolute;top: 1px;right: 1px;"></p-button-->
               </th>
             </tr>
           </ng-template>
@@ -27,8 +38,8 @@
                 <td>{{item['name']}}</td>
                 <td>{{item['maker']}}</td>
                 <td>{{item['model']}}</td>
-                <td><input type="text" [(ngModel)]="item['counter']" style="width: 100%" disabled /></td>
-                <td><input type="text" [(ngModel)]="item['note']" style="width: 100%" disabled/></td>
+                <td><input type="text" [(ngModel)]="item['counter']" style="width: 100%; background: white; border: 1px solid gray;" disabled  /></td>
+                <td><input type="text" [(ngModel)]="item['note']" style="width: 100%; background: white; border: 1px solid gray;"  disabled /></td>
                 <td > <i class="pi pi-times"  style="float:right" (click)="deleteItem(index)"></i></td>
               </tr>
             </ng-template>
@@ -37,7 +48,7 @@
       </div>
       <div class="ui-g-12 ui-md-12">
         <p>შეტყობინება:</p>
-        <textarea [rows]="5" [cols]="30" pInputTextarea [(ngModel)]="message.note" disabled ></textarea>
+        <textarea [rows]="2" [cols]="10" pInputTextarea [(ngModel)]="message.note" disabled ></textarea>
       </div>
     </div>
   </div>
@@ -45,7 +56,6 @@
     <div class="actionButton">
       <div class="buttonBox">
         <button pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
-        <button pButton type="button" icon="pi pi-inbox" label="მიმაგრებული წერილები ({{ chains.length}})" > </button>
       </div>
       <div class="buttonBox">
         <button type="button" pButton icon="pi pi-close" label="გაგზავნა" class="ui-button-secondary" (click)="send()"></button>

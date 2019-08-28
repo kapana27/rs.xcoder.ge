@@ -136,7 +136,7 @@
 <div class="row">
   <ag-grid-angular
     #agGrid
-    style="width: 100%;height: calc(100vh - 135px);"
+    [ngStyle]="{width: '100%', height: 'calc(100vh - '+(searchBox? 400: 135)+'px)'}"
     id="myGrid"
     class="ag-theme-balham"
     [columnDefs]="columnDefs"

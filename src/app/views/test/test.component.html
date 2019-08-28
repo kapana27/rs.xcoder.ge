@@ -3,6 +3,7 @@
   <div class="p-col">
     <div class="box box box-stretched pTable">
     <app-multiple-table
+      scrollHeight="calc(100vh - 400px)"
       (onAdditionAction)="additionButton($event)"
       (onEmployeeAction)="onNewEmployee($event)"
       [additionButton]="true"
@@ -12,7 +13,7 @@
       [filter]="true"
       (onSelected)="selected($event,1)"
       [cols]="[
-     { field: 'id', header: 'ID' },
+     { field: 'id', header: 'ID', width: '50px' },
      { field: 'name', header: 'დასახელება' }
     ]"
       [actions]="{
@@ -28,6 +29,7 @@
   <div class="p-col" >
     <div class="box box box-stretched pTable">
       <app-multiple-table
+        scrollHeight="calc(100vh - 400px)"
         (onEmployeeAction)="onNewEmployee($event)"
         [changer]="selectedItem[1]"
         [title]="selectedItem[1]['name']"
@@ -39,7 +41,7 @@
         [additionButton]="true"
         (onSelected)="selected($event,2)"
         [cols]="[
-     { field: 'id', header: 'ID' },
+     { field: 'id', header: 'ID', width: '50px' },
      { field: 'name', header: 'დასახელება' }
     ]"
         [actions]="{
@@ -56,6 +58,7 @@
   <div class="p-col">
     <div class="box box box-stretched pTable">
       <app-multiple-table
+        scrollHeight="calc(100vh - 400px)"
         (onEmployeeAction)="onNewEmployee($event)"
         (onAdditionAction)="additionButton($event)"
         [additionButton]="true"
@@ -67,7 +70,7 @@
         [filter]="true"
         (onSelected)="selected($event,3)"
         [cols]="[
-     { field: 'id', header: 'ID' },
+     { field: 'id', header: 'ID', width: '50px' },
      { field: 'name', header: 'დასახელება' }
     ]"
         [actions]="{
@@ -86,6 +89,7 @@
           [maximizable]="true" [baseZIndex]="10000">
    <div style="width: 100%; height: 100%" >
      <app-multiple-table
+        scrollHeight="calc(100vh - 350px)"
        [disableClass]="true"
         [checkEditionStatus]="true"
        [changer]="additional.selected"
@@ -95,7 +99,7 @@
        [filter]="false"
        (onSelected)="selected($event,3)"
        [cols]="[
-     { field: 'id', header: 'ID' },
+     { field: 'id', header: 'ID' , width: '50px'},
      { field: 'name', header: 'დასახელება' }
     ]"
        [actions]="{
@@ -124,7 +128,7 @@
       [filter]="false"
       (onSelected)="selected($event,3)"
       [cols]="[
-     { field: 'id', header: 'ID'},
+     { field: 'id', header: 'ID', width: '50px'},
      { field: 'department.name', header: 'საშტატო ერთეული' , width: 200 },
      { field: 'location.name', header: 'მდებარეობა' },
      { field: 'position.name', header: 'თანამდებობა' },

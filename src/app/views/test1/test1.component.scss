@@ -13,6 +13,10 @@
   }
   .pTable{
     height: calc(100vh - 138px);
+    .ui-table-scrollable-body{
+      height: 100vh;
+      border:1px solid #c8c8c8
+    }
     .ui-table{
       height: calc(100vh - 138px);
       .ui-table-wrapper {

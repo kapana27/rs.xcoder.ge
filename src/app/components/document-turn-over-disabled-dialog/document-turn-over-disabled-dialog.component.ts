@@ -13,6 +13,7 @@ export class DocumentTurnOverDisabledDialogComponent implements OnInit {
   @Input() selectedUser: any;
   @Input() note: any;
   @Input() chains: any[] = [];
+  @Input() selected: any;
   @Output() onClose = new EventEmitter();
 
   toUsers: any[] = [];
@@ -34,6 +35,8 @@ export class DocumentTurnOverDisabledDialogComponent implements OnInit {
     note?: string
   } = {};
   mails: any;
+  showDetails: boolean=true;
+   detailsData: any[]=[];
 
 
   constructor(private Request: RequestService,  private operation: OperationsService) { }
@@ -41,6 +44,7 @@ export class DocumentTurnOverDisabledDialogComponent implements OnInit {
   ngOnInit() {
     this.searchToUser({query: ''})
     this.message.note = this.note;
+    console.log(this.selected);
   }
 
   searchToUser(event) {
@@ -101,5 +105,13 @@ export class DocumentTurnOverDisabledDialogComponent implements OnInit {
 
   closeGroupDialog() {
     this.itemGroupDialog = false;
+  }
+
+  details() {
+    this.Request.Post("api/secured/ItemRequest/Chains?parentId="+this.selected[0].id)
+      .then(response=>{
+        this.detailsData = response['data']
+      })
+      .catch()
   }
 }

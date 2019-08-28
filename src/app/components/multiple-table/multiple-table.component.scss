@@ -6,7 +6,10 @@
         overflow: auto !important;
         background-color: #f4f4f4;
       }
-
+      .ui-table-scrollable-body{
+        height: 100vh;
+        border:1px solid #c8c8c8
+      }
       .ui-widget-overlay {
         z-index: 99999999999999;
       }
@@ -21,6 +24,7 @@
         .ui-table-wrapper {
           height: 100% !important;
         }
+
       }
     }
   }

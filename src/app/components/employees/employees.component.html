@@ -1,6 +1,7 @@
 <p-confirmDialog [style]="{width: '500px'}"></p-confirmDialog>
 <div  [ngClass]="{'pTable':!disableClass, 'dialog':disableClass }">
   <p-table
+    scrollHeight="calc(100vh - 400px)"
     [columns]="cols"
     [value]="data"
     [lazy]="true"

@@ -47,6 +47,8 @@ export class MultipleTableComponent implements OnInit, OnChanges {
   selectedRows: Array<any> =[];
   interval: any;
   @Input() checkEditionStatus: boolean = false;
+  @Input() scrollHeight = "calc(100vh - 100px)";
+
   provider: {
     id?: any,
     new: boolean,

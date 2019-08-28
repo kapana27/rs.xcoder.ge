@@ -2,7 +2,7 @@
 <div class="p-grid p-align-stretch vertical-container">
   <div class="p-col">
     <app-multiple-table
-
+      scrollHeight="calc(100vh - 400px)"
       header="რეგიონი"
       title="&nbsp;"
       filterTitle="რეგიონი"
@@ -24,6 +24,7 @@
   <div class="p-col" >
     <div class="box box box-stretched">
       <app-multiple-table
+        scrollHeight="calc(100vh - 400px)"
         [changer]="selectedItem[1]"
         [title]="selectedItem[1]['name']"
         header="ქალაქი"
@@ -49,6 +50,7 @@
   <div class="p-col">
     <div class="box box box-stretched">
       <app-multiple-table
+        scrollHeight="calc(100vh - 400px)"
         [changer]="selectedItem[2]"
         [title]="selectedItem[2]['name']"
         header="შენობა"
@@ -73,6 +75,7 @@
   <div class="p-col">
     <div class="box box box-stretched">
       <app-multiple-table
+        scrollHeight="calc(100vh - 400px)"
         [changer]="selectedItem[3]"
         [title]="selectedItem[3]['name']"
         header="სექცია"
