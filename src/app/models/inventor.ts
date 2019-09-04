@@ -13,9 +13,9 @@ export interface Inventor {
   fullname?: any,
   selectedName?: any;
   selectedMaker?: Default,
-  maker?: number,
+  maker?: any,
   selectedModel?: Default,
-  model?: number,
+  model?: any,
   price?: number,
   inStock?: number,
   selectedBarcode?: {id?: number, name?: string, length?: number, startPoint?: number, value?: string},

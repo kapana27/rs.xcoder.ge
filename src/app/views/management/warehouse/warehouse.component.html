@@ -86,7 +86,7 @@
           <div class="form-group col-md-6" >
             <div class="input-group">
               <input class="form-control"  placeholder=""
-                     name="dp" [(ngModel)]="filter.dateFrom" ngbDatepicker #d10="ngbDatepicker">
+                     name="dp" [(ngModel)]="filter.dateFrom" ngbDatepicker #d10="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
               <div class="input-group-append">
                 <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d10.toggle()" ></button>
               </div>
@@ -95,7 +95,7 @@
           <div class="form-group col-md-6">
             <div class="input-group">
               <input class="form-control"  placeholder=""
-                     name="dp" [(ngModel)]="filter.dateTo" ngbDatepicker #d11="ngbDatepicker">
+                     name="dp" [(ngModel)]="filter.dateTo" ngbDatepicker #d11="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
               <div class="input-group-append">
                 <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d11.toggle()" ></button>
               </div>
@@ -427,19 +427,12 @@
   </p-footer>
 </p-dialog>
 
-<p-dialog header="საქონლის ჯგუფი" style="vertical-align: baseline" *ngIf="itemGroupDialogShow" [(visible)]="itemGroupDialogShow" [modal]="true" [responsive]="true" [style]="{width: '500px', minWidth: '200px'}" [minY]="100"
-          [maximizable]="true" [baseZIndex]="10000">
+<p-dialog header="საქონლის ჯგუფი" *ngIf="itemGroupDialogShow" [(visible)]="itemGroupDialogShow" [modal]="true" [style]="{width: '500px', minWidth: '200px',  top: '200px !important', position: 'absolute'}"
+         [baseZIndex]="10000" id="itemGroup">
   <!--p-tree [value]="ItemGroup" selectionMode="single"
           (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)" field></p-tree-->
   <p-treeTable [value]="ItemGroup" [columns]="[{field: 'name', header: 'name'}]" selectionMode="single" dataKey="name"
-               (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)">
-    <ng-template pTemplate="header" let-columns>
-      <tr>
-        <th *ngFor="let col of columns">
-          {{col.header}}
-        </th>
-      </tr>
-    </ng-template>
+               (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)" [scrollable]="true" scrollHeight="300px">
     <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
       <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
         <td *ngFor="let col of columns; let i = index">
@@ -477,7 +470,7 @@
         <form class="form-inline">
           <div class="form-group" style="width: 100%">
             <div class="input-group">
-              <input class="form-control" placeholder="" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+              <input class="form-control" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}" placeholder="" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
                      name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d7="ngbDatepicker">
               <div class="input-group-append">
                 <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d7.toggle()" ></button>
@@ -535,7 +528,7 @@
         <div class="ui-g-4" >
           <p>დასახელება</p>
           <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"   field="name" [size]="30"
-                            placeholder="დასახელება" [minLength]="1"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" (click)="changeLanguage('ge')">
+                            placeholder="დასახელება" [minLength]="0"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" (click)="changeLanguage('ge')">
           </p-autoComplete>
         </div>
         <div class="ui-g-4">
@@ -544,11 +537,11 @@
             <tr>
               <td>
                 <p-autoComplete  [(ngModel)]="newInventor.selectedMaker"    [suggestions]="ItemData" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" field="name" type="marker" [size]="30"
-                                placeholder="მარკა" [minLength]="1" (ngModelChange)="onKeyUpMaker($event)"  (click)="changeLanguage('uk')"></p-autoComplete>
+                                placeholder="მარკა" [minLength]="0" (ngModelChange)="onKeyUpMaker($event)"  (click)="changeLanguage('uk')"></p-autoComplete>
               </td>
-              <td>
+              <!--td>
                 <p-button icon="pi pi-plus" (click)="newRecordDialog('marker', newInventor.selectedMaker)"></p-button>
-              </td>
+              </td-->
             </tr>
           </table>
         </div>
@@ -560,9 +553,9 @@
                 <p-autoComplete [(ngModel)]="newInventor.selectedModel" [disabled]="!newInventor.selectedMaker"  [ngClass]="{ 'red':if_error(formErrors,'selectedModel')?'1px solid red': '' }" [suggestions]="ItemData" field="name" [size]="30"
                                 placeholder="მოდელი" [minLength]="1"  (ngModelChange)="onKeyUpModel($event)"  (click)="changeLanguage('uk')"></p-autoComplete>
               </td>
-              <td>
+              <!--td>
                 <p-button icon="pi pi-plus" (click)="newRecordDialog('model', newInventor.selectedModel)"></p-button>
-              </td>
+              </td-->
             </tr>
           </table>
         </div>
@@ -679,7 +672,7 @@
         <form class="form-inline">
           <div class="form-group" style="width: 100%">
             <div class="input-group">
-              <input class="form-control" placeholder="" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+              <input class="form-control"  [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}" placeholder="" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
                      name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker">
               <div class="input-group-append">
                 <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
@@ -712,7 +705,7 @@
         <div class="ui-g-4" >
           <p>დასახელება</p>
           <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"   field="name" [size]="30"
-                            placeholder="დასახელება" [minLength]="1"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" >
+                            placeholder="დასახელება" [minLength]="0"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" >
           </p-autoComplete>
 
         </div>
@@ -726,7 +719,7 @@
             <tr>
               <td>
                 <p-autoComplete [suggestions]="ItemData" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" (completeMethod)="filterItemSingle($event,'marker')" field="name" type="marker" [size]="30"
-                                placeholder="მარკა" [minLength]="1" [(ngModel)]="newInventor.selectedMaker"></p-autoComplete>
+                                placeholder="მარკა" [minLength]="0" [(ngModel)]="newInventor.selectedMaker"></p-autoComplete>
               </td>
               <td>
                 <p-button icon="pi pi-plus" (click)="newRecordDialog('marker', newInventor.selectedMaker)"></p-button>
@@ -857,7 +850,7 @@
         <form class="form-inline">
           <div class="form-group" style="width: 100%">
             <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d20="ngbDatepicker">
+              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d20="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
               <div class="input-group-append">
                 <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d20.toggle()" ></button>
               </div>
@@ -871,7 +864,7 @@
         <form class="form-inline">
           <div class="form-group" style="width: 100%">
             <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker">
+              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
               <div class="input-group-append">
                 <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
               </div>
@@ -885,7 +878,7 @@
         <form class="form-inline">
           <div class="form-group" style="width: 100%">
             <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker">
+              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
               <div class="input-group-append">
                 <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
               </div>
@@ -903,7 +896,7 @@
         <form class="form-inline">
           <div class="form-group" style="width: 100%">
             <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker">
+              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
               <div class="input-group-append">
                 <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
               </div>
@@ -916,7 +909,7 @@
         <form class="form-inline">
           <div class="form-group" style="width: 100%">
             <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker">
+              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
               <div class="input-group-append">
                 <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
               </div>
@@ -937,7 +930,7 @@
         <form class="form-inline">
           <div class="form-group" style="width: 100%">
             <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker">
+              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
               <div class="input-group-append">
                 <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
               </div>
@@ -950,7 +943,7 @@
         <form class="form-inline">
           <div class="form-group" style="width: 100%">
             <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker">
+              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
               <div class="input-group-append">
                 <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
               </div>

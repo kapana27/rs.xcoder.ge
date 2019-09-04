@@ -12,8 +12,8 @@
           <ng-template pTemplate="header" >
             <tr>
               <th>დასახელება</th>
-              <th>მარკა</th>
-              <th>მოდელი</th>
+              <!--th>მარკა</th>
+              <th>მოდელი</th-->
               <th>რაოდენობა</th>
               <th>კომენტარი</th>
               <th style="position: relative">
@@ -25,8 +25,8 @@
             <ng-template pTemplate="body" let-item  let-index="rowIndex">
               <tr>
                 <td>{{item['name']}}</td>
-                <td>{{item['maker']}}</td>
-                <td>{{item['model']}}</td>
+                <!--td>{{item['maker']}}</td>
+                <td>{{item['model']}}</td-->
                 <td><input type="text" [(ngModel)]="item['counter']" style="width: 100%"/></td>
                 <td><input type="text" [(ngModel)]="item['note']" style="width: 100%"/></td>
                 <td > <i class="pi pi-times"  style="float:right" (click)="deleteItem(index)"></i></td>

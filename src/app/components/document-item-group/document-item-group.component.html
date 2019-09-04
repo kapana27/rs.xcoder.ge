@@ -14,15 +14,15 @@
           <ng-template pTemplate="header">
             <tr>
               <th>დასახელება</th>
-              <th>მარკა</th>
-              <th>მოდელი</th>
+              <!--th>მარკა</th>
+              <th>მოდელი</th-->
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-d>
             <tr [pSelectableRow]="d">
               <td>{{d['name']}}</td>
-              <td>{{d['maker']}}</td>
-              <td>{{d['model']}}</td>
+              <!--td>{{d['maker']}}</td>
+              <td>{{d['model']}}</td-->
             </tr>
           </ng-template>
         </p-table>
