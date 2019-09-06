@@ -1061,7 +1061,7 @@ console.log(this.newInventor);
     }
     this.formErrors = this.validator.checkObject(this.newInventor, filter);
     console.log(filter, this.newInventor, this.formErrors);
-    if(this.formErrors.indexOf("selectedSupplier")){
+    if(this.formErrors.indexOf("selectedSupplier") > -1){
       alert("მომწოდებელი არჩეული არ არის");
     }
     if (this.formErrors.length === 0) {

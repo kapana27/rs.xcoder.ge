@@ -71,8 +71,15 @@ export const navItems: NavData[] = [
   },*/
   {
     name: 'რეპორტი',
-    url: '/report',
+    url: '',
     icon: 'icon-speedometer',
+    children: [
+      {
+        name: 'ზედდებულები',
+        url: '/report',
+        icon: 'icon-puzzle'
+      }
+      ]
   },
   {
     name: 'ცნობარი',

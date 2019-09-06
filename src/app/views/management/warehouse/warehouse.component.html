@@ -450,7 +450,7 @@
   </p-footer>
 </p-dialog>
 
-<p-dialog  header="{{inventorOperation=='edit'? 'ინვენტარის რედაქტირება':(inventorOperation ==='multiple')? 'პაკეტური რედაქტირება':'ინვენტარის მიღება'}}" *ngIf="inventorDialogShow" [(visible)]="inventorDialogShow" [modal]="true" [responsive]="true" [style]="{width: '1200px', minWidth: '200px'}" [minY]="500"
+<p-dialog  header="{{inventorOperation=='edit'? 'ინვენტარის რედაქტირება':(inventorOperation ==='multiple')? 'პაკეტური რედაქტირება':'ინვენტარის მიღება'}}" *ngIf="inventorDialogShow" [(visible)]="inventorDialogShow" [modal]="true" [responsive]="true" [style]="{width: '1200px', minWidth: '200px'}"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
 
           <p-header>
@@ -618,7 +618,7 @@
       </div>
     </div>
   </div >
-  <div style="width: 100%;height: 500px;" *ngIf="frustrate">
+  <div style="width: 100%;height: 400px;" *ngIf="frustrate">
       <table style="border-collapse: collapse;" class="table generator-table" cellpadding="5">
           <thead>
             <tr>
