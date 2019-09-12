@@ -63,13 +63,26 @@ export class MultipleTableComponent implements OnInit, OnChanges {
     this.loading = true;
     this.thisProperty=this;
 
-
+    this.Request.error$.subscribe((err) => {
+      this.error('შეცდომა', err['error']['error']);
+      setTimeout(() => {
+        $('.ui-confirmdialog').css({ 'z-index': 22222222});
+      }, 200);
+    });
   }
 
   ngOnInit() {
     console.log(this.tooltip);
   }
-
+  error(title, data) {
+    this.confirmationService.confirm({
+      message: data,
+      header: title,
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+      }
+    });
+  }
   loadLazy(event: LazyLoadEvent, param?: string) {
     this.event = this.notNull(event)? event: {first: 0, rows: 30};
     this.loading = true;

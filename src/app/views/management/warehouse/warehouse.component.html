@@ -492,7 +492,7 @@
                 <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedBarcode')?'1px solid red': '' }" [autoWidth]="true" [options]="barcodes"   placeholder="RS"  optionLabel="name" [(ngModel)]="newInventor.selectedBarcode"  [showClear]="true" (ngModelChange)="getLastCode()" ></p-dropdown>
               </td>
               <td *ngIf="!newInventor.consumption">
-                <input type="text"  pInputText placeholder="შტრიხკოდი" style="width: 100%; height: 33px;" [(ngModel)]="newInventor.barCode"  >
+                <input type="text"  pInputText placeholder="შტრიხკოდი" style="width: 100%; height: 33px;" [(ngModel)]="newInventor.barCode"  [ngClass]="{ 'red':if_error(formErrors,'barCode')?'1px solid red': '' }" >
               </td>
               <td>
                 <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.amount"  [ngClass]="{ 'red':if_error(formErrors,'amount')?'1px solid red': '' }">
@@ -527,7 +527,7 @@
       <div class="ui-g-8 ui-g-nopad">
         <div class="ui-g-4" >
           <p>დასახელება</p>
-          <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"   field="name" [size]="30"
+          <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }"  field="name" [size]="30"
                             placeholder="დასახელება" [minLength]="0"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" (click)="changeLanguage('ge')">
           </p-autoComplete>
         </div>

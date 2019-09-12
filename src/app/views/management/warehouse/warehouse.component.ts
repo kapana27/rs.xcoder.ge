@@ -57,7 +57,7 @@ export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
 
 })
 export class WarehouseComponent implements OnInit {
-  @ViewChild("searchDiv", {static: false, read: ElementRef}) searchDiv;
+  @ViewChild('searchDiv', {static: false, read: ElementRef}) searchDiv;
 
   public lastCode: number = 0;
   public lang ;
@@ -174,14 +174,17 @@ export class WarehouseComponent implements OnInit {
   public frameworkComponents;
   public filter: Filter = {};
    changeLanguage(lang) {
-      //this.lgService.changeLanguage(lang);
+      // this.lgService.changeLanguage(lang);
    }
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService,  private confirmationService: ConfirmationService, private Request: RequestService, private lgService: LgService) {
     /*this.lgService.changeLanguage$.subscribe((data) => {
         this.lang = data; // And he have data here too!
       }
     );*/
-     // this.lang =  localStorage.getItem("lang");
+    // this.lang =  localStorage.getItem("lang");
+    this.Request.error$.subscribe((err) => {
+      this.error('შეცდომა', err['error']['error']);
+    });
      this.lang =  'uk';
     this.prod = this.Request.prod;
     this.gridOptions = {
@@ -674,7 +677,7 @@ export class WarehouseComponent implements OnInit {
   itemGroupDialog() {
     this.itemGroupDialogShow = true;
     setTimeout(() => {
-      console.log( $("#itemGroup .ui-dialog").css('top', '100px'))
+      console.log( $('#itemGroup .ui-dialog').css('top', '100px'));
     }, 50);
      this.operation.getItemGroup()
        .then((response) => {
@@ -703,7 +706,7 @@ export class WarehouseComponent implements OnInit {
             price: 0,
             amount: 1,
             selectedMeasureUnitName: { id: 3, name: 'ცალი'},
-            selectedItemStatus: {id: 1, name: "ახალი"}
+            selectedItemStatus: {id: 1, name: 'ახალი'}
           };
           this.operation.getItemTypes()
             .then(response => {
@@ -917,7 +920,7 @@ export class WarehouseComponent implements OnInit {
 
     if (type === 'model') {
       if (this.notNull(this.newInventor.selectedMaker)) {
-        query = query + '&parent=' + (this.notNull(this.newInventor.selectedMaker['id'])? this.newInventor.selectedMaker['id']: 0);
+        query = query + '&parent=' + (this.notNull(this.newInventor.selectedMaker['id']) ? this.newInventor.selectedMaker['id'] : 0);
       }
     }
     this.operation.getItemData(this.newItem.selected, query )
@@ -934,7 +937,7 @@ export class WarehouseComponent implements OnInit {
     this.newInventor.itemGroupName = $event.node['data']['name'];
     this.newInventor.spend = $event.node['data']['spend'];
     this.newInventor.isCar = $event.node['data']['isCar'];
-    //this.newInventor.amount = ($event.node['data']['isCar'] === 1) ? 1 : null;
+    // this.newInventor.amount = ($event.node['data']['isCar'] === 1) ? 1 : null;
     this.newInventor.consumption = ($event.node['data']['spend'] === 1) ? true : false;
 console.log(this.newInventor);
   }
@@ -1051,21 +1054,38 @@ console.log(this.newInventor);
       'selectedSupplier'
 
     ];
-
     if (this.newInventor.spend === 1) {
+      this.formErrors = this.validator.checkObject(this.newInventor, filter);
 
+      this.frustrateData()
     } else {
       if (this.newInventor.isCar !== 1) {
         filter.push( 'selectedBarcode');
       }
+        this.Request.PostWitoutStatus('api/secured/Item/Check/BarCode?barCodeType=' + (this.notNull(this.newInventor.selectedBarcode) ? this.newInventor.selectedBarcode['id'] : '' ) + '&barCode=' + (this.notNull(this.newInventor.barCode) ? this.newInventor.barCode : ''))
+        .then(response => {
+          if (response['status'] !== 200) {
+            filter.push( 'barCode');
+            this.error('შეცდომა', response['error']);
+            this.formErrors['barCode'] = response['error'];
+            this.formErrors = this.validator.checkObject(this.newInventor, filter);
+
+          }else {
+            this.formErrors = this.validator.checkObject(this.newInventor, filter);
+            this.frustrateData()
+          }
+        });
     }
-    this.formErrors = this.validator.checkObject(this.newInventor, filter);
-    console.log(filter, this.newInventor, this.formErrors);
-    if(this.formErrors.indexOf("selectedSupplier") > -1){
-      alert("მომწოდებელი არჩეული არ არის");
+
+    if (this.formErrors.indexOf('selectedSupplier') > -1) {
+      alert('მომწოდებელი არჩეული არ არის');
     }
+
+  }
+
+  frustrateData(){
     if (this.formErrors.length === 0) {
-      console.log(this.newInventor)
+      console.log(this.newInventor);
       // this.newInventor.entryDate = moment(this.newInventor.date).format('DD-MM-YYYY');
       this.newInventor.entryDate = this.newInventor.date.day + '-' + this.newInventor.date.month + '-' + this.newInventor.date.year;
       this.newInventor.name = (typeof this.newInventor.fullname === 'string') ? this.newInventor.fullname : this.newInventor.fullname['name'];
@@ -1087,33 +1107,33 @@ console.log(this.newInventor);
       this.operation.getAddonNumber({type: 'Stock/Income', subType: ''})
         .then(response => {
           if (response['status'] === 200) {
-              this.addon = response['data'];
+            this.addon = response['data'];
             if (this.newInventor.itemGroup !== undefined && this.newInventor.consumption === false && this.newInventor.isCar !== 1) {
 
 
-                this.operation.getFreeCodes({
-                  barCodeType: this.newInventor.barCodeType,
-                  count: this.newInventor.amount,
-                  start: (this.newInventor.spend === 0 && (this.newInventor.barCode !== undefined && this.newInventor.barCode !== null)) ?  this.newInventor.barCode : ''
-                })
-                  .then((response: {
-                    TotalCount: number,
-                    status: number,
-                    success: boolean,
-                    totalCount: number,
-                    data: Barcode[]
-                  }) => {
-                    this.newInventor['showAmount'] = 1;
-                    this.lastBarCodes = response.data.map(value => {
-                      value.fullBarcode = value.value + value.barCodeVisualValue;
-                      value.factoryNumber = this.newInventor.factoryNumber;
-                      return value;
-                    });
-                    this.frustrate = true;
-                  })
-                  .catch(response => {
-                    this.error('შეცდომა', response['error']);
+              this.operation.getFreeCodes({
+                barCodeType: this.newInventor.barCodeType,
+                count: this.newInventor.amount,
+                start: (this.newInventor.spend === 0 && (this.newInventor.barCode !== undefined && this.newInventor.barCode !== null)) ?  this.newInventor.barCode : ''
+              })
+                .then((response: {
+                  TotalCount: number,
+                  status: number,
+                  success: boolean,
+                  totalCount: number,
+                  data: Barcode[]
+                }) => {
+                  this.newInventor['showAmount'] = 1;
+                  this.lastBarCodes = response.data.map(value => {
+                    value.fullBarcode = value.value + value.barCodeVisualValue;
+                    value.factoryNumber = this.newInventor.factoryNumber;
+                    return value;
                   });
+                  this.frustrate = true;
+                })
+                .catch(response => {
+                  this.error('შეცდომა', response['error']);
+                });
 
 
 
@@ -1136,6 +1156,7 @@ console.log(this.newInventor);
 
     }
   }
+
   selectedName() {
     console.log(this.newInventor);
     this.newInventor.selectedMaker = this.newInventor.fullname['maker'];
@@ -1440,6 +1461,9 @@ console.log(this.newInventor);
       accept: () => {
       }
     });
+    setTimeout(() => {
+      $('.ui-confirmdialog').css({ 'z-index': 22222222});
+    }, 200);
   }
   selectCell($event: any) {
 
@@ -1593,7 +1617,7 @@ console.log(this.newInventor);
         this.filterItemSingle({query: en2geo((typeof this.newInventor.selectedMaker === 'string') ? this.newInventor.selectedMaker : this.newInventor.selectedMaker['name'])}, 'marker');
       }, 20);
     }
-    console.log(this.newInventor.selectedMaker)
+    console.log(this.newInventor.selectedMaker);
   }
   onKeyUp($event: any) {
     if (typeof $event === 'object') {

@@ -6,7 +6,7 @@
   </div>
   <div class="buttonBox">
     <button (click)="personDialog()" *ngIf="distributed" pButton type="button" label="განპიროვნება" class="ui-button-danger"></button>&nbsp;&nbsp;
-    <button (click)="showDialog()" *ngIf="!distributed" pButton type="button" label="ინვ. შებრუნება" class="ui-button-raised"></button> &nbsp;&nbsp;
+    <button (click)="showDialog()"  pButton type="button" label="ინვ. შებრუნება" class="ui-button-raised"></button> &nbsp;&nbsp;
     <button (click)="inventoryToBuildingDialog()" *ngIf="distributed" pButton type="button" label="ინვ. მოძრაობა შენობებს შორის" class="ui-button-raised"></button>&nbsp;&nbsp;
     <span class="cart">
       <fa-icon [icon]="faCartPlus"  (click)="cartDialog()" size="2x"  ></fa-icon>
@@ -373,7 +373,7 @@
             <div class="ui-g-12 ui-md-6">
               <p>პიროვნება</p>
               <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="forPerson.selectedPerson"
-                              (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
+                              (onSelect)="selectPerson($event)" [minLength]="1" placeholder="აირჩიეთ პიროვნება"  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>

@@ -1,54 +1,79 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
+import {Observable, Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RequestService {
-  public prod: string = '';
+  public prod: string = '/rs';
+  error$: Observable<any>;
+  private errorSubject = new Subject<any>();
   constructor(private http: HttpClient) {
+    this.error$ = this.errorSubject.asObservable();
+  }
+  Get(uri) {
+    uri = this.prod + uri;
+    return new Promise((resolve, reject) => {
+      this.http.get(uri)
+        .toPromise()
+        .then(response => {
 
+          if (response['status'] === 200) {
+            resolve(response);
+          } else {
+            this.error(response);
+          }
+        })
+        .catch(reason => {
+          this.error(reason);
+        });
+    });
   }
-  Get(uri){
+  GetWitoutStatus(uri) {
     uri = this.prod + uri;
     return new Promise((resolve, reject) => {
       this.http.get(uri)
         .toPromise()
-        .then(response=>{
-          resolve(response)
-           /* if(response['status']===200){
-                resolve(response)
-            }*/
+        .then(response => {
+          resolve(response);
         })
         .catch(reason => {
-          alert('დაფიქსირდა შეცდომა')
-        })
+          alert('დაფიქსირდა შეცდომა');
+        });
     });
   }
-  GetWitoutStatus(uri){
+  Post(uri, params = {}) {
     uri = this.prod + uri;
     return new Promise((resolve, reject) => {
-      this.http.get(uri)
+      this.http.post(uri, params)
         .toPromise()
-        .then(response=>{
-            resolve(response)
+        .then(response => {
+          if (response['status'] === 200) {
+            resolve(response);
+          } else {
+            this.error(response);
+          }
         })
         .catch(reason => {
-          alert('დაფიქსირდა შეცდომა')
-        })
+          this.error(reason);
+        });
     });
   }
-  Post(uri,params ={}){
+  PostWitoutStatus(uri, params = {}) {
     uri = this.prod + uri;
     return new Promise((resolve, reject) => {
-      this.http.post(uri,params)
+      this.http.post(uri, params)
         .toPromise()
-        .then(response=>{
-            resolve(response)
+        .then(response => {
+          resolve(response);
         })
         .catch(reason => {
-          reject(reason)
-        })
-    })
+          resolve(reason);
+        });
+    });
+  }
+  error(data) {
+    this.errorSubject.next(data);
   }
 }

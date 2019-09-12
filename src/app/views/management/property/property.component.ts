@@ -14,6 +14,8 @@ import {ForPerson} from '../../../models/forPerson';
 import {RequestService} from '../../../services/request.service';
 import {CustomDateComponent} from '../../../components/custom-date/custom-date.component';
 import {NgbDate, NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
+declare var $: any;
+
 interface Data {
   TotalCount: number;
   data: Item[];
@@ -50,6 +52,9 @@ export class PropertyComponent implements OnInit {
   public frameworkComponents;
   propertyList: Array<any> = [];
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService, private Request: RequestService) {
+    this.Request.error$.subscribe((err) => {
+      this.error('შეცდომა', err['error']);
+    });
     this.getCartItems();
     this.prod = this.Request.prod;
     this.inOut = 'out';
@@ -1159,7 +1164,7 @@ export class PropertyComponent implements OnInit {
       this.operation.getRoomsByPerson($event['id'])
         .then(response => {
           if (response['status'] === 200) {
-              this.roomsList = response['data'];
+              this.roomsList = [{id: null, name: "აირჩიეთ ოთახი", selectable: 1, parent: 277, lvl: 4, dictId: 573},...response['data']];
           } else {
             this.error('შეცდომა', response['error']);
           }
@@ -1169,7 +1174,7 @@ export class PropertyComponent implements OnInit {
         });
   }
   generateForPersonInvoice() {
-    const filter = ['date', 'selectedPerson', 'selectedRoom'];
+    const filter = ['date', 'selectedPerson'];
     if (this.cartItemsData.length === 0) {
       alert('კალათა ცარიელია');
       return;
@@ -1189,7 +1194,7 @@ export class PropertyComponent implements OnInit {
               this.forPerson.generator = true;
               this.forPerson.trDate = this.forPerson.date.day+"-"+this.forPerson.date.month+"-"+this.forPerson.date.year;
               this.forPerson.receiverPerson = this.forPerson.selectedPerson['id'];
-              this.forPerson.roomId = this.forPerson.selectedRoom['id'];
+              this.forPerson.roomId = (this.notNull(this.forPerson.selectedRoom))?this.forPerson.selectedRoom['id']: 0;
               this.forPerson.list = this.cartItemsData.map(value => {
                 return {itemId: value['id'], amount: value['count'], list: this.notNull(value['fileList']) ? value['fileList'].toString() : ''};
 
@@ -1246,6 +1251,9 @@ export class PropertyComponent implements OnInit {
       accept: () => {
       }
     });
+    setTimeout(() => {
+      $('.ui-confirmdialog').css({ 'z-index': 22222222});
+    }, 200);
   }
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {

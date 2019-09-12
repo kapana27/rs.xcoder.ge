@@ -17,7 +17,7 @@
               <th>რაოდენობა</th>
               <th>კომენტარი</th>
               <th style="position: relative">
-                <p-button icon="pi pi-plus" (click)="add()" style="position: absolute;top: 1px;right: 1px;"></p-button>
+                <p-button icon="pi pi-plus" (click)="add()" style="position: absolute;top: 1px;right: 1px; display: none;"></p-button>
               </th>
             </tr>
           </ng-template>
@@ -37,7 +37,7 @@
       </div>
       <div class="ui-g-12 ui-md-12">
         <p>შეტყობინება:</p>
-        <textarea [rows]="5" [cols]="30" pInputTextarea [(ngModel)]="message.note" ></textarea>
+        <textarea [rows]="1" [cols]="30" pInputTextarea [(ngModel)]="message.note" ></textarea>
       </div>
     </div>
   </div>
