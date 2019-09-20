@@ -1062,7 +1062,7 @@ console.log(this.newInventor);
       if (this.newInventor.isCar !== 1) {
         filter.push( 'selectedBarcode');
       }
-        this.Request.PostWitoutStatus('api/secured/Item/Check/BarCode?barCodeType=' + (this.notNull(this.newInventor.selectedBarcode) ? this.newInventor.selectedBarcode['id'] : '' ) + '&barCode=' + (this.notNull(this.newInventor.barCode) ? this.newInventor.barCode : ''))
+        this.Request.PostWitoutStatus('/api/secured/Item/Check/BarCode?barCodeType=' + (this.notNull(this.newInventor.selectedBarcode) ? this.newInventor.selectedBarcode['id'] : '' ) + '&barCode=' + (this.notNull(this.newInventor.barCode) ? this.newInventor.barCode : ''))
         .then(response => {
           if (response['status'] !== 200) {
             filter.push( 'barCode');
