@@ -173,6 +173,7 @@ export class WarehouseComponent implements OnInit {
   prod: any = '';
   public frameworkComponents;
   public filter: Filter = {};
+   public disabledFields: any[] = [];
    changeLanguage(lang) {
       // this.lgService.changeLanguage(lang);
    }
@@ -734,12 +735,26 @@ export class WarehouseComponent implements OnInit {
       });
 
   }
-  inventorEditDialog() {
+   async getDisabledFields(ids){
+      return this.Request.Post("/api/secured/Item/Select_Edit?list="+ids,{});
+  }
+
+  async inventorEditDialog() {
+    this.disabledFields = [];
      this.inventorOperation = this.cartItemsData.length > 1 ? 'multiple' : 'edit';
-     console.log(this.cartItemsData, this.inventorOperation);
     if (Object.entries(this.tmpData).length > 1 || this.inventorOperation === 'multiple') {
       this.inventorDialogShow = true;
       this.frustrate = false;
+      if(this.inventorOperation === 'multiple'){
+          await this.getDisabledFields(this.cartItemsData.map(item=>item.id).join(',')).then(response=>{
+            if(response['status'] === 200){
+              console.log("request")
+              this.disabledFields = response['data'];
+            }else{
+              this.disabledFields = [];
+            }
+          }).catch()
+      }
       this.operation.getItemTypes()
         .then(response => {
           this.itemTypes = response['data'];
@@ -799,7 +814,8 @@ export class WarehouseComponent implements OnInit {
            factoryNumber: this.tmpData['factoryNumber']
          };
          console.log(this.newInventor);
-       } else {
+       }
+       else {
          this.newInventor.date = null;
          this.newInventor.amount = null;
          this.cartMultipleItemsData = this.cartItemsData.map(tmpData => {

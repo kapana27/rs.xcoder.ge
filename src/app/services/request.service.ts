@@ -6,7 +6,7 @@ import {Observable, Subject} from 'rxjs';
   providedIn: 'root'
 })
 export class RequestService {
-  public prod: string = 'git';
+  public prod: string = '';
   error$: Observable<any>;
   private errorSubject = new Subject<any>();
   constructor(private http: HttpClient) {

@@ -35,6 +35,7 @@ import { DocumentItemGroupComponent } from './document-item-group/document-item-
 import { TableComponent } from './table/table.component';
 import { DocumentTurnOverDisabledDialogComponent } from './document-turn-over-disabled-dialog/document-turn-over-disabled-dialog.component';
 import { ErrorComponent } from './error/error.component';
+import { ReportTableComponent } from './report-table/report-table.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { ErrorComponent } from './error/error.component';
       DocumentItemGroupComponent,
       TableComponent,
       DocumentTurnOverDisabledDialogComponent,
-      ErrorComponent
+      ErrorComponent,
+      ReportTableComponent
       ],
   imports: [
     DropdownModule,
@@ -93,7 +95,8 @@ import { ErrorComponent } from './error/error.component';
     DocumentItemGroupComponent,
     DocumentTurnOverDialogComponent,
     TableComponent,
-    DocumentTurnOverDisabledDialogComponent
+    DocumentTurnOverDisabledDialogComponent,
+    ReportTableComponent
   ],
   entryComponents: [
     CustomDateComponent,

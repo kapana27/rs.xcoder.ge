@@ -1,0 +1,12 @@
+/deep/ app-report-table {
+  .pTable{
+    p-table{
+      .ui-table-wrapper {
+        height: calc(100vh - 150px) !important;
+        overflow: auto !important;
+        background-color: #f4f4f4;
+      }
+    }
+  }
+
+}

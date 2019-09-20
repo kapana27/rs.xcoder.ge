@@ -1,5 +1,5 @@
 
-<p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
+<p-confirmDialog [style]="{width: '50vw'}" modal="modal"></p-confirmDialog>
 <div class="actionButton">
   <div class="buttonBox" style="width: 150px;">
     <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
@@ -663,7 +663,6 @@
           </tbody>
       </table>
   </div>
-
   <div class="invred_box" *ngIf="inventorOperation=='multiple'" style="min-height: 400px">
     <div class="ui-g ui-fluid">
       <div class="ui-g-12 ui-md-3" >
@@ -683,19 +682,19 @@
       </div>
       <div class="ui-g-12 ui-md-3" >
         <p>რაოდენობა</p>
-        <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.amount"  [ngClass]="{ 'red':if_error(formErrors,'amount')?'1px solid red': '' }">
+        <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.amount"  [ngClass]="{ 'red':if_error(formErrors,'amount')?'1px solid red': '' }" [disabled]="disabledFields.indexOf('amount')>-1">
       </div>
 
       <div class="ui-g-12 ui-md-3" >
         <p>განზომილების ერთეული</p>
         <div class="ui-inputgroup" >
-          <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedMeasureUnitName')?'1px solid red': '' }" [autoWidth]="true" class="measureUnits" [options]="measureUnits"  placeholder="ერთეული" optionLabel="name" [(ngModel)]="newInventor.selectedMeasureUnitName"  [showClear]="true" ></p-dropdown>
+          <p-dropdown [disabled]="disabledFields.indexOf('measureUnit')>-1" [ngClass]="{ 'red':if_error(formErrors,'selectedMeasureUnitName')?'1px solid red': '' }" [autoWidth]="true" class="measureUnits" [options]="measureUnits"  placeholder="ერთეული" optionLabel="name" [(ngModel)]="newInventor.selectedMeasureUnitName"  [showClear]="true" ></p-dropdown>
         </div>
       </div>
       <div class="ui-g-12 ui-md-3" >
         <p>საქონლის ჯგუფი</p>
         <div class="ui-inputgroup">
-          <input type="text" [ngClass]="{ 'red':if_error(formErrors,'itemGroupName')?'1px solid red': '' }" pInputText placeholder="საქონლის ჯგუფი" disabled [(ngModel)]="newInventor.itemGroupName" style="width: 100%" [ngClass]="{ 'red':errors.group?'1px solid red': '' }" >
+          <input [disabled]="disabledFields.indexOf('itemGroup')>-1" type="text" [ngClass]="{ 'red':if_error(formErrors,'itemGroupName')?'1px solid red': '' }" pInputText placeholder="საქონლის ჯგუფი" disabled [(ngModel)]="newInventor.itemGroupName" style="width: 100%" [ngClass]="{ 'red':errors.group?'1px solid red': '' }" >
           <button (click)="itemGroupDialog()" pButton type="button" label="..."></button>
         </div>
       </div>
@@ -704,21 +703,21 @@
       <div class="ui-g-8 ui-g-nopad">
         <div class="ui-g-4" >
           <p>დასახელება</p>
-          <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"   field="name" [size]="30"
+          <p-autoComplete [disabled]="disabledFields.indexOf('name')>-1"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"   field="name" [size]="30"
                             placeholder="დასახელება" [minLength]="0"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" >
           </p-autoComplete>
 
         </div>
         <div class="ui-g-4">
           <p>ინვენტარის ტიპი</p>
-          <p-dropdown [options]="itemTypes"  [ngClass]="{ 'red':if_error(formErrors,'selectedItemType')?'1px solid red': '' }" placeholder="ტიპი" optionLabel="name" [showClear]="true" [(ngModel)]="newInventor.selectedItemType" ></p-dropdown>
+          <p-dropdown [disabled]="disabledFields.indexOf('itemType')>-1" [options]="itemTypes"  [ngClass]="{ 'red':if_error(formErrors,'selectedItemType')?'1px solid red': '' }" placeholder="ტიპი" optionLabel="name" [showClear]="true" [(ngModel)]="newInventor.selectedItemType" ></p-dropdown>
         </div>
         <div class="ui-g-4">
           <p>მარკა</p>
           <table>
             <tr>
               <td>
-                <p-autoComplete [suggestions]="ItemData" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" (completeMethod)="filterItemSingle($event,'marker')" field="name" type="marker" [size]="30"
+                <p-autoComplete [disabled]="disabledFields.indexOf('maker-model')>-1" [suggestions]="ItemData" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" (completeMethod)="filterItemSingle($event,'marker')" field="name" type="marker" [size]="30"
                                 placeholder="მარკა" [minLength]="0" [(ngModel)]="newInventor.selectedMaker"></p-autoComplete>
               </td>
               <td>
@@ -732,7 +731,7 @@
           <table>
             <tr>
               <td>
-                <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData"  field="generatedName" [size]="30"
+                <p-autoComplete [disabled]="disabledFields.indexOf('supplier')>-1"  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData"  field="generatedName" [size]="30"
                                  placeholder="მიმწოდებელი" [minLength]="1" [(ngModel)]="newInventor.selectedSupplier" (ngModelChange)="onKeyUpSupplier($event)"></p-autoComplete>
               </td>
               <td>
@@ -743,7 +742,7 @@
         </div>
         <div class="ui-g-4">
           <p>ინვენტარის სტატუსი</p>
-          <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedItemStatus')?'1px solid red': '' }" [options]="itemStatus"  placeholder="სტატუსი" optionLabel="name" [showClear]="true" [(ngModel)]="newInventor.selectedItemStatus"></p-dropdown>
+          <p-dropdown [disabled]="disabledFields.indexOf('itemStatus')>-1" [ngClass]="{ 'red':if_error(formErrors,'selectedItemStatus')?'1px solid red': '' }" [options]="itemStatus"  placeholder="სტატუსი" optionLabel="name" [showClear]="true" [(ngModel)]="newInventor.selectedItemStatus"></p-dropdown>
 
         </div>
         <div class="ui-g-4">
@@ -751,7 +750,7 @@
           <table>
             <tr>
               <td>
-                <p-autoComplete [disabled]="!newInventor.selectedMaker"  [ngClass]="{ 'red':if_error(formErrors,'selectedModel')?'1px solid red': '' }" [suggestions]="ItemData" field="name" [size]="30"
+                <p-autoComplete [disabled]="disabledFields.indexOf('maker-model')>-1" [disabled]="!newInventor.selectedMaker"  [ngClass]="{ 'red':if_error(formErrors,'selectedModel')?'1px solid red': '' }" [suggestions]="ItemData" field="name" [size]="30"
                                 placeholder="მოდელი" [minLength]="1" [(ngModel)]="newInventor.selectedModel"   (ngModelChange)="onKeyUpModel($event)"></p-autoComplete>
               </td>
               <td>
@@ -771,7 +770,7 @@
           </div>
           <div class="ui-g-4" >
             <p>ერთეულის ფასი</p>
-            <p-spinner size="30" step="0.25"   [(ngModel)]="newInventor.price" [ngClass]="{ 'red':if_error(formErrors,'price')?'1px solid red': '' }" ></p-spinner>
+            <p-spinner [disabled]="disabledFields.indexOf('price')>-1"  size="30" step="0.25"   [(ngModel)]="newInventor.price" [ngClass]="{ 'red':if_error(formErrors,'price')?'1px solid red': '' }" ></p-spinner>
           </div>
         </div>
         <div class="ui-g-12">
