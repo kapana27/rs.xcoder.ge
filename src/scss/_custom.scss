@@ -1,8 +1,8 @@
 // Here you can add other styles
 
-  .nav a {
-    font-family: 'lbet-mt',sans-serif !important;
-  }
+.nav a {
+  font-family: 'lbet-mt',sans-serif !important;
+}
 .app-header button:nth-child(5)  {display: none !important;}
 
 app-sidebar, app-header, app-warehouse, app-property, p-tabmenu, ul[role="tablist"], table thead {
@@ -34,5 +34,20 @@ app-header{
     position: absolute;
     right: 10px;
     top:16px;
-  }  
+  }
+}
+
+.sidebar .nav-link {
+  padding: 0.40rem 1rem;
+  font-size: 12px;
+}
+
+.zednadebisheaderi {
+  font-family: 'lbet-mt',sans-serif !important;
+  font-size: 18px;
+}
+
+app-generator h3 {
+  font-family: 'lbet-mt',sans-serif !important;
+  font-size: 18px;
 }

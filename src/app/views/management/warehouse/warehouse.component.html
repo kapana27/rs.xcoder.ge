@@ -113,7 +113,7 @@
     <div class="col-m-6 col-lg-6" style="width: 445px">
       <label>შტრიხკოდი: დან-მდე</label>
       <div style="display: flex">
-        <div style="flex: 0.4">
+        <div>
           <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedBarcode')?'1px solid red': '' }" [autoWidth]="true" [options]="barcodes"   placeholder="RS"  optionLabel="name" [(ngModel)]="newInventor.selectedBarcode"  [showClear]="true" (ngModelChange)="getLastCode()" ></p-dropdown>
         </div>
         <input type="text"  pInputText placeholder="დან" style="width: 120px;"  [(ngModel)]="filter.barcodeFrom">
@@ -271,8 +271,19 @@
 
               <div class="ui-g-12 ui-md-6">
                     <p>ქონების მართვა</p>
-                <p-autoComplete  [(ngModel)]="inventorTransfer.selectedProperty"    [suggestions]="propertyList" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" field="fname" type="marker" [size]="30"
-                placeholder="" [minLength]="1" (ngModelChange)="onKeyUpProperty($event)" ></p-autoComplete>
+                <p-autoComplete [dropdown]="true"  [(ngModel)]="inventorTransfer.selectedProperty"  (completeMethod)="filterPropertyList($event)"  [suggestions]="propertyList" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" field="fname" type="marker"  [size]="30"
+                placeholder="" [minLength]="1" (ngModelChange)="onKeyUpProperty($event)" >
+                  <ng-template let-brand pTemplate="item">
+                    <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                      <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                      <div style="font-size:12px;">{{brand['position']}}</div>
+                    </div>
+                  </ng-template>
+                </p-autoComplete>
+
+
+
+
 
               </div>
 
@@ -326,10 +337,11 @@
                   </div>
                 </form>
               </div>
+
               <div class="ui-g-12 ui-md-6">
-                <p>ქონების მართვა</p>
-                <p-autoComplete [suggestions]="propertyList" (completeMethod)="filterPropertyList($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                                [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                <p>პიროვნება</p>
+                <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
+                                (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
                   <ng-template let-brand pTemplate="item">
                     <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                       <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -338,6 +350,8 @@
                   </ng-template>
                 </p-autoComplete>
               </div>
+
+
 
 
               <div class="ui-g-12 ui-md-6">
@@ -363,10 +377,12 @@
 
             </div>
             <div class="ui-g-12 ui-md-4">
+
+
               <div class="ui-g-12 ui-md-12">
-                <p>პიროვნება</p>
-                <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
-                                (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
+                <p>ქონების მართვა</p>
+                <p-autoComplete [suggestions]="propertyList" (completeMethod)="filterPropertyList($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
+                                [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
                   <ng-template let-brand pTemplate="item">
                     <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                       <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -375,6 +391,9 @@
                   </ng-template>
                 </p-autoComplete>
               </div>
+
+
+
               <div class="ui-g-12 ui-md-12">
                 <p>მომთხოვნი პიროვნება</p>
                 <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedRequestPerson"
@@ -458,7 +477,7 @@
           </p-header>
   <div class="row" style="text-align: center" *ngIf="addon !== undefined">
     <div class="col-md-12" style="text-align: center" *ngIf="frustrate">
-      <h3>საწყობის შემოსავლის ელ. ზედდებული  № {{ addon['Left'] }} - {{ addon['Right'] }}</h3>
+      <h3 class="zednadebisheaderi">საწყობის შემოსავლის ელ. ზედდებული  № {{ addon['Left'] }} - {{ addon['Right'] }}</h3>
     </div>
   </div>
   <div  style="width: 100%;height: 500px;" *ngIf="!frustrate && (inventorOperation==='edit' || inventorOperation ==='new')">
@@ -619,7 +638,7 @@
     </div>
   </div >
   <div style="width: 100%;height: 400px;" *ngIf="frustrate">
-      <table style="border-collapse: collapse;" class="table generator-table" cellpadding="5">
+      <table  style="border-collapse: collapse;" class="table generator-table zdntablehead" cellpadding="5">
           <thead>
             <tr>
               <th>თარიღი</th>

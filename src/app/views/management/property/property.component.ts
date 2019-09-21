@@ -14,6 +14,7 @@ import {ForPerson} from '../../../models/forPerson';
 import {RequestService} from '../../../services/request.service';
 import {CustomDateComponent} from '../../../components/custom-date/custom-date.component';
 import {NgbDate, NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
+import {Filter} from '../../../models/filter';
 declare var $: any;
 
 interface Data {
@@ -23,6 +24,7 @@ interface Data {
   success: boolean;
   totalCount: number;
 }
+
 
 function format(f) {
   return f.toString().length === 1 ? '0' + f : f;
@@ -46,6 +48,10 @@ export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
   providers: [ConfirmationService, {provide: NgbDateParserFormatter, useClass: NgbDateCustomParserFormatter}]
 
 })
+
+
+
+
 export class PropertyComponent implements OnInit {
   private lastCode: any = 0;
   prod: any = '';
@@ -596,6 +602,8 @@ export class PropertyComponent implements OnInit {
   public minDate: NgbDateStruct = { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())} ;
   filesDialog: boolean = false;
   dialogName: any =  'ელექტრონული ზედდებული №';
+  //public searchBox: boolean = true;
+  //public filter: Filter = {};
   static inCart(inCard) {
     alert(inCard);
   }
@@ -1255,6 +1263,8 @@ export class PropertyComponent implements OnInit {
       $('.ui-confirmdialog').css({ 'z-index': 22222222});
     }, 200);
   }
+
+  inventorSearch() {}
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {
   return sortData(sortModel, filterData(filterModel, allOfTheData));

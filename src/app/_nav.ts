@@ -71,7 +71,7 @@ export const navItems: NavData[] = [
   },*/
   {
     name: 'რეპორტი',
-    url: '',
+    url: '/rep',
     icon: 'icon-speedometer',
     children: [
       {

@@ -1,10 +1,10 @@
 /deep/ app-warehouse{
-.inv_lang{
-  position: absolute;
-  right: 80px;
-}
+  .inv_lang{
+    position: absolute;
+    right: 80px;
+  }
 
- 
+
   ag-grid-angular {
     .ag-header {
       overflow: visible !important;
@@ -114,27 +114,33 @@
   svg[data-icon="cart-plus"] {font-size: 1.7em;color: #007ad9;}
 
   .search {
-      background: #dedede;
-      padding: 20px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      display: flex;
+    background: #dedede;
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    display: flex;
 
-      p-chips {
-        .ui-inputtext {width: 100%}
-      }
-      input {
-        //width: 100% !important;
-      }
-      label {
-        margin: 0;
+    p-chips {
+      .ui-inputtext {width: 100%}
+    }
+    input {
+      //width: 100% !important;
+    }
+    label {
+      margin: 0;
 
-      }
-      p-calendar input {
-        width: 100px;
-      }
+    }
+    p-calendar input {
+      width: 100px;
+    }
     .ui-inputtext {
       padding: 2px;
+    }
+    .form-control {
+      height: 27px;
+    }
+    .ui-dropdown {
+      min-width: auto;
     }
   }
 
@@ -214,7 +220,7 @@
 
   p-dropdown {
     .ui-dropdown{
-      width: 100%;
+      /*width: 100%;*/
     }
   }
   p-tree{

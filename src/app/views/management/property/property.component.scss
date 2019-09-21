@@ -1,4 +1,36 @@
  /deep/ app-property{
+
+   .search {
+     background: #dedede;
+     padding: 20px;
+     border: 1px solid #ccc;
+     margin-bottom: 10px;
+     display: flex;
+
+     p-chips {
+       .ui-inputtext {width: 100%}
+     }
+     input {
+       //width: 100% !important;
+     }
+     label {
+       margin: 0;
+
+     }
+     p-calendar input {
+       width: 100px;
+     }
+     .ui-inputtext {
+       padding: 2px;
+     }
+     .form-control {
+       height: 27px;
+     }
+     .ui-dropdown {
+       min-width: auto;
+     }
+   }
+
    ag-grid-angular {
      .ag-header {
        overflow: visible !important;
@@ -128,6 +160,9 @@
      cursor: pointer;
    }
 }
+
+
+
 
 
 
