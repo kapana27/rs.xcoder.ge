@@ -6,12 +6,10 @@ import { P500Component } from './views/error/500.component';
 import { LoginComponent } from './views/login/login.component';
 import { RegisterComponent } from './views/register/register.component';
 import {MessagesComponent} from './views/messages/messages.component';
-import {ReportComponent} from './views/report/report.component';
 import {DirectoryComponent} from './views/directory/directory.component';
 import {IncameOperationComponent} from './views/incame-operation/incame-operation.component';
 import {TestComponent} from "./views/test/test.component";
 import {Test1Component} from "./views/test1/test1.component";
-import { DocumentTurnoverComponent } from './views/document-turnover/document-turnover.component';
 
 export const routes: Routes = [
   {
@@ -53,6 +51,10 @@ export const routes: Routes = [
     component: DefaultLayoutComponent,
     children: [
       {
+        path: 'report',
+        loadChildren: './views/report/report.module#ReportModule'
+      },
+      {
         path: 'management',
         loadChildren: './views/management/management.module#ManagementModule'
       },
@@ -68,13 +70,6 @@ export const routes: Routes = [
         component: IncameOperationComponent,
         data: {
           title: 'მიღების ოპერაციები'
-        }
-      },
-      {
-        path: 'report',
-        component: ReportComponent,
-        data: {
-          title: 'რეპორტი'
         }
       },
       {
@@ -103,6 +98,7 @@ export const routes: Routes = [
         loadChildren: './views/document-turnover/document.module#DocumentModule'
         
       },
+
     ]
   },
   { path: '**', component: P404Component }

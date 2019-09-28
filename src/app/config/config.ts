@@ -100,6 +100,7 @@ export  const Config = {
       inbox: '/api/secured/Item/Inbox/Income'
     },
     post: {
+      Delete: '/api/secured/Item/Inbox/Delete',
       NotApprove: '/api/secured/Item/Inbox/NotApprove',
       Approve: '/api/secured/Item/Inbox/Approve'
     }

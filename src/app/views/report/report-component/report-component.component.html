@@ -1,0 +1,5 @@
+<p-tabView (onChange)="onTabChange($event)">
+  <p-tabPanel header="{{t.tabName}}" *ngFor="let t of data">
+    <app-report-table [confUrl]="t.configUrl" > </app-report-table>
+  </p-tabPanel>
+</p-tabView>

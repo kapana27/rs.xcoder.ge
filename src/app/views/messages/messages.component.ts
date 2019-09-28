@@ -115,7 +115,28 @@ export class MessagesComponent implements OnInit {
     this.rowSelect({data: { id: this.selectedParams.id}});
   }
   confirm(type) {
-    if (type === 1) {
+    console.log(type)
+    if (type === -1) {
+      console.log(22222);
+      this.confirmationService.confirm({
+        message: 'დარწმუნებული ხართ რომ გსურთ უარყოფა?',
+        header: 'უარყოფა',
+        icon: 'pi pi-info-circle',
+        accept: () => {
+          this.messageService.confirm( 'Delete', this.selectedParams.id)
+            .then(response => {
+              if (response['status'] === 200) {
+                this.selectedParams.id = 0;
+                this.getList();
+              }
+            }).catch();
+
+        },
+        reject: () => {
+        }
+      });
+    }
+    else if (type === 1) {
       console.log(22222);
       this.confirmationService.confirm({
         message: 'დარწმუნებული ხართ რომ გსურთ უარყოფა?',

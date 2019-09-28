@@ -15,6 +15,8 @@ import {RequestService} from '../../../services/request.service';
 import {CustomDateComponent} from '../../../components/custom-date/custom-date.component';
 import {NgbDate, NgbDateParserFormatter, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 import {Filter} from '../../../models/filter';
+import {Inventor} from '../../../models/inventor';
+import {Barcode} from '../../../models/barcode';
 declare var $: any;
 
 interface Data {
@@ -56,7 +58,22 @@ export class PropertyComponent implements OnInit {
   private lastCode: any = 0;
   prod: any = '';
   public frameworkComponents;
+  public searchBox: boolean = false;
+  newInventor: Inventor = {
+    date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
+    consumption: false,
+    price: 0,
+    amount: 0,
+    fullname: {
+      name: ''
+    }
+  };
+  measureUnits: Default[] = [];
+  barcodes: Barcode[] = [];
+  public filter: Filter = {};
+
   propertyList: Array<any> = [];
+  private location: any='';
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService, private Request: RequestService) {
     this.Request.error$.subscribe((err) => {
       this.error('შეცდომა', err['error']);
@@ -742,10 +759,11 @@ export class PropertyComponent implements OnInit {
       }
     }
   }
-  onGridReady(params) {
+  onGridReady(params,  filter: boolean= false) {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
+    const filterData = this.filter;
     const operation = this.operation;
     const cartItems = this.cartItems;
     const inOut = this.inOut;
@@ -759,6 +777,19 @@ export class PropertyComponent implements OnInit {
             value: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? params['request']['filterModel'][f]['dateFrom'] : params['request']['filterModel'][f]['filter'],
             operator: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' )? '=':'like'
           });
+        }
+        if (filter) {
+          console.log(filterData);
+          for (const f in filterData) {
+            const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
+            if (filterData[f] != '' && filterData[f] != undefined && filterData[f] !== null) {
+              parameters.push({
+                property: name,
+                value: filterData[f],
+                operator: 'like'
+              });
+            }
+          }
         }
         operation.getAllData(inOut === 'v2' ? 'in' : inOut, params['request']['startRow'], params['request']['endRow'], encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
@@ -791,9 +822,10 @@ export class PropertyComponent implements OnInit {
         name: 'ექსელში ექსპორტი .xlsx',
         action: function () {
           if (params.context.thisComponent.selectedTabId === -2) {
-            window.open(params.context.thisComponent.prod + '/api/secured/Item/Section/In/Export'+localStorage.getItem("filter"), '_blank');
+
+            window.open(params.context.thisComponent.prod + '/api/secured/Item/Section/In/Export'+localStorage.getItem("filter")+"&list="+params.context.thisComponent.cartItemsData.map(v=>v.id).join(","), '_blank');
           } else {
-            window.open(params.context.thisComponent.prod + '/api/secured/Item/Section/Out/Export'+localStorage.getItem("filter"), '_blank');
+            window.open(params.context.thisComponent.prod + '/api/secured/Item/Section/Out/Export'+localStorage.getItem("filter")+"&list="+params.context.thisComponent.cartItemsData.map(v=>v.id).join(","), '_blank');
           }
 
         }
@@ -1049,7 +1081,8 @@ export class PropertyComponent implements OnInit {
             name:  v['fullname'] + ' , ' + v['position']['name'] + ' ,' + v['department']['name'],
             fname: v['fullname'],
             position: v['position']['name'],
-            department:  v['department']['name']
+            department:  v['department']['name'],
+            location:  v['location']['parentUnit']['name'] + ', ' + v['location']['name']
           };
         }) : [];
       })
@@ -1169,6 +1202,7 @@ export class PropertyComponent implements OnInit {
 
   }
   selectPerson($event: any) {
+    this.location = $event['location'];
       this.operation.getRoomsByPerson($event['id'])
         .then(response => {
           if (response['status'] === 200) {
@@ -1264,7 +1298,59 @@ export class PropertyComponent implements OnInit {
     }, 200);
   }
 
-  inventorSearch() {}
+  inventorSearch() {
+    this.newInventor = {
+      date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
+      consumption: false,
+      price: 0,
+      amount: 0,
+      fullname: {
+        name: ''
+      }
+    };
+    this.searchBox = true;
+    this.operation.getListBarcodes()
+      .then(response => {
+        this.barcodes = response['data'].map(v => {
+          delete v.endPoint;
+          return v;
+        });
+      }).catch();
+    this.operation.getMeasureUnits()
+      .then(response => {
+        this.measureUnits = response['data'];
+        console.log(this.measureUnits);
+      }).catch();
+  }
+  CloseInventorSearch() {
+    this.searchBox = false;
+    this.newInventor = {
+      date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
+      consumption: false,
+      price: 0,
+      amount: 0,
+      fullname: {
+        name: ''
+      }
+    };
+
+  }
+  filterGrid() {
+    try {
+
+
+      if (this.notNull(this.newInventor.selectedMeasureUnitName)) {
+        this.filter.measureUnit = this.notNull(this.newInventor.selectedMeasureUnitName['id']) ? this.newInventor.selectedMeasureUnitName['name'] : this.newInventor.selectedMeasureUnitName['name'];
+      }
+
+
+      this.filter.barCodeType = this.notNull(this.newInventor.selectedBarcode) ? this.newInventor.selectedBarcode['id'] : '';
+
+      this.onGridReady(this.eventData, true);
+    } catch (e) {}
+    console.log( this.filter);
+
+  }
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {
   return sortData(sortModel, filterData(filterModel, allOfTheData));

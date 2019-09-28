@@ -174,6 +174,8 @@ export class WarehouseComponent implements OnInit {
   public frameworkComponents;
   public filter: Filter = {};
    public disabledFields: any[] = [];
+  private onKeyUpMakerTimeout: boolean = true;
+  private location: any = '';
    changeLanguage(lang) {
       // this.lgService.changeLanguage(lang);
    }
@@ -443,7 +445,7 @@ export class WarehouseComponent implements OnInit {
       {
         name: 'ექსელში ექსპორტი .xlsx',
         action: function () {
-          window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export' + localStorage.getItem('filter'), '_blank');
+          window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export' + localStorage.getItem('filter')+"&list="+params.context.thisComponent.cartItemsData.map(v=>v.id).join(","), '_blank');
         }
       },
       'separator',
@@ -735,8 +737,8 @@ export class WarehouseComponent implements OnInit {
       });
 
   }
-   async getDisabledFields(ids){
-      return this.Request.Post("/api/secured/Item/Select_Edit?list="+ids,{});
+   async getDisabledFields(ids) {
+      return this.Request.Post('/api/secured/Item/Select_Edit?list=' + ids, {});
   }
 
   async inventorEditDialog() {
@@ -745,15 +747,15 @@ export class WarehouseComponent implements OnInit {
     if (Object.entries(this.tmpData).length > 1 || this.inventorOperation === 'multiple') {
       this.inventorDialogShow = true;
       this.frustrate = false;
-      if(this.inventorOperation === 'multiple'){
-          await this.getDisabledFields(this.cartItemsData.map(item=>item.id).join(',')).then(response=>{
-            if(response['status'] === 200){
-              console.log("request")
+      if (this.inventorOperation === 'multiple') {
+          await this.getDisabledFields(this.cartItemsData.map(item => item.id).join(',')).then(response => {
+            if (response['status'] === 200) {
+              console.log('request');
               this.disabledFields = response['data'];
-            }else{
+            } else {
               this.disabledFields = [];
             }
-          }).catch()
+          }).catch();
       }
       this.operation.getItemTypes()
         .then(response => {
@@ -814,8 +816,7 @@ export class WarehouseComponent implements OnInit {
            factoryNumber: this.tmpData['factoryNumber']
          };
          console.log(this.newInventor);
-       }
-       else {
+       } else {
          this.newInventor.date = null;
          this.newInventor.amount = null;
          this.cartMultipleItemsData = this.cartItemsData.map(tmpData => {
@@ -859,6 +860,7 @@ export class WarehouseComponent implements OnInit {
 
   }
   onTabChange($event: any) {
+     this.location = '';
     this.inventorTransfer.selectedIndex = $event.index;
   }
   newRecordDialog(type, value) {
@@ -942,6 +944,8 @@ export class WarehouseComponent implements OnInit {
     this.operation.getItemData(this.newItem.selected, query )
       .then(response => {
           this.ItemData = response['data'];
+
+          console.log(this.ItemData);
       })
       .catch(response => {
         this.error('შეცდომა', response['error']);
@@ -1073,7 +1077,7 @@ console.log(this.newInventor);
     if (this.newInventor.spend === 1) {
       this.formErrors = this.validator.checkObject(this.newInventor, filter);
 
-      this.frustrateData()
+      this.frustrateData();
     } else {
       if (this.newInventor.isCar !== 1) {
         filter.push( 'selectedBarcode');
@@ -1086,9 +1090,9 @@ console.log(this.newInventor);
             this.formErrors['barCode'] = response['error'];
             this.formErrors = this.validator.checkObject(this.newInventor, filter);
 
-          }else {
+          } else {
             this.formErrors = this.validator.checkObject(this.newInventor, filter);
-            this.frustrateData()
+            this.frustrateData();
           }
         });
     }
@@ -1099,7 +1103,7 @@ console.log(this.newInventor);
 
   }
 
-  frustrateData(){
+  frustrateData() {
     if (this.formErrors.length === 0) {
       console.log(this.newInventor);
       // this.newInventor.entryDate = moment(this.newInventor.date).format('DD-MM-YYYY');
@@ -1309,7 +1313,8 @@ console.log(this.newInventor);
               name:  v['fullname'] + ' , ' + v['position']['name'] + ' ,' + v['department']['name'],
               fname: v['fullname'],
               position: v['position']['name'],
-              department:  v['department']['name']
+              department:  v['department']['name'],
+              location:  v['location']['parentUnit']['name'] + ', ' + v['location']['name']
             };
           }) : [];
         })
@@ -1457,6 +1462,7 @@ console.log(this.newInventor);
   }
   selectPerson($event: any) {
     this.inventorTransfer.toWhomSection = $event['id'];
+    this.location = $event['location'];
     this.operation.getRoomsByPerson($event['id'])
       .then(response => {
         if (response['status'] === 200) {
@@ -1489,7 +1495,9 @@ console.log(this.newInventor);
   }
   editNewInventor() {
     if (this.inventorOperation === 'edit') {
-      this.newInventor.entryDate = this.newInventor.date.day + '-' + this.newInventor.date.month + '-' + this.newInventor.date.year;
+      if (this.notNull(this.newInventor.date)) {
+        this.newInventor.entryDate = this.newInventor.date.day + '-' + this.newInventor.date.month + '-' + this.newInventor.date.year;
+      }
 
       const formdata = new FormData();
       for (const key in this.newInventor) {
@@ -1525,7 +1533,9 @@ console.log(this.newInventor);
         });
     } else if (this.inventorOperation === 'multiple') {
 
-      this.newInventor.entryDate = moment(this.newInventor.date).format('DD-MM-YYYY');
+        if (this.notNull(this.newInventor.date)) {
+          this.newInventor.entryDate = moment(this.newInventor.date).format('DD-MM-YYYY');
+        }
       this.newInventor.name = (typeof this.newInventor.fullname === 'string') ? this.newInventor.fullname : this.newInventor.fullname['name'];
       this.newInventor.itemType = (this.newInventor.selectedItemType !== undefined) ? this.newInventor.selectedItemType['id'] : null;
       this.newInventor.maker = (this.newInventor.selectedMaker !== undefined) ? this.newInventor.selectedMaker['id'] : null;
@@ -1534,7 +1544,7 @@ console.log(this.newInventor);
       this.newInventor.model = (this.newInventor.selectedModel !== undefined) ? this.newInventor.selectedModel['id'] : null;
       this.newInventor.measureUnit = (this.newInventor.selectedMeasureUnitName != undefined) ? this.newInventor.selectedMeasureUnitName['id'] : null;
       const inventory: Inventory = {
-        entryDate: this.newInventor.entryDate,
+        entryDate: (this.notNull(this.newInventor.entryDate) ? this.newInventor.entryDate : ''),
         name: this.newInventor.name,
         maker: this.newInventor.maker,
         vin: this.newInventor.vin,
@@ -1572,8 +1582,8 @@ console.log(this.newInventor);
         .then(response => {
           if (response['status'] == 200) {
             this.inventorDialogShow = false;
-            this.onGridReady(this.eventData);
             this.tmpData = this.newInventor;
+            this.removeCartItem();
             alert('ოპერაცია წარმატებით დასრულდა');
           }
         })
@@ -1614,6 +1624,7 @@ console.log(this.newInventor);
 
 
   onKeyUpMaker($event: any) {
+
     if (typeof $event === 'object') {
       return;
     }
@@ -1633,7 +1644,12 @@ console.log(this.newInventor);
         this.filterItemSingle({query: en2geo((typeof this.newInventor.selectedMaker === 'string') ? this.newInventor.selectedMaker : this.newInventor.selectedMaker['name'])}, 'marker');
       }, 20);
     }
-    console.log(this.newInventor.selectedMaker);
+    if (this.onKeyUpMakerTimeout === true) {
+      setTimeout(() => {
+        this.ItemData = [];
+        this.filterItemSingle({query: en2geo((typeof this.newInventor.selectedMaker === 'string') ? this.newInventor.selectedMaker : this.newInventor.selectedMaker['name'])}, 'marker');
+      }, 100);
+    }
   }
   onKeyUp($event: any) {
     if (typeof $event === 'object') {

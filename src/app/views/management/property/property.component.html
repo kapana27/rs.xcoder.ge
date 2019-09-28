@@ -5,7 +5,7 @@
     <p-tabMenu [model]="items" [activeItem]="items[0]" ></p-tabMenu>
   </div>
   <div class="buttonBox">
-
+    <button style="width: 120px; margin-right: 20px" pButton icon="pi pi-search" label="ძებნა" class="ui-button-raised" (click)="inventorSearch()" *ngIf="searchBox !== true"></button>
     <button (click)="personDialog()" *ngIf="distributed" pButton type="button" label="განპიროვნება" class="ui-button-danger"></button>&nbsp;&nbsp;
     <button (click)="showDialog()"  pButton type="button" label="ინვ. შებრუნება" class="ui-button-raised"></button> &nbsp;&nbsp;
     <button (click)="inventoryToBuildingDialog()" *ngIf="distributed" pButton type="button" label="ინვ. მოძრაობა შენობებს შორის" class="ui-button-raised"></button>&nbsp;&nbsp;
@@ -16,10 +16,122 @@
   </div>
 </div>
 
+<div class="search" *ngIf="this.searchBox === true">
+  <div class="row">
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>დასახელება:</label>
+      <input type="text"  pInputText placeholder="" [(ngModel)]="filter.name" />
 
+    </div>
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>მარკა:</label>
+      <input type="text"  pInputText placeholder="" [(ngModel)]="filter.maker" />
+    </div>
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>მოდელი:</label>
+      <div>
+        <input type="text"  pInputText placeholder="" [(ngModel)]="filter.model" />
+      </div>
+    </div>
+
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>განზ. ერთეული:</label>
+      <div class="ui-inputgroup" >
+        <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedMeasureUnitName')?'1px solid red': '' }" [autoWidth]="true" class="measureUnits" [options]="measureUnits"  placeholder="ერთეული" optionLabel="name" [(ngModel)]="newInventor.selectedMeasureUnitName"  [showClear]="true" ></p-dropdown>
+      </div>
+    </div>
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>ჯგუფი:</label>
+      <input type="text"  pInputText placeholder="" [(ngModel)]="filter.itemGroup" />
+
+    </div>
+
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>ერთეული:</label>
+      <input type="text"  pInputText placeholder="" [(ngModel)]="filter.measureUnit" />
+    </div>
+    <!--div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>შტრიხ კოდი:</label>
+      <div>
+        <p-autoComplete  field="name" [size]="30" placeholder="შტრიხ კოდი" [minLength]="1"></p-autoComplete>
+      </div>
+    </div-->
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>ტიპი:</label>
+      <div>
+        <input type="text"  pInputText placeholder="" [(ngModel)]="filter.itemType" />
+      </div>
+    </div>
+
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>ქარხნული ნომერი:</label>
+      <div>
+        <input type="text"  pInputText placeholder="" [(ngModel)]="filter.factoryNumber" />
+
+      </div>
+    </div>
+    <div class="col-m-12 col-lg-3" style="max-width: 200px">
+      <label>მწარმოებელი:</label>
+      <input type="text"  pInputText placeholder="" [(ngModel)]="filter.supplier" />
+    </div>
+
+    <div class="col-m-6 col-lg-6" style="max-width: 320px">
+      <label>თარიღი: დან-მდე</label>
+
+      <form class="form-inline row">
+
+        <div class="form-group col-md-6" >
+          <div class="input-group">
+            <input class="form-control"  placeholder=""
+                   name="dp" [(ngModel)]="filter.dateFrom" ngbDatepicker #d10="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+            <div class="input-group-append">
+              <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d10.toggle()" ></button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-md-6">
+          <div class="input-group">
+            <input class="form-control"  placeholder=""
+                   name="dp" [(ngModel)]="filter.dateTo" ngbDatepicker #d11="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+            <div class="input-group-append">
+              <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d11.toggle()" ></button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-m-12 col-lg-6" style="max-width: 280px">
+      <label>ფასი: დან-მდე</label>
+      <div>
+        <p-spinner size="7" placeholder="დან" style="width: 150px" [(ngModel)]="filter.priceFrom"></p-spinner>
+        <p-spinner size="7" placeholder="მდე" [(ngModel)]="filter.priceTo"></p-spinner>
+      </div>
+    </div>
+    <div class="col-m-6 col-lg-6" style="width: 445px">
+      <label>შტრიხკოდი: დან-მდე</label>
+      <div style="display: flex">
+        <div>
+          <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedBarcode')?'1px solid red': '' }" [autoWidth]="true" [options]="barcodes"   placeholder="RS"  optionLabel="name" [(ngModel)]="newInventor.selectedBarcode"  [showClear]="true" (ngModelChange)="getLastCode()" ></p-dropdown>
+        </div>
+        <input type="text"  pInputText placeholder="დან" style="width: 120px;"  [(ngModel)]="filter.barcodeFrom">
+        <input type="text"  pInputText placeholder="მდე" style="width: 120px;" [(ngModel)]="filter.barcodeTo" >
+      </div>
+    </div>
+
+    <div  style="min-width:350px; max-width: 100%; padding-right: 20px; padding-top: 21px; flex: 1;">
+      <div style="float: right">
+        <button pButton icon="pi pi-search" label="ძებნა" class="ui-button-warning" (click)="filterGrid()"></button>
+        <button  pButton type="button" label="გასუფთავება" icon="pi pi-times" class="ui-button-danger" style="margin-left: 10px" (click)="filter={}"></button> &nbsp;&nbsp;
+        <button pButton type="button" label="დახურვა" class="ui-button-secondary" (click)="CloseInventorSearch()" style="float: right; margin-left: 20px;"></button>
+      </div>
+    </div>
+  </div>
+
+</div>
 
 <div class="row" *ngIf="inOut ==='out'">
   <ag-grid-angular
+    [ngStyle]="{width: '100%', height: 'calc(100vh - '+(searchBox? 400: 135)+'px)'}"
     #agGrid
     style="width: 100%;height: calc(100vh - 135px);"
     id="myGrid"
@@ -51,6 +163,7 @@
 </div>
 <div class="row" *ngIf="inOut ==='in'">
   <ag-grid-angular
+    [ngStyle]="{width: '100%', height: 'calc(100vh - '+(searchBox? 400: 135)+'px)'}"
     #agGrid
     style="width: 100%;height: calc(100vh - 135px);"
     id="myGrid"
@@ -386,6 +499,7 @@
                   </div>
                 </ng-template>
               </p-autoComplete>
+              <span>{{location}}</span>
             </div>
             <div class="ui-g-12 ui-md-12">
               <p>აირჩიეთ ოთახი</p>

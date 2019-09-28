@@ -80,9 +80,7 @@
 
     <div class="col-m-6 col-lg-6" style="max-width: 320px">
       <label>თარიღი: დან-მდე</label>
-
         <form class="form-inline row">
-
           <div class="form-group col-md-6" >
             <div class="input-group">
               <input class="form-control"  placeholder=""
@@ -349,6 +347,7 @@
                     </div>
                   </ng-template>
                 </p-autoComplete>
+                <span>{{location}}</span>
               </div>
 
 
@@ -555,8 +554,8 @@
           <table>
             <tr>
               <td>
-                <p-autoComplete  [(ngModel)]="newInventor.selectedMaker"    [suggestions]="ItemData" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" field="name" type="marker" [size]="30"
-                                placeholder="მარკა" [minLength]="0" (ngModelChange)="onKeyUpMaker($event)"  (click)="changeLanguage('uk')"></p-autoComplete>
+                <p-autoComplete  [(ngModel)]="newInventor.selectedMaker"    [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" field="name" type="marker" [size]="30"
+                                placeholder="მარკა"  (ngModelChange)="onKeyUpMaker($event)"  [suggestions]="ItemData"></p-autoComplete>
               </td>
               <!--td>
                 <p-button icon="pi pi-plus" (click)="newRecordDialog('marker', newInventor.selectedMaker)"></p-button>
@@ -722,7 +721,7 @@
       <div class="ui-g-8 ui-g-nopad">
         <div class="ui-g-4" >
           <p>დასახელება</p>
-          <p-autoComplete [disabled]="disabledFields.indexOf('name')>-1"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"   field="name" [size]="30"
+          <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }" [ngClass]="{ 'red':errors.name?'1px solid red': '' }"   field="name" [size]="30"
                             placeholder="დასახელება" [minLength]="0"  (ngModelChange)="onKeyUp($event)"  (onSelect)="selectedName()" [suggestions]="filteredInventors" >
           </p-autoComplete>
 

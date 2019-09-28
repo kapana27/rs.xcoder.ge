@@ -1,9 +1,9 @@
 /* Error: expected selector.
  *   ,
- * 1 | /deep/ app-report-table{
+ * 1 | /deep/ app-report.component.ts-table{
  *   | ^
  *   '
- *   report-table.component.scss 1:1  root stylesheet */
+ *   report.component.ts-table.component.scss 1:1  root stylesheet */
 
 body::before {
   font-family: "Source Code Pro", "SF Mono", Monaco, Inconsolata, "Fira Mono",

@@ -4,8 +4,8 @@
 <p-tabView *ngIf="activeItem['type']==='structura'" (onChange)="handleChange($event)">
 
   <!--<div class="action-button" *ngIf="activeSubItem['id']==='employees'">
-    <button pButton type="button"   class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="employee({ action: 'new',type:'sub'})"></button>
-    <button pButton type="button"   class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="employee({action: 'edit', type:'sub'})"></button>
+    <button pButton type="button"   class="ui-button-success" icon="pi pi-plus" pTooltip="დამატება" tooltipPosition="top" (click)="employee1({ action: 'new',type:'sub'})"></button>
+    <button pButton type="button"   class="ui-button-info" icon="pi pi-pencil" pTooltip="რედაქტირება" tooltipPosition="top" (click)="employee1({action: 'edit', type:'sub'})"></button>
     <button pButton type="button"   class="ui-button-danger" icon="pi pi-trash" pTooltip="წაშლა" tooltipPosition="top" (click)="deleteEmployee()"></button>
   </div>-->
   <p-tabPanel [header]="item.label" *ngFor="let item of subTabs; let i = index" [selected]="i == 0"  >

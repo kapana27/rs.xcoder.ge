@@ -91,7 +91,7 @@ export class IncameOperationComponent implements OnInit {
         header: 'უარყოფა',
         icon: 'pi pi-info-circle',
         accept: () => {
-          this.messageService.confirm( 'NotApprove', this.selectedParams.id)
+          this.messageService.confirm( 'Delete', this.selectedParams.id)
             .then(response => {
               if (response['status'] === 200) {
                 this.selectedParams.id = 0;

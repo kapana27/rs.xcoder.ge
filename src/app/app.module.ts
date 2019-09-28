@@ -43,7 +43,6 @@ import { ChartsModule } from 'ng2-charts';
 import { ManagementComponent } from './views/management/management.component';
 import { MessagesComponent } from './views/messages/messages.component';
 import { DirectoryComponent } from './views/directory/directory.component';
-import { ReportComponent } from './views/report/report.component';
 import {HttpClientModule} from "@angular/common/http";
 import {AgGridModule} from "ag-grid-angular";
 import {TableModule} from "primeng/table";
@@ -64,6 +63,7 @@ import { Test1Component } from './views/test1/test1.component';
 import {NgbDatepickerModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { DocumentTurnoverComponent } from './views/document-turnover/document-turnover.component';
+import {ReportComponent} from './views/report/report.component';
 
 @NgModule({
   imports: [
@@ -105,9 +105,9 @@ import { DocumentTurnoverComponent } from './views/document-turnover/document-tu
     LoginComponent,
     RegisterComponent,
     ManagementComponent,
+    ReportComponent,
     MessagesComponent,
     DirectoryComponent,
-    ReportComponent,
     IncameOperationComponent,
     TestComponent,
     Test1Component,

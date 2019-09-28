@@ -71,17 +71,26 @@ export const navItems: NavData[] = [
   },*/
   {
     name: 'რეპორტი',
-    url: '/rep',
+    url: '/report',
     icon: 'icon-speedometer',
     children: [
       {
         name: 'ზედდებულები',
-        url: '/report',
         icon: 'icon-puzzle',
         children:[
           {
-            name: 'ზედდებულები',
-            url: '/report',
+            name: 'საწყობი',
+            url: '/report/warehouse',
+            icon: 'icon-puzzle',
+          },
+          {
+            name: 'ქონების მართვა',
+            url: '/report/property',
+            icon: 'icon-puzzle',
+          },
+          {
+            name: 'თანამშრომელი',
+            url: '/report/employee',
             icon: 'icon-puzzle',
           }
         ]
