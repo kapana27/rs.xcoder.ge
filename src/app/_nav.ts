@@ -77,23 +77,22 @@ export const navItems: NavData[] = [
       {
         name: 'ზედდებულები',
         icon: 'icon-puzzle',
-        children:[
-          {
-            name: 'საწყობი',
-            url: '/report/warehouse',
-            icon: 'icon-puzzle',
-          },
-          {
-            name: 'ქონების მართვა',
-            url: '/report/property',
-            icon: 'icon-puzzle',
-          },
-          {
-            name: 'თანამშრომელი',
-            url: '/report/employee',
-            icon: 'icon-puzzle',
-          }
-        ]
+        url: '/report/invoice'
+      },
+      {
+        name: 'დოკუმენტბრუნვა',
+        icon: 'icon-puzzle',
+        url: '/report/documentTurnover'
+      },
+      {
+        name: 'ინვენტარიზაცია',
+        icon: 'icon-puzzle',
+        url: '/report/inventory'
+      },
+      {
+        name: 'ხელმძღვანელობა',
+        icon: 'icon-puzzle',
+        url: '/report/leadership'
       }
     ]
   },

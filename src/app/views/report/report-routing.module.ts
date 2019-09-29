@@ -13,28 +13,22 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'employee'
+        redirectTo: 'invoice'
       },
       {
-        path: 'warehouse',
-        component: ReportComponentComponent,
-        data: {
-          title: 'საწყობის მართვა'
-        },
+        path: 'invoice',
+        component: ReportComponentComponent
       },
       {
-        path: 'property',
-        component: ReportComponentComponent,
-        data: {
-          title: 'ქონების მართვა'
-        },
+        path: 'documentTurnover',
+        component: ReportComponentComponent
       },
       {
-        path: 'employee',
-        component: ReportComponentComponent,
-        data: {
-          title: 'თანამშრომლები'
-        },
+        path: 'inventory',
+        component: ReportComponentComponent
+      },{
+        path: 'leadership',
+        component: ReportComponentComponent
       },
     ]
   }

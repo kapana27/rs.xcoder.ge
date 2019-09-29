@@ -1,5 +1,19 @@
-<p-tabView (onChange)="onTabChange($event)">
-  <p-tabPanel header="{{t.tabName}}" *ngFor="let t of data">
+<p-button icon="pi pi-arrow-left" label="უკან დაბრუნება" style="position: absolute;right: 35px;" *ngIf="state.length>0 || data.length > 0" (click)="goBack()"></p-button>
+
+<div class="p-grid" *ngIf="data.length === 0">
+  <div *ngFor="let folder of folders">
+    <div class="p-col-fixed" style="top:0px; width:150px; height: 150px; background: white; margin-right: 20px;text-align: center;line-height: 132px;cursor: pointer" (click)="onClickFolder(folder)" >
+      <div class="box">{{folder.name}}</div>
+    </div>
+  </div>
+  <div class="p-col" >
+  </div>
+</div>
+
+<p-tabView (onChange)="onTabChange($event)"  *ngIf="data.length > 0" se>
+  <p-tabPanel header="{{t.tabName}}" *ngFor="let t of data; let i = index" [selected]="i===selectedIndex">
     <app-report-table [confUrl]="t.configUrl" > </app-report-table>
   </p-tabPanel>
 </p-tabView>
+
+

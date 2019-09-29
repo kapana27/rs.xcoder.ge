@@ -2,29 +2,45 @@
   <div class="row">
     <div class="col-md-6 col-lg-6" >
       <label>თარიღი: დან-მდე</label>
-      <form class="form-inline row">
-        <div class="form-group col-md-6" >
-          <div class="input-group">
-            <input class="form-control"  placeholder=""
-                   name="dp" [(ngModel)]="filter.dateFrom" ngbDatepicker #d10="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
-            <div class="input-group-append">
-              <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d10.toggle()" ></button>
-            </div>
-          </div>
-        </div>
-        <div class="form-group col-md-6">
-          <div class="input-group">
-            <input class="form-control"  placeholder=""
-                   name="dp" [(ngModel)]="filter.dateTo" ngbDatepicker #d11="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
-            <div class="input-group-append">
-              <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d11.toggle()" ></button>
-            </div>
-          </div>
-        </div>
-      </form>
+      <table>
+          <tr>
+            <td>
+              <form class="form-inline ">
+                <div class="form-group col-md-12" >
+                  <div class="input-group">
+                    <input class="form-control"  placeholder=""
+                           name="dp" [(ngModel)]="filter.dateFrom" ngbDatepicker #d10="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+                    <div class="input-group-append">
+                      <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d10.toggle()" ></button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </td>
+            <td>
+              <form class="form-inline ">
+                <div class="form-group col-md-12">
+                  <div class="input-group">
+                    <input class="form-control"  placeholder=""
+                           name="dp" [(ngModel)]="filter.dateTo" ngbDatepicker #d11="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+                    <div class="input-group-append">
+                      <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d11.toggle()" ></button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </td>
+            <td>
+              <button pButton type="button" label="განახლება" (click)="refresh()"></button>
+            </td>
+          </tr>
+      </table>
+
     </div>
     <div class="col-md-6 col-lg-6 " >
+      <a href="{{this.excelUrl+'?'+this.convertDate }}" target="_blank">
       <button pButton type="button" label="ექსელში ექსპორტი" style="float: right; margin-top: 30px"></button>
+      </a>
     </div>
   </div>
 

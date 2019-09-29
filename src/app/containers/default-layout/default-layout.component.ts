@@ -3,6 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { navItems } from '../../_nav';
 import{ ChangeDetectorRef } from '@angular/core';
 import {LgService} from "../../services/lg.service";
+import {MenuService} from "../../services/menu.service";
 
 
 @Component({
@@ -36,7 +37,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   lang: string;
   changer: any = '';
   // @ts-ignore
-  constructor(@Inject(DOCUMENT) _document?: any, public lgService: LgService) {
+  constructor(@Inject(DOCUMENT) _document?: any, public lgService: LgService, public menuService: MenuService) {
 
     this.changes = new MutationObserver((mutations) => {
       this.sidebarMinimized = _document.body.classList.contains('sidebar-minimized');
@@ -47,7 +48,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       attributeFilter: ['class']
     });
   }
- 
+
 
   ngOnDestroy(): void {
     this.changes.disconnect();
@@ -63,6 +64,10 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   onChange($event: any) {
     this.lgService.changeLanguage($event);
       this.lang = $event;
+  }
+
+  clickMenu($event: MouseEvent) {
+    console.log($event)
   }
 }
 
