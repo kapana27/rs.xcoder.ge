@@ -6,7 +6,9 @@
   </div>
   <div class="buttonBox">
     <button (click)="personDialog()" *ngIf="distributed" pButton type="button" label="განპიროვნება" class="ui-button-danger"></button>&nbsp;&nbsp;
-    <button (click)="showDialog()"  pButton type="button" label="ინვ. შებრუნება" class="ui-button-raised"></button> &nbsp;&nbsp;
+    <button (click)="showDialog()"  pButton type="button" label="ინვ. შებრუნება" class="ui-button-raised" *ngIf="inOut ==='out'"></button> &nbsp;&nbsp;
+    <button (click)="showDialog1()"  pButton type="button" label="ინვ. საწყობში დაბრუნება" class="ui-button-raised" *ngIf="inOut ==='in'"></button> &nbsp;&nbsp;
+    <!--button (click)="showDialog2()"  pButton type="button" label="ინვ. შებრუნება" class="ui-button-raised" *ngIf="inOut ==='in'"></button--> &nbsp;&nbsp;
     <button (click)="inventoryToBuildingDialog()" *ngIf="distributed" pButton type="button" label="ინვ. მოძრაობა შენობებს შორის" class="ui-button-raised"></button>&nbsp;&nbsp;
     <button  pButton icon="pi pi-search" label="ძებნა" class="ui-button-raised" (click)="inventorSearch()" *ngIf="searchBox !== true"></button>&nbsp;&nbsp;&nbsp;&nbsp;
     <span class="cart">
@@ -250,8 +252,8 @@
           <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedSection')?'1px solid red': '' }" [options]="stockList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="inventorReturnModel.selectedSection"  (ngModelChange)="getTransferProperty()"  ></p-dropdown>
         </div>
         <div class="ui-g-12 ui-md-6">
-          <p>ქონების მართვა</p>
-          <p-dropdown   [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }" [options]="propertyData" optionLabel="fullname" placeholder="ქონების მართვა" [(ngModel)]="inventorReturnModel.selectedProperty" ></p-dropdown>
+          <p>საწყობის მართვა</p>
+          <p-dropdown   [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }" [options]="propertyData" optionLabel="fullname" placeholder="საწყობის მართვა" [(ngModel)]="inventorReturnModel.selectedProperty" ></p-dropdown>
         </div>
         <div class="ui-g-12 ui-md-6">
           <p>ტრანსპორტ. პასხ. პირი:</p>
@@ -285,43 +287,104 @@
     <button type="button" pButton icon="pi pi-close" (click)="display=false" label="დახურვა" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>
-<p-dialog header=" "
-         *ngIf="cartDialogShow" [(visible)]="cartDialogShow" [modal]="true" [responsive]="true" [style]="{width: '850px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
-  <div style="width: 100%;height: 500px;">
-    <app-cart-button (removeCartItem)="removeCartItem()"></app-cart-button>
-    <app-cart style="position: relative; top:30px;"  [data]="cartItemsData" (removeCartItem)="removeCartItem()" ></app-cart>
-  </div>
-</p-dialog>
-<p-dialog header="ინვენტარის მოძრაობა შენობებს შორის" *ngIf="inventoryToBuildingDialogShow" [(visible)]="inventoryToBuildingDialogShow" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500"
+<p-dialog header="ინვენტარის საწყობში დაბრუნება" *ngIf="display1" [(visible)]="display1" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+  <div style="width: 100%;height: 500px;" *ngIf="inventorReturnModel.inventarReturnGenerator">
+    <app-generator [transferToSection]="inventorReturnModel" name="თანამშრომლის გასავლის ელ. ზედდებული" ></app-generator>
+  </div>
+  <div style="width: 100%;height: 500px;" *ngIf="!inventorReturnModel.inventarReturnGenerator">
+    <div class="ui-g ui-fluid">
+      <div class="ui-g-12 ui-md-8">
+        <div class="ui-g-12 ui-md-6">
+          <p>თარიღი</p>
+          <!--p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="inventorReturnModel.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar-->
+          <form class="form-inline">
+            <div class="form-group">
+              <div class="input-group">
+                <input class="form-control" [minDate]="minDate"  placeholder="yyyy-mm-dd" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+                       name="dp" [(ngModel)]="inventorReturnModel.date" ngbDatepicker #d6="ngbDatepicker">
+                <div class="input-group-append">
+                  <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d6.toggle()" ></button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="ui-g-12 ui-md-6">
+          <p>სექცია</p>
+          <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedSection')?'1px solid red': '' }" [options]="stockList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="inventorReturnModel.selectedSection"  (ngModelChange)="getTransferProperty()"  ></p-dropdown>
+        </div>
+        <div class="ui-g-12 ui-md-6">
+          <p>საწყობის მართვა</p>
+          <p-dropdown   [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }" [options]="propertyData" optionLabel="fullname" placeholder="საწყობის მართვა" [(ngModel)]="inventorReturnModel.selectedProperty" ></p-dropdown>
+        </div>
+        <div class="ui-g-12 ui-md-6">
+          <p>ტრანსპორტ. პასხ. პირი:</p>
+          <p-autoComplete [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }"  [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorReturnModel.selectedCarrier"
+                          [minLength]="1" placeholder=""  field="fname" [dropdown]="false">
+            <ng-template let-brand pTemplate="item">
+              <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                <div style="font-size:12px;">{{brand['position']}}</div>
+              </div>
+            </ng-template>
+          </p-autoComplete>
+        </div>
+      </div>
+
+      <div class="ui-g-12 ui-md-4">
+        <p>კომენტარი</p>
+        <textarea pInputTextarea placeholder="შენიშვნა" [(ngModel)]="inventorReturnModel.note" rows="5"></textarea>
+      </div>
+      <app-cart [data]="cartItemsData" (checker)="checker($event)"></app-cart>
+    </div>
+  </div>
+  <p-footer>
+    <app-cart-button (removeCartItem)="removeCartItem()"></app-cart-button>
+    <button style="position: absolute; left: 230px" pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
+    <span style="width: 20px; margin-right: 20px" *ngIf="inventorReturnModel.inventarReturnGenerator">
+      ბოლო კოდი - {{lastCode}}
+    </span>
+    <button type="button" pButton icon="pi pi-check"  *ngIf="!inventorReturnModel.inventarReturnGenerator"(click)="generateInventarReturn1()" label="ზედდებულის გენერაცია"></button>
+    <button type="button" pButton icon="pi pi-check"  *ngIf="inventorReturnModel.inventarReturnGenerator" (click)="activateInventarReturn1()" label="ზედდებულის გააქტიურება"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="display=false" label="დახურვა" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+
+
+<p-dialog header="ინვენტარის გაცემა" *ngIf="inventoryToBuildingDialogShow" [(visible)]="inventoryToBuildingDialogShow" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500"
+          [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+  <p-header>
+  </p-header>
   <div style="width: 100%;height: 500px;" *ngIf="inventorTransfer.generator">
-    <app-generator [transferToSection]="inventorTransfer" name="ქონების მართვის გასავლის ელ. ზედდებული" ></app-generator>
+    <app-generator [transferToSection]="inventorTransfer" name="ქონების მართვის გასავლის ელ.ზედდებული" ></app-generator>
   </div>
   <div style="width: 100%;height: 500px;" *ngIf="!inventorTransfer.generator">
     <p-tabView (onChange)="onTabChange($event)" >
-      <p-tabPanel header="შენობა " [selected]="true" >
+      <p-tabPanel header="შენობა" [selected]="true" >
         <div class="ui-g ui-fluid" >
           <div class="ui-g-12 ui-md-8">
             <div class="ui-g-12 ui-md-6">
               <p>თარიღი</p>
-              <!--p-calendar [minDate]="minDate"  dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar-->
+              <!--p-calendar [minDate]="minDate" dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar-->
               <form class="form-inline">
                 <div class="form-group">
                   <div class="input-group">
                     <input class="form-control" [minDate]="minDate"  placeholder="yyyy-mm-dd" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
-                           name="dp" [(ngModel)]="inventorTransfer.date" ngbDatepicker #d3="ngbDatepicker">
+                           name="dp" [(ngModel)]="inventorTransfer.date" ngbDatepicker #d="ngbDatepicker">
                     <div class="input-group-append">
-                      <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d3.toggle()" ></button>
+                      <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d.toggle()" ></button>
                     </div>
                   </div>
                 </div>
               </form>
+
             </div>
 
             <div class="ui-g-12 ui-md-6">
               <p>ქონების მართვა</p>
-              <p-autoComplete [suggestions]="propertyList" (completeMethod)="filterPropertyList($event)"[size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
-                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+              <p-autoComplete [dropdown]="true"  [(ngModel)]="inventorTransfer.selectedProperty"  (completeMethod)="filterPropertyList($event)"  [suggestions]="propertyList" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" field="fname" type="marker"  [size]="30"
+                              placeholder="" [minLength]="1" (ngModelChange)="onKeyUpProperty($event)" >
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -329,12 +392,17 @@
                   </div>
                 </ng-template>
               </p-autoComplete>
+
+
+
+
+
             </div>
 
             <div class="ui-g-12 ui-md-6">
               <p>მომთხოვნი პიროვნება</p>
-              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedRequestPerson"
-                              [minLength]="1" placeholder=""  field="fname" [dropdown]="false"  [ngClass]="{ 'red':if_error(formErrors,'selectedRequestPerson')?'1px solid red': '' }">
+              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="false"  [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
                 <ng-template let-brand pTemplate="item">
                   <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
@@ -360,6 +428,149 @@
           <div class="ui-g-12 ui-md-4">
             <p>კომენტარი</p>
             <textarea pInputTextarea placeholder="შენიშვნა" rows="5" [(ngModel)]="inventorTransfer.note" [ngClass]="{ 'red':if_error(formErrors,'note')?'1px solid red': '' }"></textarea>
+          </div>
+        </div>
+      </p-tabPanel>
+      <!--p-tabPanel header="პიროვნება" >
+        <div class="ui-g ui-fluid" >
+          <div class="ui-g-12 ui-md-8">
+            <div class="ui-g-12 ui-md-6">
+              <p>თარიღი</p>
+              <form class="form-inline">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input class="form-control" [minDate]="minDate" placeholder="yyyy-mm-dd" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+                           name="dp" [(ngModel)]="inventorTransfer.date" ngbDatepicker #d1="ngbDatepicker">
+                    <div class="input-group-append">
+                      <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d1.toggle()" ></button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div class="ui-g-12 ui-md-6">
+              <p>პიროვნება</p>
+              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedPerson"
+                              (onSelect)="selectPerson($event)" [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedPerson')?'1px solid red': '' }">
+                <ng-template let-brand pTemplate="item">
+                  <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                    <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                    <div style="font-size:12px;">{{brand['position']}}</div>
+                  </div>
+                </ng-template>
+              </p-autoComplete>
+              <span>{{location}}</span>
+            </div>
+            <div class="ui-g-12 ui-md-6">
+              <p>სექცია</p>
+              <p-dropdown [disabled]="!inventorTransfer.selectedPerson" [options]="roomsList" optionLabel="name" placeholder="აირჩიეთ სექცია" [(ngModel)]="inventorTransfer.selectedSection" [ngClass]="{ 'red':if_error(formErrors,'selectedSection')?'1px solid red': '' }" ></p-dropdown>
+            </div>
+            <div class="ui-g-12 ui-md-6">
+              <p>ტრანსპორტ. პასხ. პირი:</p>
+              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedCarrier"
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedCarrier')?'1px solid red': '' }">
+                <ng-template let-brand pTemplate="item">
+                  <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                    <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                    <div style="font-size:12px;">{{brand['position']}}</div>
+                  </div>
+                </ng-template>
+              </p-autoComplete>
+            </div>
+            <div class="ui-g-12 ui-md-6">
+              <p>კომენტარი</p>
+              <textarea pInputTextarea placeholder="შენიშვნა" rows="1" [(ngModel)]="inventorTransfer.note"></textarea>
+            </div>
+
+          </div>
+          <div class="ui-g-12 ui-md-4">
+            <div class="ui-g-12 ui-md-12">
+              <p>ქონების მართვა</p>
+              <p-autoComplete [suggestions]="propertyList" (completeMethod)="filterPropertyList($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                <ng-template let-brand pTemplate="item">
+                  <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                    <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                    <div style="font-size:12px;">{{brand['position']}}</div>
+                  </div>
+                </ng-template>
+              </p-autoComplete>
+            </div>
+            <div class="ui-g-12 ui-md-12">
+              <p>მომთხოვნი პიროვნება</p>
+              <p-autoComplete [suggestions]="staffList" (completeMethod)="filterStaff($event)" [size]="30" [(ngModel)]="inventorTransfer.selectedRequestPerson"
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="false" [ngClass]="{ 'red':if_error(formErrors,'selectedRequestPerson')?'1px solid red': '' }">
+                <ng-template let-brand pTemplate="item">
+                  <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                    <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                    <div style="font-size:12px;">{{brand['position']}}</div>
+                  </div>
+                </ng-template>
+              </p-autoComplete>
+            </div>
+
+          </div>
+        </div>
+      </p-tabPanel-->
+    </p-tabView>
+    <app-cart [data]="cartItemsData" (checker)="checker($event)"></app-cart>
+  </div>
+  <p-footer>
+    <button style="position: absolute; left: 230px" pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
+    <app-cart-button (removeCartItem)="removeCartItem()"></app-cart-button>
+    <span style="width: 20px; margin-right: 20px" *ngIf="inventorTransfer.generator">
+      ბოლო კოდი - {{lastCode}}
+    </span>
+    <button type="button" pButton icon="pi pi-check"  *ngIf="!inventorTransfer.generator" (click)="generaTeInventorTransfer()" label="ზედდებულის გენერაცია"></button>
+    <button type="button" pButton icon="pi pi-check"  *ngIf="inventorTransfer.generator"  (click)="activeInventorTransfer()" label="ზედდებულის გააქტიურება"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="inventoryToBuildingDialogShow=false" label="დახურვა" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+<p-dialog header=" "
+         *ngIf="cartDialogShow" [(visible)]="cartDialogShow" [modal]="true" [responsive]="true" [style]="{width: '850px', minWidth: '200px'}" [minY]="500" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+  <div style="width: 100%;height: 500px;">
+    <app-cart-button (removeCartItem)="removeCartItem()"></app-cart-button>
+    <app-cart style="position: relative; top:30px;"  [data]="cartItemsData" (removeCartItem)="removeCartItem()" ></app-cart>
+  </div>
+</p-dialog>
+<p-dialog header="ინვენტარის საწყობში დაბრუნება" *ngIf="inventoryToBuildingDialogShow1" [(visible)]="inventoryToBuildingDialogShow1" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500"
+          [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+  <div style="width: 100%;height: 500px;" *ngIf="inventorTransfer.generator">
+    <app-generator [transferToSection]="inventorTransfer" name="ქონების მართვის გასავლის ელ. ზედდებული" ></app-generator>
+  </div>
+  <div style="width: 100%;height: 500px;" *ngIf="!inventorTransfer.generator">
+    <p-tabView (onChange)="onTabChange($event)" >
+      <p-tabPanel header=" " [selected]="true" >
+        <div class="ui-g ui-fluid" >
+          <div class="ui-g-12 ui-md-8">
+            <div class="ui-g-12 ui-md-6">
+              <p>თარიღი</p>
+              <!--p-calendar [minDate]="minDate"  dateFormat="dd-mm-yy" [(ngModel)]="inventorTransfer.date" [showIcon]="true" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar-->
+              <form class="form-inline">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input class="form-control" [minDate]="minDate"  placeholder="yyyy-mm-dd" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+                           name="dp" [(ngModel)]="inventorTransfer.date" ngbDatepicker #d3="ngbDatepicker">
+                    <div class="input-group-append">
+                      <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d3.toggle()" ></button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="ui-g-12 ui-md-6">
+              <p>ქონების მართვა</p>
+              <p-autoComplete [suggestions]="propertyList" (completeMethod)="filterPropertyList($event)"[size]="30" [(ngModel)]="inventorTransfer.selectedProperty"
+                              [minLength]="1" placeholder=""  field="fname" [dropdown]="true" [ngClass]="{ 'red':if_error(formErrors,'selectedProperty')?'1px solid red': '' }">
+                <ng-template let-brand pTemplate="item">
+                  <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                    <div style="font-size:14px;font-weight: bold">{{brand['fname']}}</div>
+                    <div style="font-size:12px;">{{brand['position']}}</div>
+                  </div>
+                </ng-template>
+              </p-autoComplete>
+            </div>
           </div>
         </div>
       </p-tabPanel>
@@ -452,8 +663,8 @@
     <span style="width: 20px; margin-right: 20px" *ngIf="inventorTransfer.generator">
       ბოლო კოდი - {{lastCode}}
     </span>
-    <button type="button" pButton icon="pi pi-check"  *ngIf="!inventorTransfer.generator" (click)="generaTeInventorTransfer()" label="ზედდებულის გენერაცია"></button>
-    <button type="button" pButton icon="pi pi-check"  *ngIf="inventorTransfer.generator"  (click)="activeInventorTransfer()" label="ზედდებულის გააქტიურება"></button>
+    <button type="button" pButton icon="pi pi-check"  *ngIf="!inventorTransfer.generator" (click)="generaTeInventorTransfer1()" label="ზედდებულის გენერაცია"></button>
+    <button type="button" pButton icon="pi pi-check"  *ngIf="inventorTransfer.generator"  (click)="activeInventorTransfer1()" label="ზედდებულის გააქტიურება"></button>
     <button type="button" pButton icon="pi pi-close" (click)="inventoryToBuildingDialogShow=false" label="დახურვა" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>

@@ -74,8 +74,10 @@ export class PropertyComponent implements OnInit {
 
   propertyList: Array<any> = [];
   private location: any='';
+  private display1: boolean =false;
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService, private Request: RequestService) {
     this.Request.error$.subscribe((err) => {
+      console.log(err)
       this.error('შეცდომა', err['error']);
     });
     this.getCartItems();
@@ -619,6 +621,7 @@ export class PropertyComponent implements OnInit {
   public minDate: NgbDateStruct = { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())} ;
   filesDialog: boolean = false;
   dialogName: any =  'ელექტრონული ზედდებული №';
+  inventoryToBuildingDialogShow1: boolean = false;
   //public searchBox: boolean = true;
   //public filter: Filter = {};
   static inCart(inCard) {
@@ -950,6 +953,23 @@ export class PropertyComponent implements OnInit {
       });
 
   }
+  showDialog1() {
+    this.operation.getAddonNumber({type: 'Staff/Stock/Return', subType: 'last'})
+      .then(response => {
+        if (response['status'] === 200) {
+          this.lastCode = response['data']['Right'];
+          this.uploadFiles = [];
+          this.inventorReturnModel = {
+            inventarReturnGenerator: false,
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+          };
+          this.display1 = true;
+          this.checkMinDate();
+        }
+      });
+
+  }
+
   personDialog() {
     this.operation.getAddonNumber({type: 'Person/Transfer', subType: 'last'})
       .then(response => {
@@ -1025,6 +1045,54 @@ export class PropertyComponent implements OnInit {
     }
   }
 
+
+  generateInventarReturn1() {
+    const filter = ['date', 'selectedSection', 'selectedProperty', 'selectedCarrier'];
+    this.formErrors = this.validator.checkObject(this.inventorReturnModel, filter);
+    if (this.formErrors.length === 0 && this.dataChecker) {
+      if (this.cartItemsData.length === 0) {
+        alert('კალათა ცარიელია');
+        return;
+      }
+      this.operation.getAddonNumber({type: 'Staff/Stock/Return'})
+        .then(response => {
+          if (response['status'] === 200) {
+            this.cartItemsData = this.cartItemsData.map(value => {
+              if (value['name'] === undefined || value['name'] === null) {
+                value['name'] = '';
+              }
+              return value;
+            });
+            //this.inventorReturnModel.trDate = moment(this.inventorReturnModel.date).format('DD-MM-YYYY');
+            this.inventorReturnModel.trDate = this.inventorReturnModel.date.day+"-"+this.inventorReturnModel.date.month+"-"+this.inventorReturnModel.date.year;
+            //this.inventorTransfer.trDate =this.inventorTransfer.date.day+"-"+this.inventorTransfer.date.month+"-"+this.inventorTransfer.date.year; // moment().format('DD-MM-YYYY');
+            this.inventorReturnModel.addon = response['data'];
+            this.inventorReturnModel.inventarReturnGenerator = true;
+            this.inventorReturnModel.toStock = this.inventorReturnModel.selectedSection['id'];
+            this.inventorReturnModel.toWhomStock = this.inventorReturnModel.selectedProperty['id'];
+            this.inventorReturnModel.carrierPerson = this.inventorReturnModel.selectedCarrier['id'];
+
+            this.inventorReturnModel.listData = this.cartItemsData;
+            this.inventorReturnModel.list = this.cartItemsData.map(value => {
+              return {itemId: value['id'], amount: value['count'], list: this.notNull(value['fileList']) ? value['fileList'].toString() : ''};
+
+            });
+            this.inventorReturnModel.files = this.uploadFiles.map(value => value['id']).toString();
+
+          } else {
+            this.error('შეცდომა', response['error']);
+          }
+
+        })
+        .catch(response => {
+          this.error('შეცდომა', response['error']);
+        });
+    }
+  }
+
+
+
+
   filterPropertyList($event: any) {
     console.log($event);
     this.operation.getPropertyList($event.query)
@@ -1059,15 +1127,46 @@ export class PropertyComponent implements OnInit {
     this.operation.generateReturnInvetorInvoice(formData)
       .then(response => {
         if (response['status'] === 200) {
+          this.removeCartItem();
           this.display = false;
         } else {
           this.error('შეცდომა', response['error']);
         }
       })
       .catch(response => {
+        console.log("შეცდომა")
         this.error('შეცდომა', response['error']);
       });
   }
+
+
+  activateInventarReturn1() {
+    const formData = new FormData();
+    for (const key in this.inventorReturnModel) {
+      if (key === 'list' || key === 'listData') {
+        formData.append(key, JSON.stringify(this.inventorReturnModel[key]));
+      } else if (key === 'addon') {
+        formData.append(key, this.inventorReturnModel[key]['Right']);
+      } else {
+        formData.append(key, this.inventorReturnModel[key].toString());
+      }
+    }
+
+    this.operation.generateReturnInvetorInvoice1(formData)
+      .then(response => {
+        if (response['status'] === 200) {
+          this.removeCartItem();
+          this.display1 = false;
+        } else {
+          this.error('შეცდომა', response['error']);
+        }
+      })
+      .catch(response => {
+        console.log("შეცდომა")
+        this.error('შეცდომა', response['error']);
+      });
+  }
+
   if_error(data: Array<string>, field: string) {
     // console.log(data,field, data.indexOf(field));
     return data.indexOf(field) > -1;
@@ -1147,10 +1246,12 @@ export class PropertyComponent implements OnInit {
               return {itemId: value['id'], amount: value['count'], list: this.notNull(value['fileList']) ? value['fileList'].toString() : ''};
             });
             this.inventorTransfer.files = this.uploadFiles.map(value => value['id']).toString();
-
             this.inventorTransfer.addon = response['data'];
             this.inventorTransfer.generator = true;
-            this.inventorTransfer.requestPerson = this.inventorTransfer.selectedRequestPerson['id'];
+            console.log("test")
+
+            this.inventorTransfer.requestPerson = this.inventorTransfer.selectedPerson['id'];
+
             this.inventorTransfer.fromStock = 11;
             this.inventorTransfer.listData = this.cartItemsData;
             this.inventorTransfer.carrierPerson = this.inventorTransfer.selectedCarrier['id'];
@@ -1166,6 +1267,48 @@ export class PropertyComponent implements OnInit {
         });
     }
   }
+
+  onKeyUpProperty($event: any) {
+
+    this.filterPropertyList({query: ((typeof this.inventorTransfer.selectedProperty === 'string') ? this.inventorTransfer.selectedProperty : this.inventorTransfer.selectedProperty['name'])});
+
+  }
+  generaTeInventorTransfer1() {
+    const filter = ['date', 'selectedProperty'];
+
+    this.formErrors = this.validator.checkObject(this.inventorTransfer, filter);
+    if (this.formErrors.length === 0 && this.dataChecker) {
+      if (this.cartItemsData.length === 0) {
+        alert('კალათა ცარიელია');
+        return;
+      }
+      this.operation.getAddonNumber({type: 'Item/Staff/Return'})
+        .then(response => {
+          if (response['status'] === 200) {
+            this.cartItemsData = this.cartItemsData.map(value => {
+              if (value['name'] === undefined || value['name'] === null) {
+                value['name'] = '';
+              }
+              return value;
+            });
+            this.inventorTransfer.list = this.cartItemsData.map(value => {
+              return {itemId: value['id'], amount: value['count'], list: this.notNull(value['fileList']) ? value['fileList'].toString() : ''};
+            });
+            this.inventorTransfer.files = this.uploadFiles.map(value => value['id']).toString();
+            this.inventorTransfer.addon = response['data'];
+            this.inventorTransfer.generator = true;
+            this.inventorTransfer.listData = this.cartItemsData;
+            this.inventorTransfer.toWhomSection = this.inventorTransfer.selectedProperty['id'];
+            this.inventorTransfer.trDate =this.inventorTransfer.date.day+"-"+this.inventorTransfer.date.month+"-"+this.inventorTransfer.date.year;
+          }
+
+        })
+        .catch(response => {
+
+        });
+    }
+  }
+
   notNull(value) {
     return (value !== undefined && value !== null);
   }
@@ -1192,6 +1335,39 @@ export class PropertyComponent implements OnInit {
           this.removeCartItem();
           this.inventorTransfer.generator = false;
           this.inventoryToBuildingDialogShow = false;
+        } else {
+          this.error('შეცდომა', response['error']);
+        }
+      })
+      .catch(response => {
+        this.error('შეცდომა', response['error']);
+      });
+
+  }
+
+  activeInventorTransfer1() {
+    const formData = new FormData();
+    for (const key in this.inventorTransfer) {
+      if (key === 'list' || key === 'listData') {
+        formData.append(key, JSON.stringify(this.inventorTransfer[key]));
+      } else if (key === 'addon') {
+        formData.append(key, this.inventorTransfer[key]['Right']);
+      } else {
+        formData.append(key, this.inventorTransfer[key]);
+      }
+    }
+
+    this.operation.generateTransferToPerson(formData, 'section')
+      .then(response => {
+        if (response['status'] === 200) {
+          this.inventorTransfer = {
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+            selectedIndex: 0,
+            generator: false
+          };
+          this.removeCartItem();
+          this.inventorTransfer.generator = false;
+          this.inventoryToBuildingDialogShow1 = false;
         } else {
           this.error('შეცდომა', response['error']);
         }
@@ -1350,6 +1526,22 @@ export class PropertyComponent implements OnInit {
     } catch (e) {}
     console.log( this.filter);
 
+  }
+
+  showDialog2() {
+    this.operation.getAddonNumber({type: 'Item/Staff/Return', subType: 'last'})
+      .then(response => {
+        if (response['status'] === 200) {
+          this.lastCode = response['data']['Right'];
+          this.uploadFiles = [];
+          this.inventorReturnModel = {
+            inventarReturnGenerator: false,
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth()+1), day: (new Date().getDate())},
+          };
+          this.inventoryToBuildingDialogShow1 = true;
+          this.checkMinDate();
+        }
+      });
   }
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {

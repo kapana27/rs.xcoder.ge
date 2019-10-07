@@ -18,8 +18,8 @@
           <th width="50" rowspan="2"></th>
         </tr>
         <tr>
-          <th style="font-size: 10px;">საწყობიდან გამოსვლის ზედდებული</th>
-          <th style="font-size: 10px;">ქონების მართვის შემოსავლის ზედდებული</th>
+          <th style="font-size: 10px;">გასავლის ზედდებული</th>
+          <th style="font-size: 10px;">შემოსავლის ზედდებული</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-d let-i="rowIndex">
@@ -27,8 +27,8 @@
         <tr [pSelectableRow]="d" [ngClass]="{ 'gray': (params.approved===0 && d['newOne']===1)}">
           <td>{{i+params.start +1}}</td>
 
-          <td>{{d['id']}}</td>
-          <td>{{d['id']}}</td>
+          <td>{{types[d['operationType']]}} - {{d['id']}}</td>
+          <td>{{types[d['toOperationType']]}} - {{+d['id']}}</td>
           <td>{{d['date']}}</td>
           <td><i class="pi pi-download"   *ngIf="d['attachment']>0" (click)="download(d)"></i></td>
 

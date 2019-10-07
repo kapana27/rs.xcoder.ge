@@ -56,7 +56,7 @@ export class RequestService {
           }
         })
         .catch(reason => {
-          this.error(reason);
+          this.error(reason.error);
         });
     });
   }
@@ -69,7 +69,8 @@ export class RequestService {
           resolve(response);
         })
         .catch(reason => {
-          resolve(reason);
+          console.log(reason.error)
+          resolve(reason.error);
         });
     });
   }

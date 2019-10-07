@@ -72,6 +72,7 @@ export  const Config = {
         addon: '/api/secured/Item/Addon',
         invoice: '/api/secured/Item/Stock/Change',
         return: '/api/secured/Item/Stock/Return',
+        invReturn: '/api/secured/Item/Staff/Stock/Return',
         section: '/api/secured/Item/Section/Transfer',
         structuralUnit: '/api/secured/StructuralUnit/Insert/Row',
         employee: '/api/secured/Staff/Insert',

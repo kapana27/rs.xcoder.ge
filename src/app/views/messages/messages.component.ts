@@ -33,7 +33,17 @@ export class MessagesComponent implements OnInit {
   selectedCar3: any;
   msgs: Message[] = [];
   selectedPage: string = 'standart';
-
+  types = {
+    'WI': 'ს.შ',
+    'WW': 'ს.შ',
+    'WS': 'ს.შ',
+    'PS': 'ქ.გ',
+    'PP': 'ქ.გ',
+    'PW': 'ქ.გ',
+    'SW': 'თ.გ',
+    'SI': 'თ.შ',
+    'PI': 'ქ.შ'
+  };
   constructor(private messageService: MessagesService, private confirmationService: ConfirmationService, private operationService: OperationsService) { }
   ngOnInit() {
     this.items1 = [

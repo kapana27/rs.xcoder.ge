@@ -97,6 +97,11 @@ export class OperationsService {
   generateReturnInvetorInvoice(formData) {
     return this.Request.Post(Config.baseURI + Config.List.post.return, formData);
   }
+
+  generateReturnInvetorInvoice1(formData) {
+    return this.Request.Post(Config.baseURI + Config.List.post.invReturn, formData);
+  }
+
   generateTransferToPerson(formData, type) {
     console.log(type);
     return this.Request.Post(Config.baseURI + Config.transfer.post[type], formData);
