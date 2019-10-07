@@ -145,7 +145,6 @@ export class WarehouseComponent implements OnInit {
   inventorTransfer: InventorTransfer = {
     selectedIndex: 0,
     generator: false,
-    roomId: 89,
     selectedProperty: {
       name: ''
     }
@@ -176,6 +175,40 @@ export class WarehouseComponent implements OnInit {
    public disabledFields: any[] = [];
   private onKeyUpMakerTimeout: boolean = true;
   private location: any = '';
+  selectedCities: boolean = false;
+  selectedCheckbox: Array<boolean> = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
+  selecteddates: Array<{year, month, day}> = [
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+    {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()}
+  ];
    changeLanguage(lang) {
       // this.lgService.changeLanguage(lang);
    }
@@ -628,7 +661,6 @@ export class WarehouseComponent implements OnInit {
           date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
           selectedIndex: 0,
           generator: false,
-          roomId: 89,
           selectedProperty: {
             name: ''
           }
@@ -1371,22 +1403,25 @@ console.log(this.newInventor);
   }
   filterBrands($event: any) {}
   generaTeInventorTransfer() {
-    console.log(this.inventorTransfer);
     const filter = ['date', 'selectedProperty', 'selectedPerson', 'selectedCarrier'];
     if (this.inventorTransfer.selectedIndex === 1) {
-       filter.push('selectedSection');
+       //filter.push('selectedSection');
        filter.push('selectedRequestPerson');
     }
     this.formErrors = this.validator.checkObject(this.inventorTransfer, filter);
 
     if (this.formErrors.length === 0 && this.dataChecker) {
+
       if (this.cartItemsData.length === 0) {
         alert('კალათა ცარიელია');
         return;
       }
+
+
       this.operation.getAddonNumber({type: 'Stock/Transfer'})
         .then(response => {
           if (response['status'] === 200) {
+
             this.addon = response['data'];
 
             this.cartItemsData = this.cartItemsData.map(value => {
@@ -1399,10 +1434,13 @@ console.log(this.newInventor);
             this.inventorTransfer.addon = response['data'];
             this.inventorTransfer.generator = true;
             this.inventorTransfer.trDate = this.inventorTransfer.date.day + '-' + this.inventorTransfer.date.month + '-' + this.inventorTransfer.date.year; // moment().format('DD-MM-YYYY');
-
             this.inventorTransfer.fromStock = 11;
+
+            this.inventorTransfer.roomId= (this.notNull(this.inventorTransfer.selectedSection)? this.inventorTransfer.selectedSection['id']: '');
+
             this.inventorTransfer.listData = this.cartItemsData;
             this.inventorTransfer.carrierPerson = this.inventorTransfer.selectedCarrier['id'];
+
             if (this.inventorTransfer.selectedIndex === 1) {
               this.inventorTransfer.receiverPerson  = this.inventorTransfer.selectedPerson['id'];
               this.inventorTransfer.requestPerson  = this.inventorTransfer.selectedRequestPerson['id'];
@@ -1410,17 +1448,16 @@ console.log(this.newInventor);
               this.inventorTransfer.requestPerson = this.inventorTransfer.selectedPerson['id'];
             }
             this.inventorTransfer.toWhomSection = this.inventorTransfer.selectedProperty['id'];
-
             this.inventorTransfer.list = this.cartItemsData.map(value => {
               return {itemId: value['id'], amount: value['count'], list: this.notNull(value['fileList']) ? value['fileList'].toString() : ''};
             });
              this.inventorTransfer.files = this.uploadFiles.map(value => value['id']).toString();
-          } else {
-            this.error('შეცდომა', response['error']);
+
+
           }
         })
         .catch(response => {
-          this.error('შეცდომა', response['error']);
+         // this.error('შეცდომა', response['error']);
         });
     }
   }
@@ -1435,6 +1472,7 @@ console.log(this.newInventor);
         formData.append(key, this.inventorTransfer[key]);
       }
     }
+    console.log(this.inventorTransfer)
 
     this.operation.generateTransferToPerson(formData, 'transfer')
       .then(response => {
@@ -1772,6 +1810,39 @@ console.log(this.newInventor);
 
   zednadebiDialog() {
     this.zednadebiDialogShow = true;
+    this.selectedCheckbox = [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ];
+    this.selecteddates = [
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()},
+      {year:(new Date()).getFullYear(), month:(new Date()).getMonth()+1, day:(new Date()).getDate()}
+    ];
   }
 
   onKeyUpModel($event: any) {
@@ -1812,6 +1883,10 @@ console.log(this.newInventor);
     } catch (e) {}
        console.log( this.filter);
 
+  }
+
+  selectCities() {
+      console.log(this.selectedCities)
   }
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {

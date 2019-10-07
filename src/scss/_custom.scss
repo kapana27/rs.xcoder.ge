@@ -37,9 +37,25 @@ app-header{
   }
 }
 
-.sidebar .nav-link {
-  padding: 0.40rem 1rem;
-  font-size: 12px;
+
+.sidebar {
+  .nav-link {
+    padding: 0.40rem 1rem;
+    font-size: 12px;
+  }
+  .nav-dropdown-items {
+
+    a {
+      padding-left: 45px;
+      white-space: nowrap;
+      i {
+        display: none !important;
+      }
+    }
+  }
+  .nav-dropdown-toggle::before {
+    right: 2.5rem;
+  }
 }
 
 .zednadebisheaderi {

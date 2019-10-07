@@ -8,11 +8,13 @@
     <button style="width: 120px" pButton icon="pi pi-plus"  label="ინვ. მიღება" class="ui-button-raised" (click)="inventorDialog()"></button> &nbsp; &nbsp;
     <button style="width: 120px" pButton icon="pi pi-plus"  label="ზედ. მიღება" class="ui-button-raised" (click)="zednadebiDialog()"></button> &nbsp; &nbsp;
     <button style="width: 120px" pButton icon="pi pi-pencil" label="რედაქტირება" class="ui-button-raised" (click)="inventorEditDialog()"></button>&nbsp;&nbsp;&nbsp;
-    <button style="width: 120px" pButton icon="pi pi-search" label="ძებნა" class="ui-button-raised" (click)="inventorSearch()" *ngIf="searchBox !== true"></button>
   </div>
   <div class="buttonBox">
     <button (click)="inventoryToBuildingDialog()" pButton type="button" label="ინვენტარის გაცემა" icon="pi pi-arrow-up" class="ui-button-danger"></button> &nbsp;&nbsp;
     <button (click)="showDialog()" pButton type="button" label="მოძრაობა A-B" class="ui-button-raised arrow-icon"></button>&nbsp;&nbsp;
+    <button style="width: 120px" pButton icon="pi pi-search" label="ძებნა" class="ui-button-raised" (click)="inventorSearch()" *ngIf="searchBox !== true"></button>
+    &nbsp;&nbsp;
+
     <span class="cart">
       <fa-icon [icon]="faCartPlus"  (click)="cartDialog()" size="2x"  ></fa-icon>
       {{this.cartItems.length}}
@@ -168,7 +170,7 @@
 <p-dialog header="ინვენტარის მოძრაობა სექციებს შორის" *ngIf="display" [(visible)]="display" [modal]="true" [responsive]="true" [style]="{width: '900px', minWidth: '200px'}" [minY]="500"
           [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
   <div style="width: 100%;height: 500px;" *ngIf="transferToSectionInvoiceGenerator">
-    <app-generator  (onChangeAddon)="changeAddon($event)" [transferToSection]="transferToSection"  [name]="dialogName"></app-generator>
+    <app-generator  (onChangeAddon)="changeAddon($event)" [transferToSection]="transferToSection"  name="საწყობიდან გასავლის ელ. ზედდებული"></app-generator>
   </div>
   <div style="width: 100%;height: 500px;" *ngIf="!transferToSectionInvoiceGenerator">
     <div class="ui-g ui-fluid">
@@ -842,131 +844,142 @@
 
   <div class="invred_box" style="min-height: 400px">
     <div class="ui-g ui-fluid">
-      <div class="ui-g-12 ui-md-3" >
-        <p>ზედნადების ტიპი</p>
-        <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;" >
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>გამყიდველის პირადი ნომერი</p>
-        <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;" >
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>სტატუსები</p>
-        <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;" >
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>მანქანის ნომერი</p>
-        <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;" >
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>დაწყების თარიღი</p>
-        <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;" >
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>დაწყების თარიღი შუალედის დასასრული</p>
-        <form class="form-inline">
-          <div class="form-group" style="width: 100%">
-            <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d20="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
-              <div class="input-group-append">
-                <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d20.toggle()" ></button>
+      <div class="ui-g-12 ui-md-10">
+        <div class="ui-g-12 ui-md-6">
+          <div class="ui-g-12 ui-md-12" >
+            <p-checkbox label="შექმნის თარიღი" [(ngModel)]="selectedCheckbox[6]" binary="true"></p-checkbox>
+            <form class="form-inline" *ngIf="selectedCheckbox[6]">
+              <div class="form-group" style="width: 100%">
+                <div class="input-group">
+                  <input class="form-control" placeholder=""  name="dp" [(ngModel)]="selecteddates[2]" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+                  <div class="input-group-append">
+                    <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
+                  </div>
+                </div>
               </div>
-            </div>
+            </form>
+            <form class="form-inline" *ngIf="selectedCheckbox[6]">
+              <div class="form-group" style="width: 100%">
+                <div class="input-group">
+                  <input class="form-control" placeholder=""  name="dp" [(ngModel)]="selecteddates[3]" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+                  <div class="input-group-append">
+                    <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
+                  </div>
+                </div>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
+          <div class="ui-g-12 ui-md-12" >
+            <p-checkbox label="ტრანსპ. თარიღი" [(ngModel)]="selectedCheckbox[4]" binary="true"></p-checkbox>
+            <form class="form-inline" *ngIf="selectedCheckbox[4]">
+              <div class="form-group" style="width: 100%">
+                <div class="input-group">
+                  <input class="form-control" placeholder=""  name="dp" [(ngModel)]="selecteddates[0]" ngbDatepicker #d21="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+                  <div class="input-group-append">
+                    <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d21.toggle()" ></button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <form class="form-inline" *ngIf="selectedCheckbox[4]">
+              <div class="form-group" style="width: 100%">
+                <div class="input-group">
+                  <input class="form-control" placeholder=""  name="dp" [(ngModel)]="selecteddates[1]" ngbDatepicker #d20="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+                  <div class="input-group-append">
+                    <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d20.toggle()" ></button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="ui-g-12 ui-md-12" >
+            <p-checkbox label="მიტანის თარიღი" [(ngModel)]="selectedCheckbox[9]" binary="true"></p-checkbox>
+            <form class="form-inline" *ngIf="selectedCheckbox[9]">
+              <div class="form-group" style="width: 100%">
+                <div class="input-group">
+                  <input class="form-control" placeholder=""  name="dp" [(ngModel)]="selecteddates[4]" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+                  <div class="input-group-append">
+                    <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <form class="form-inline" *ngIf="selectedCheckbox[9]">
+              <div class="form-group" style="width: 100%">
+                <div class="input-group">
+                  <input class="form-control" placeholder=""  name="dp" [(ngModel)]="selecteddates[5]" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+                  <div class="input-group-append">
+                    <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="ui-g-12 ui-md-12" >
+            <p-checkbox label="დახურვის თარიღი" [(ngModel)]="selectedCheckbox[13]" binary="true"></p-checkbox>
+            <form class="form-inline" *ngIf="selectedCheckbox[13]">
+              <div class="form-group" style="width: 100%">
+                <div class="input-group">
+                  <input class="form-control" placeholder=""  name="dp" [(ngModel)]="selecteddates[6]" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+                  <div class="input-group-append">
+                    <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <form class="form-inline" *ngIf="selectedCheckbox[13]">
+              <div class="form-group" style="width: 100%">
+                <div class="input-group">
+                  <input class="form-control" placeholder=""  name="dp" [(ngModel)]="selecteddates[7]" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
+                  <div class="input-group-append">
+                    <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="ui-g-12 ui-md-12" >
+            <p-checkbox label="კომენტარი" [(ngModel)]="selectedCheckbox[11]" binary="true"></p-checkbox>
+            <input type="text" pInputText placeholder="" *ngIf="selectedCheckbox[11]" style="width: 100%; height: 33px;"/>
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-6">
+          <div class="ui-g-12 ui-md-12" >
+            <p-checkbox label="მძღოლის პირადი #" [(ngModel)]="selectedCheckbox[8]" binary="true"></p-checkbox>
+            <input type="text" pInputText placeholder="" *ngIf="selectedCheckbox[8]" style="width: 100%; height: 33px;" >
+          </div>
 
-      <div class="ui-g-12 ui-md-3" >
-        <p>შექმნის თარიღი შუალედის დასაწყისი</p>
-        <form class="form-inline">
-          <div class="form-group" style="width: 100%">
-            <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
-              <div class="input-group-append">
-                <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
-              </div>
-            </div>
+          <div class="ui-g-12 ui-md-12" >
+            <p-checkbox label="მანქანის #" [(ngModel)]="selectedCheckbox[3]" binary="true"></p-checkbox>
+            <input type="text" pInputText placeholder="" *ngIf="selectedCheckbox[3]" style="width: 100%; height: 33px;"/>
           </div>
-        </form>
-      </div>
 
-      <div class="ui-g-12 ui-md-3" >
-        <p>შექმნის თარიღი შუალედის დასასრული</p>
-        <form class="form-inline">
-          <div class="form-group" style="width: 100%">
-            <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
-              <div class="input-group-append">
-                <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
-              </div>
-            </div>
+          <div class="ui-g-12 ui-md-12" >
+            <p-checkbox label="მიმწ-ის საიდ.კოდი" [(ngModel)]="selectedCheckbox[0]" binary="true"></p-checkbox>
+            <input type="text" pInputText placeholder="" *ngIf="selectedCheckbox[0]" style="width: 100%; height: 33px;"/>
           </div>
-        </form>
-      </div>
 
-      <div class="ui-g-12 ui-md-3" >
-        <p>მძღოლის პირადი ნომერი</p>
-        <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;" >
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>მიტანის თარიღი შუალედის დასაწყისი</p>
-        <form class="form-inline">
-          <div class="form-group" style="width: 100%">
-            <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
-              <div class="input-group-append">
-                <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
-              </div>
-            </div>
+          <div class="ui-g-12 ui-md-12" >
+            <p-checkbox label="ზედნადების #" [(ngModel)]="selectedCheckbox[12]" binary="true"></p-checkbox>
+            <input type="text" pInputText placeholder="" *ngIf="selectedCheckbox[12]" style="width: 100%; height: 33px;" >
           </div>
-        </form>
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>მიტანის თარიღი შუალედის დასასრული</p>
-        <form class="form-inline">
-          <div class="form-group" style="width: 100%">
-            <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
-              <div class="input-group-append">
-                <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
-              </div>
-            </div>
+
+          <div class="ui-g-12 ui-md-12" >
+            <p-checkbox label="ზედდებულის თანხა" [(ngModel)]="selectedCheckbox[2]" binary="true"></p-checkbox>
+            <input type="text" pInputText placeholder="" *ngIf="selectedCheckbox[2]" style="width: 100%; height: 33px;"/>
           </div>
-        </form>
+        </div>
+
+
       </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>მთლიანი თანხა</p>
-        <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;" >
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>ზედნადების ნომერი</p>
-        <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;" >
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>დახურვის თარიღი შუალედის დასაწყისი</p>
-        <form class="form-inline">
-          <div class="form-group" style="width: 100%">
-            <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
-              <div class="input-group-append">
-                <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="ui-g-12 ui-md-3" >
-        <p>დახურვის თარიღი შუალედის დასასრული</p>
-        <form class="form-inline">
-          <div class="form-group" style="width: 100%">
-            <div class="input-group">
-              <input class="form-control" placeholder=""  name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d8="ngbDatepicker" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}">
-              <div class="input-group-append">
-                <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d8.toggle()" ></button>
-              </div>
-            </div>
-          </div>
-        </form>
+      <div class="ui-g-12 ui-md-2">
+        <h6>ზედნადების ტიპები</h6>
+        <p-checkbox label="შიდა გადაზიდვა"  binary="true"></p-checkbox>
+        <p-checkbox label="ტრანსპორტირებით"  binary="true"></p-checkbox>
+        <p-checkbox label="ტრანსპ.ს გარეშე"  binary="true"></p-checkbox>
+        <p-checkbox label="დისტრიბუცია"  binary="true"></p-checkbox>
+        <p-checkbox label="უკან დაბრუნება"  binary="true"></p-checkbox>
+        <p-checkbox label="ქვეზედნადები"  binary="true"></p-checkbox>
       </div>
     </div>
   </div>

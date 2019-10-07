@@ -38,7 +38,7 @@ export class ReportTableComponent implements OnInit {
     dateFrom : { year: (new Date(moment().day(-6).toDate())).getFullYear(), month: (new Date(moment().day(-6).toDate())).getMonth() + 1, day: (new Date(moment().day(-6).toDate())).getDate()},
     dateTo: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())}
   };
-  private excelUrl: string='';
+  public excelUrl: string = '';
 
   constructor(private Request: RequestService) {
 

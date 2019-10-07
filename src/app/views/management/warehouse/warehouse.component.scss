@@ -160,8 +160,33 @@
     position: relative;
   }
 
-  .invred_box p, .invred_box table {
-    white-space:nowrap;
+  .invred_box {
+    table {
+      white-space:nowrap;
+    }
+    p {
+      white-space:nowrap;
+    }
+    p-checkbox {
+      display: inline-block;
+      width: 170px;
+    }
+    input {
+      margin-top: 8px;
+      max-width: 211px;
+      padding: 0 10px;
+    }
+    form {
+      display: inline-block;
+      width: 125px;
+      input {
+        font-size: 12px;
+      }
+      button {
+        margin-top: 8px;
+      }
+    }
+
   }
 
   button, p-tabmenu ul li a {

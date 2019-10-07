@@ -18,7 +18,7 @@ export interface InventorTransfer {
   selectedIndex?: number;
   generator?: boolean;
   addon?: number,
-  roomId?: number,
+  roomId?: any,
   receiverPerson?: number,
   selectedRequestPerson?:number,
   files?:any
