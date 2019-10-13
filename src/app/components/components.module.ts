@@ -36,6 +36,8 @@ import { TableComponent } from './table/table.component';
 import { DocumentTurnOverDisabledDialogComponent } from './document-turn-over-disabled-dialog/document-turn-over-disabled-dialog.component';
 import { ErrorComponent } from './error/error.component';
 import { ReportTableComponent } from './report-table/report-table.component';
+import { InventorIncomeDialogComponent } from './inventor/inventor-income-dialog/inventor-income-dialog.component';
+import { FieldsComponent } from './inventor/inventor-income-dialog/fields/fields.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +60,9 @@ import { ReportTableComponent } from './report-table/report-table.component';
       TableComponent,
       DocumentTurnOverDisabledDialogComponent,
       ErrorComponent,
-      ReportTableComponent
+      ReportTableComponent,
+      InventorIncomeDialogComponent,
+      FieldsComponent
       ],
   imports: [
     DropdownModule,
