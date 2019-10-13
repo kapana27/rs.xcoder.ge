@@ -1,4 +1,4 @@
-<app-fields></app-fields>
+<app-inventor-income-dialog  header="test" [dialog]="true"> </app-inventor-income-dialog>
 <p-confirmDialog [style]="{width: '50vw'}" modal="modal"></p-confirmDialog>
 <div class="actionButton">
   <div class="buttonBox" style="width: 150px;">
@@ -466,7 +466,7 @@
 
   <p-footer>
     <button type="button" pButton icon="pi pi-check" (click)="itemGroupDialogShow=false" label="Yes"></button>
-    <button type="button" pButton icon="pi pi-close" (click)="itemGroupDialogShow=false" label="No" class="ui-button-secondary"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="itemGroupDialogShow=false" label="No" class="ui-button-secondary"></button>ა
   </p-footer>
 </p-dialog>
 
@@ -484,7 +484,7 @@
   <div  style="width: 100%;height: 500px;" *ngIf="!frustrate && (inventorOperation==='edit' || inventorOperation ==='new')">
     <div class="ui-g ui-fluid">
       <div class="ui-g-12 ui-md-2" >
-        <p>მიღების თარიღი</p>
+        <p>მიღების თარიღი</p>ა
         <!--p-calendar [(ngModel)]="newInventor.date" dateFormat="dd-mm-yy" [showIcon]="true"  [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"></p-calendar-->
 
         <form class="form-inline">

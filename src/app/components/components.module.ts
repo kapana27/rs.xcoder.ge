@@ -18,7 +18,7 @@ import {
   TooltipModule,
   TreeTableModule,
   AutoComplete,
-  AutoCompleteModule, InputTextareaModule
+  AutoCompleteModule, InputTextareaModule, SpinnerModule
 } from 'primeng/primeng';
 import { FileUploaderComponent } from './file-uploader/file-uploader.component';
 import { AttachmentsComponent } from './attachments/attachments.component';
@@ -37,7 +37,7 @@ import { DocumentTurnOverDisabledDialogComponent } from './document-turn-over-di
 import { ErrorComponent } from './error/error.component';
 import { ReportTableComponent } from './report-table/report-table.component';
 import { InventorIncomeDialogComponent } from './inventor/inventor-income-dialog/inventor-income-dialog.component';
-import { FieldsComponent } from './inventor/inventor-income-dialog/fields/fields.component';
+import { InventorIncomeDialogFieldsComponent } from './inventor/inventor-income-dialog/inventor-income-dialog-fields/inventor-income-dialog-fields.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +62,7 @@ import { FieldsComponent } from './inventor/inventor-income-dialog/fields/fields
       ErrorComponent,
       ReportTableComponent,
       InventorIncomeDialogComponent,
-      FieldsComponent
+      InventorIncomeDialogFieldsComponent
       ],
   imports: [
     DropdownModule,
@@ -79,7 +79,8 @@ import { FieldsComponent } from './inventor/inventor-income-dialog/fields/fields
     CalendarModule,
     NgbDatepickerModule,
     AutoCompleteModule,
-    InputTextareaModule
+    InputTextareaModule,
+    SpinnerModule
   ],
   exports: [
     CartComponent,
@@ -102,7 +103,7 @@ import { FieldsComponent } from './inventor/inventor-income-dialog/fields/fields
     DocumentTurnOverDisabledDialogComponent,
     ReportTableComponent,
     InventorIncomeDialogComponent,
-    FieldsComponent
+    InventorIncomeDialogFieldsComponent
   ],
   entryComponents: [
     CustomDateComponent,

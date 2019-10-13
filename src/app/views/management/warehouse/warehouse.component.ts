@@ -719,8 +719,6 @@ export class WarehouseComponent implements OnInit {
          this.ItemGroup = response['data'];
        })
        .catch();
-
-
   }
   inventorDialog() {
     this.operation.getAddonNumber({type: 'Stock/Income', subType: 'last'})
