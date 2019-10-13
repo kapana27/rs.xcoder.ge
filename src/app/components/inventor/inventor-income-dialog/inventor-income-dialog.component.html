@@ -53,14 +53,41 @@
   </div>
 
   <div style="width: 100%; overflow: auto; height: auto; min-height: 300px; max-height: 380px" >
-    <div *ngFor="let inventor of newInventor.data">
-      <app-inventor-income-dialog-fields
-        [newInventor]="inventor"
-        [BarCodes]="barcodes"
-        [ItemTypes]="itemTypes"
-        [ItemStatus]="itemStatus"
-        [MeasureUnits]="measureUnits"
-      ></app-inventor-income-dialog-fields>
+    <div class="tb_grid">
+      <p-table>
+        <ng-template pTemplate="header">
+          <tr>
+            <th>დასახელება</th>
+            <th>მარკა</th>
+            <th>მოდელი</th>
+            <th>რაოდენობა</th>
+            <th>განზომილების ერთეული</th>
+            <th>საქონლის ჯგუფი</th>
+            <th>ქარხნული ნომერი</th>
+            <th>ინვენტარის ტიპი</th>
+            <th>ინვენტარის სტატუსი</th>
+            <th>ქარხნული ნომერი</th>
+            <th>ფასი</th>
+            <th>სულ ფასი</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body">
+          <tr>
+            <td>1</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
   </div>
 
