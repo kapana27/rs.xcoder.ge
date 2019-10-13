@@ -100,7 +100,9 @@ import { FieldsComponent } from './inventor/inventor-income-dialog/fields/fields
     DocumentTurnOverDialogComponent,
     TableComponent,
     DocumentTurnOverDisabledDialogComponent,
-    ReportTableComponent
+    ReportTableComponent,
+    InventorIncomeDialogComponent,
+    FieldsComponent
   ],
   entryComponents: [
     CustomDateComponent,
