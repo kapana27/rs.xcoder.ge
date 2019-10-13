@@ -5,6 +5,7 @@ export interface Inventor {
   vin?: any,
   isCar?: number,
   id?: number,
+  data?: Array<Inventor>,
   selectedMeasureUnitName?: Default
   date?: NgbDateStruct,
   inCart?: boolean,

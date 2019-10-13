@@ -1,0 +1,117 @@
+<div class="ui-g">
+    <div class="ui-g-1" >
+      <p>დასახელება</p>
+      <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }"  field="name" [size]="30"
+                        placeholder="დასახელება" [minLength]="0"  (completeMethod)="onKeyUpName($event)"  (onSelect)="onSelectInventorName($event)" [suggestions]="filteredInventorNames" >
+      </p-autoComplete>
+    </div>
+    <div class="ui-g-1">
+      <p>მარკა</p>
+      <table>
+        <tr>
+          <td>
+            <p-autoComplete [suggestions]="ItemData['marker']" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" (completeMethod)="filterItemSingle($event,'marker')" field="name" type="marker" [size]="30"
+                            placeholder="მარკა" [minLength]="0" [(ngModel)]="newInventor.selectedMaker"></p-autoComplete>
+          </td>
+          <td>
+            <p-button icon="pi pi-plus" (click)="newRecordDialog('marker', newInventor.selectedMaker)"></p-button>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="ui-g-1">
+      <p>მოდელი</p>
+      <table>
+        <tr>
+          <td>
+            <p-autoComplete [(ngModel)]="newInventor.selectedModel" [disabled]="!newInventor.selectedMaker"  [ngClass]="{ 'red':if_error(formErrors,'selectedModel')?'1px solid red': '' }" [suggestions]="ItemData['model']" field="name" [size]="30"
+                            placeholder="მოდელი" [minLength]="1"  (completeMethod)="filterItemSingle($event,'model')"  ></p-autoComplete>
+          </td>
+          <!--td>
+            <p-button icon="pi pi-plus" (click)="newRecordDialog('model', newInventor.selectedModel)"></p-button>
+          </td-->
+        </tr>
+      </table>
+    </div>
+    <div class="ui-g-2" *ngIf="newInventor.isCar !==1">
+      <div class="ui-inputgroup">
+        <table style="width: 100%; border-collapse: collapse" >
+          <tr >
+            <th colspan="2" style="padding: 0px;line-height: 20px;margin: 0px;" *ngIf="!newInventor.consumption">შტრიხკოდი</th>
+            <th style="padding: 0px; line-height: 20px;margin: 0px;" *ngIf="!newInventor.consumption"> </th>
+            <th style="padding: 0px; line-height: 20px;margin: 0px;" > <span>{{ newInventor.consumption? 'რაოდენობა': '' }}</span> </th>
+            <!--td *ngIf="newInventor.consumption" style="padding: 0px;line-height: 20px;margin: 0px;" >ერთ. რაოდენობა</td-->
+          </tr>
+          <tr >
+            <td *ngIf="!newInventor.consumption" >
+              <p-dropdown [ngClass]="{ 'red':if_error(formErrors,'selectedBarcode')?'1px solid red': '' }" [autoWidth]="true" [options]="BarCodes"   placeholder="RS"  optionLabel="name" [(ngModel)]="newInventor.selectedBarcode"  [showClear]="true" (ngModelChange)="onLastCode()"  [style]="{ width: '50px'}"></p-dropdown>
+            </td>
+            <td *ngIf="!newInventor.consumption">
+              <input type="text"  pInputText placeholder="შტრიხკოდი" style="width: 50px; height: 33px;" [(ngModel)]="newInventor.barCode"  [ngClass]="{ 'red':if_error(formErrors,'barCode')?'1px solid red': '' }" />
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="რაოდ" style="height: 33px;" [width]="{ 'width': newInventor.consumption? '100%': '100px'}" [(ngModel)]="newInventor.amount"  [ngClass]="{ 'red':if_error(formErrors,'amount')?'1px solid red': '' }" />
+            </td>
+            <!--td *ngIf="newInventor.consumption">
+              <input type="text" pInputText placeholder="" style="width: 100%; height: 33px;"  [(ngModel)]="newInventor.packageAmount" [ngClass]="{ 'red':if_error(formErrors,'packageAmount')?'1px solid red': '' }">
+            </td-->
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="ui-g-1" >
+      <p>განზომილების ერთეული</p>
+      <div class="ui-inputgroup" >
+        <p-dropdown [style]="{width: '100%'}" [ngClass]="{ 'red':if_error(formErrors,'selectedMeasureUnitName')?'1px solid red': '' }" [autoWidth]="true" class="measureUnits" [options]="MeasureUnits"  placeholder="ერთეული" optionLabel="name" [(ngModel)]="newInventor.selectedMeasureUnitName"  [showClear]="true" ></p-dropdown>
+      </div>
+    </div>
+    <div class="ui-g-1" >
+      <p>საქონლის ჯგუფი</p>
+      <div class="ui-inputgroup">
+        <input pInputText type="text" [ngClass]="{ 'red':if_error(formErrors,'itemGroupName')?'1px solid red': '' }"  placeholder="საქონლის ჯგუფი" disabled [(ngModel)]="newInventor.itemGroupName" style="width: 100%; height: 35px" />
+        <button (click)="itemGroupDialog()" pButton type="button" label="..."></button>
+      </div>
+    </div>
+    <div class="ui-g-1"  style="max-width: 200px">
+      <label>ქარხნული ნომერი:
+        <input type="text"  pInputText placeholder="" [(ngModel)]="newInventor.factoryNumber" style="height: 35px; width: 100%"/>
+      </label>
+    </div>
+    <div class="ui-g-1">
+      <p>ინვენტარის ტიპი</p>
+      <p-dropdown [style]="{width: '100%'}" [options]="ItemTypes"  [ngClass]="{ 'red':if_error(formErrors,'selectedItemType')?'1px solid red': '' }" placeholder="ტიპი" optionLabel="name" [showClear]="true" [(ngModel)]="newInventor.selectedItemType" ></p-dropdown>
+    </div>
+    <div class="ui-g-1">
+      <p>ინვენტარის სტატუსი</p>
+      <p-dropdown  [style]="{width: '100%'}"  [ngClass]="{ 'red':if_error(formErrors,'selectedItemStatus')?'1px solid red': '' }" [options]="ItemStatus"  placeholder="სტატუსი" optionLabel="name" [showClear]="true" [(ngModel)]="newInventor.selectedItemStatus"></p-dropdown>
+    </div>
+    <div class="ui-g-1" >
+      <p>ერთეულის ფასი</p>
+      <p-spinner size="30" step="0.25"   [(ngModel)]="newInventor.price" [ngClass]="{ 'red':if_error(formErrors,'price')?'1px solid red': '' }" ></p-spinner>
+    </div>
+    <div class="ui-g-1" >
+      <p>სულ ფასი: {{ newInventor.price * newInventor.amount}}</p>
+    </div>
+</div>
+<p-dialog header="საქონლის ჯგუფი" *ngIf="itemGroupDialogShow" [(visible)]="itemGroupDialogShow"
+          [baseZIndex]="10000" id="itemGroup" [style]="{width: '500px' }">
+  <!--p-tree [value]="ItemGroup" selectionMode="single"
+          (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)" field></p-tree-->
+  <p-treeTable [value]="ItemGroup" [columns]="[{field: 'name', header: 'name'}]" selectionMode="single" dataKey="name"
+               (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)" [scrollable]="true" scrollHeight="300px">
+    <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+      <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
+        <td *ngFor="let col of columns; let i = index">
+          <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+          {{rowData[col.field]}}
+        </td>
+      </tr>
+    </ng-template>
+  </p-treeTable>
+  <div style="margin-top:8px">Selected Node: {{newInventor.itemGroupName ? newInventor.itemGroupName : 'none'}}</div>
+
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="itemGroupDialogShow=false" label="Yes"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="itemGroupDialogShow=false" label="No" class="ui-button-secondary"></button>ა
+  </p-footer>
+</p-dialog>

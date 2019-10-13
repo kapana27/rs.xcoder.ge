@@ -1,3 +1,90 @@
-<p>
-  inventor-income-dialog works!
-</p>
+<p-dialog [header]="header" *ngIf="dialog" [(visible)]="dialog"  [modal]="true" [responsive]="true" [style]="{width: '1200px', minWidth: '200px', height: '600px'}" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+  <div class="row" style="text-align: center" *ngIf="addon !== undefined">
+    <div class="col-md-12" style="text-align: center" *ngIf="frustrate">
+      <h3 class="zednadebisheaderi">საწყობის შემოსავლის ელ. ზედდებული  № {{ addon['Left'] }} - {{ addon['Right'] }}</h3>
+    </div>
+  </div>
+  <div class="ui-g ui-fluid">
+    <div class="ui-g-3" >
+      <p>მიღების თარიღი</p>
+      <form class="form-inline">
+        <div class="form-group" style="width: 100%">
+          <div class="input-group" style="width: 100%">
+            <input class="form-control" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}" placeholder="" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+                   name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d7="ngbDatepicker">
+            <div class="input-group-append">
+              <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d7.toggle()" ></button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="ui-g-3">
+      <p>მიმწოდებელი</p>
+      <table>
+        <tr>
+          <td>
+            <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData"  field="generatedName" [size]="30"
+                             placeholder="მიმწოდებელი" [minLength]="1" [(ngModel)]="newInventor.selectedSupplier" (completeMethod)="getSupplier($event)"  ></p-autoComplete>
+          </td>
+          <td>
+            <p-button icon="pi pi-plus" (click)="newRecordDialog('supplier', newInventor.selectedSupplier)"></p-button>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="ui-g-3">
+      <p>სასაქონლო ზედნადები</p>
+      <input type="text" pInputText style="width:100%;height: 35px;"  [(ngModel)]="newInventor.invoice"   [ngClass]="{ 'red':if_error(formErrors,'invoice')?'1px solid red': '' }" />
+    </div>
+    <div class="ui-g-3">
+      <p>ინსპექტირების დასკვნის ნომერი</p>
+      <input type="text" pInputText style="width:100%;height: 35px;" [(ngModel)]="newInventor.inspectionNumber" [ngClass]="{ 'red':if_error(formErrors,'inspectionNumber')?'1px solid red': '' }"/>
+    </div>
+  </div>
+  <div class="ui-g ui-fluid">
+      <div class="ui-g-11">
+          <p>კომენტარი</p>
+          <textarea pInputTextarea></textarea>
+      </div>
+      <div class="ui-g-1">
+        <button pButton type="button" label="დამატება" style="margin-top:20px" (click)="addNewInventor()" ></button>
+      </div>
+  </div>
+
+  <div style="width: 2100px; overflow: auto; height: auto; min-height: 300px; max-height: 380px" >
+    <div *ngFor="let inventor of newInventor.data">
+      <app-inventor-income-dialog-fields
+        [newInventor]="inventor"
+        [BarCodes]="barcodes"
+        [ItemTypes]="itemTypes"
+        [ItemStatus]="itemStatus"
+        [MeasureUnits]="measureUnits"
+      ></app-inventor-income-dialog-fields>
+    </div>
+  </div>
+
+
+  <p-footer style="width: 100%">
+    <div class="actionButton">
+      <div class="buttonBox tf">
+        <span>ბოლო შტრიხკოდი: {{newInventor.fullBarCode}}</span>
+        <span *ngIf="frustrate" style="margin-left: 30px;">ბოლო კოდი - {{lastCode}}</span>
+      </div>
+      <div class="buttonBox">
+        <button pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
+      </div>
+      <div class="buttonBox">
+      </div>
+      <div class="buttonBox">
+        <button type="button" pButton icon="pi pi-save" *ngIf="frustrate && inventorOperation=='new'" (click)="saveNewInventor()" label="შენახვა" ></button>
+        <button type="button" pButton icon="pi pi-save" *ngIf="inventorOperation=='edit' || inventorOperation ==='multiple'" (click)="editNewInventor()" label="დამახსოვრება" ></button>
+        <button type="button" pButton icon="pi pi-save" *ngIf="!frustrate && inventorOperation=='new'" (click)="frustrateInventor()" label="ჩაშლა" ></button>
+        <button type="button" pButton icon="pi pi-close" *ngIf="frustrate" (click)="frustrate=false" label="დაბრუნება" class="ui-button-secondary"></button>
+        <button type="button" pButton icon="pi pi-close" (click)="dialog=false" label="დახურვა" class="ui-button-secondary"></button>
+      </div>
+    </div>
+
+  </p-footer>
+</p-dialog>
+
