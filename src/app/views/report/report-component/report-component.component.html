@@ -2,7 +2,8 @@
 
 <div class="p-grid" *ngIf="data.length === 0">
   <div *ngFor="let folder of folders">
-    <div class="p-col-fixed" style="top:0px; width:150px; height: 150px; background: white; margin-right: 20px;text-align: center;line-height: 132px;cursor: pointer" (click)="onClickFolder(folder)" >
+    <div class="p-col-fixed rep_folder" (click)="onClickFolder(folder)" >
+      <div class="rep_folde-icon"></div>
       <div class="box">{{folder.name}}</div>
     </div>
   </div>
