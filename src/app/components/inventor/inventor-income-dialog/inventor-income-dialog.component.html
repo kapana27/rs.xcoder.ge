@@ -54,13 +54,7 @@
 
   <div style="width: 100%; overflow: auto; height: auto; min-height: 300px; max-height: 380px" >
     <div *ngFor="let inventor of newInventor.data">
-      <app-inventor-income-dialog-fields
-        [newInventor]="inventor"
-        [BarCodes]="barcodes"
-        [ItemTypes]="itemTypes"
-        [ItemStatus]="itemStatus"
-        [MeasureUnits]="measureUnits"
-      ></app-inventor-income-dialog-fields>
+
     </div>
   </div>
 
@@ -87,4 +81,17 @@
 
   </p-footer>
 </p-dialog>
+
+<div *ngIf="newInventorDialog">
+  <app-inventor-income-dialog-fields
+
+    [dialog]="newInventorDialog"
+    [BarCodes]="barcodes"
+    [ItemTypes]="itemTypes"
+    [ItemStatus]="itemStatus"
+    [MeasureUnits]="measureUnits"
+    (onInventorData)="newInventorData($event)"
+    (onCloseNewInventorDialog)="onCloseNewInventorDialog($event)"
+  ></app-inventor-income-dialog-fields>
+</div>
 

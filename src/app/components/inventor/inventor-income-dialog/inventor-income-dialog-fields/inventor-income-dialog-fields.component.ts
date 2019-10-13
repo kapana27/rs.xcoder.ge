@@ -35,6 +35,7 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
   @Input() makerSuggestions: Array<any> = [];
   @Output() onFilterItem = new EventEmitter();
   @Output() onInventorData = new EventEmitter();
+  @Output() onCloseNewInventorDialog = new EventEmitter();
   @Input() BarCodes: Barcode[] = [];
   @Input() MeasureUnits: Default[] = [];
   itemGroupDialogShow: boolean  = false;
@@ -47,10 +48,9 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
     identification?: string,
     value?: string
   } = {selected: null, value: null};
-
-
+  @Input() header: any =" ";
+  @Input() dialog: boolean = false;
   constructor(private operation: OperationsService, private confirmationService: ConfirmationService) { }
-
   ngOnInit() {
   }
   if_error(data: Array<string>, field: string) {
@@ -67,9 +67,6 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
         .catch();
     }
     return query;
-  }
-  onSelectInventorName($event) {
-    this.newInventor.fullname=$event['name'];
   }
 
   filterItemSingle($event: any, type: string) {
@@ -99,16 +96,12 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
         this.error('შეცდომა', response['error']);
       });
   }
-
   newRecordDialog(marker: string, selectedMaker: Default) {
 
   }
-
-
   onLastCode() {
 
   }
-
   itemGroupDialog() {
     this.itemGroupDialogShow = true;
     setTimeout(() => {
@@ -120,7 +113,6 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
       })
       .catch();
   }
-
   nodeSelect($event: any) {
     this.newInventor.itemGroup = $event.node['data']['id'];
     this.newInventor.itemGroupName = $event.node['data']['name'];
@@ -128,14 +120,6 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
     this.newInventor.isCar = $event.node['data']['isCar'];
     // this.newInventor.amount = ($event.node['data']['isCar'] === 1) ? 1 : null;
     this.newInventor.consumption = ($event.node['data']['spend'] === 1) ? true : false;
-    this.onInventorData.emit(this.newInventor);
-
-  }
-
-  nodeUnselect($event: any) {
-
-    this.onInventorData.emit(this.newInventor);
-
   }
   notNull(value) {
     return (value !== undefined && value !== null);
@@ -151,5 +135,12 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
     setTimeout(() => {
       $('.ui-confirmdialog').css({ 'z-index': 22222222});
     }, 200);
+  }
+  addNewInventor() {
+    this.onInventorData.emit(this.newInventor);
+    this.dialog=false;
+  }
+  close() {
+    this.onCloseNewInventorDialog.emit('close')
   }
 }

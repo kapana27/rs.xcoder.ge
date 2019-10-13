@@ -41,17 +41,7 @@ export class InventorIncomeDialogComponent implements OnInit {
     fullname: {
       name: ''
     },
-    data: [
-      {
-        date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
-        consumption: false,
-        price: 0,
-        amount: 0,
-        fullname: {
-          name: ''
-        },
-      }
-    ]
+    data: [ ]
   };
   newItem: {
     selected?: string,
@@ -64,6 +54,7 @@ export class InventorIncomeDialogComponent implements OnInit {
   measureUnits: Default[] = [];
   itemTypes: Default[] = [];
   itemStatus: Default[] = [];
+  newInventorDialog: boolean = false;
 
   constructor(private operation: OperationsService, private confirmationService: ConfirmationService,) {
     this.operation.getListBarcodes()
@@ -179,14 +170,15 @@ export class InventorIncomeDialogComponent implements OnInit {
   }
 
   addNewInventor() {
-    this.newInventor.data.push({
-      date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
-      consumption: false,
-      price: 0,
-      amount: 0,
-      fullname: {
-        name: ''
-      },
-    })
+    this.newInventorDialog = true;
+  }
+  onCloseNewInventorDialog(event){
+      if(event === 'close'){
+        this.newInventorDialog = false;
+      }
+  }
+  newInventorData($event) {
+      this.newInventor.data.push($event)
+      console.log(this.newInventor)
   }
 }

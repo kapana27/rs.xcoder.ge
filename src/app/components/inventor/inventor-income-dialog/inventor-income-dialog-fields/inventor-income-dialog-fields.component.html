@@ -1,7 +1,9 @@
-<div class="ui-g ui-fluid">
+<p-dialog [header]="header" *ngIf="dialog" [(visible)]="dialog"  [modal]="true" [responsive]="true" [style]="{width: '1150px', minWidth: '200px', height: '300px'}" [maximizable]="true" [draggable]="true" [baseZIndex]="10000" [closable]="false">
+
+<div class="ui-g ui-fluid" style="height: 300px">
     <div class="ui-md-3" >
       <p>დასახელება</p>
-      <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }"  field="name" [size]="30" placeholder="დასახელება" [minLength]="0"  (completeMethod)="onKeyUpName($event)"  (onSelect)="onSelectInventorName($event)" [suggestions]="filteredInventorNames" ></p-autoComplete>
+      <p-autoComplete   [ngModelOptions]="{standalone: true}"  [(ngModel)]="newInventor.fullname"    [ngClass]="{ 'red':if_error(formErrors,'fullname')?'1px solid red': '' }"  field="name" [size]="30" placeholder="დასახელება" [minLength]="0"  (completeMethod)="onKeyUpName($event)"  [suggestions]="filteredInventorNames" ></p-autoComplete>
     </div>
     <div class="ui-g-3">
       <p>მარკა</p>
@@ -91,7 +93,11 @@
       <p>სულ ფასი: {{ newInventor.price * newInventor.amount}}</p>
     </div>
 </div>
-
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="addNewInventor()" label="დამატება"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="close()" label="გაუქმება" class="ui-button-secondary"></button>ა
+  </p-footer>
+</p-dialog>
 
 
 <p-dialog header="საქონლის ჯგუფი" *ngIf="itemGroupDialogShow" [(visible)]="itemGroupDialogShow"
