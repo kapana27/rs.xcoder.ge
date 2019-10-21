@@ -107,7 +107,17 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
 
   }
   onLastCode() {
-
+    if (!this.newInventor.consumption) {
+      this.newInventor.barCodeType = this.newInventor.selectedBarcode['id'];
+      this.newInventor.selectedItemType =  ['rsk1', 'rs1'].indexOf(this.newInventor.selectedBarcode['name'].toLocaleLowerCase()) > -1 ? {id: 2, name: 'მცირე ფასიანი'} : {id: 1, name: 'ძირითადი საშუალებები'};
+      this.operation.getLastCode(this.newInventor.barCodeType)
+        .then(response => {
+          this.newInventor.fullBarCode = response['data']['value'] + response['data']['barCodeVisualValue'];
+        })
+        .catch(response => {
+          this.error('შეცდომა', response['error']);
+        });
+    }
   }
   itemGroupDialog() {
     this.itemGroupDialogShow = true;
@@ -246,7 +256,7 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
     this.newInventor.spend = this.newInventor.fullname['itemGroup']['spend'];
     this.newInventor.isCar = this.newInventor.fullname['itemGroup']['isCar'];
     this.newInventor.consumption = (this.newInventor.spend === 1);
-
+    this.newInventor.fullBarCode = this.newInventor.fullname.fullBarcode;
   }
   inventorFrustrate() {
     this.parseData();

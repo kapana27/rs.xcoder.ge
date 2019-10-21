@@ -94,7 +94,7 @@
   </div>
   <div *ngIf="table">
     <div class="col-md-12" style="text-align: center" >
-      <h3 class="zednadebisheaderi">საწყობის შემოსავლის ელ. ზედდებული  № {{ addon['Left'] }} - {{ addon['Right'] }}</h3>
+      <h3 class="zednadebisheaderi">საწყობის შემოსავლის ელ. ზედდებული  № {{ addon['Left'] }} - <input type="text" [(ngModel)]="addon['Right']" style="width: 80px; border: 0px"></h3>
     </div>
      {{ this.notNull(newInventor.selectedSupplier)? '&nbsp;&nbsp;&nbsp;,მომწოდებელი: '+newInventor.selectedSupplier['name']:''}}
      {{ this.notNull(newInventor.invoice)? '&nbsp;&nbsp;&nbsp;სასაქონლო ზედნადები: '+newInventor.invoice:''}}
@@ -131,10 +131,9 @@
 
   <p-footer style="width: 100%">
     <div class="actionButton">
-      <!--div class="buttonBox tf">
-        <span>ბოლო შტრიხკოდი: {{lastBarCodes}}</span>
-        <span *ngIf="frustrate" style="margin-left: 30px;">ბოლო კოდი - {{lastBarCodes}}</span>
-      </div-->
+      <div class="buttonBox tf" *ngIf="table">
+        <span>ბოლო კოდი: {{addon['Right']}}</span>
+      </div>
       <div class="buttonBox">
         <button pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
       </div>

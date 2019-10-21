@@ -137,8 +137,8 @@
 </div>
   <p-footer>
     <div class="actionButton">
-      <div class="buttonBox tf" *ngIf="(lastBarCodes.length)>0">
-        <span style="margin-left: 30px;">ბოლო კოდი - {{ lastBarCodes[lastBarCodes.length-1]['fullBarcode']}}</span>
+      <div class="buttonBox tf" *ngIf=" this.newInventor.fullBarCode">
+        <span style="margin-left: 30px;">ბოლო შტრიხკოდი - {{  this.newInventor.fullBarCode}}</span>
       </div>
     </div>
     <button *ngIf="frustrate" type="button" pButton icon="pi pi-check" (click)="addNewInventor()" label="დამატება"></button>
