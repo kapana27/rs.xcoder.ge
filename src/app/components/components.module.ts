@@ -38,6 +38,7 @@ import { ErrorComponent } from './error/error.component';
 import { ReportTableComponent } from './report-table/report-table.component';
 import { InventorIncomeDialogComponent } from './inventor/inventor-income-dialog/inventor-income-dialog.component';
 import { InventorIncomeDialogFieldsComponent } from './inventor/inventor-income-dialog/inventor-income-dialog-fields/inventor-income-dialog-fields.component';
+import { InventorTableComponent } from './inventor/inventor-income-dialog/inventor-table/inventor-table.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import { InventorIncomeDialogFieldsComponent } from './inventor/inventor-income-
       ErrorComponent,
       ReportTableComponent,
       InventorIncomeDialogComponent,
-      InventorIncomeDialogFieldsComponent
+      InventorIncomeDialogFieldsComponent,
+      InventorTableComponent
       ],
   imports: [
     DropdownModule,

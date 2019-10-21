@@ -1159,8 +1159,6 @@ console.log(this.newInventor);
           if (response['status'] === 200) {
             this.addon = response['data'];
             if (this.newInventor.itemGroup !== undefined && this.newInventor.consumption === false && this.newInventor.isCar !== 1) {
-
-
               this.operation.getFreeCodes({
                 barCodeType: this.newInventor.barCodeType,
                 count: this.newInventor.amount,
@@ -1184,23 +1182,15 @@ console.log(this.newInventor);
                 .catch(response => {
                   this.error('შეცდომა', response['error']);
                 });
-
-
-
-
             } else {
-
               this.newInventor.barCodeType = null;
               this.newInventor.barCode = null;
               this.newInventor['showAmount'] = this.newInventor.amount;
-
               for (let i = 0; i < 1; i++) {
                 this.lastBarCodes.push({value: '', barCodeVisualValue: ''});
                 this.frustrate = true;
               }
-
             }
-
           }
         });
 

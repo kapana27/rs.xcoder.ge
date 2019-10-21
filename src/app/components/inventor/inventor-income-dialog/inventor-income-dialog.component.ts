@@ -41,7 +41,8 @@ export class InventorIncomeDialogComponent implements OnInit {
     fullname: {
       name: ''
     },
-    data: [ ]
+    data: [ ],
+    comment:''
   };
   newItem: {
     selected?: string,
@@ -55,6 +56,8 @@ export class InventorIncomeDialogComponent implements OnInit {
   itemTypes: Default[] = [];
   itemStatus: Default[] = [];
   newInventorDialog: boolean = false;
+  lastBarCodes: any;
+  tableDialog: boolean = false;
 
   constructor(private operation: OperationsService, private confirmationService: ConfirmationService,) {
     this.operation.getListBarcodes()
@@ -110,7 +113,48 @@ export class InventorIncomeDialogComponent implements OnInit {
   }
   saveNewInventor() {
 
+
+
+    this.newInventor.entryDate = this.newInventor.date.day + '-' + this.newInventor.date.month + '-' + this.newInventor.date.year;
+    this.newInventor.supplier = (this.newInventor.selectedSupplier !== undefined) ? this.newInventor.selectedSupplier['id'] : null;
+    const formdata = new FormData();
+    for (const key in this.newInventor) {
+
+      if (this.newInventor[key] !== null && this.newInventor[key] !== undefined) {
+        if (key == 'list' || typeof this.newInventor[key] === "object") {
+          formdata.append(key, JSON.stringify(this.newInventor[key]).replace('null', '').replace('undefined', ''));
+        } else {
+          formdata.append(key, this.newInventor[key]);
+        }
+      }
+
+    }
+    this.operation.saveInventory((formdata))
+      .then(response => {
+        if (response['status'] == 200) {
+          this.newInventor = {
+            date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
+            consumption: false,
+            price: 0,
+            amount: 0,
+            fullname: {
+              name: ''
+            },
+            data: [ ]
+          };
+          this.dialog=false;
+          this.frustrate = false;
+          alert('ოპერაცია წარმატებით დასრულდა');
+        } else {
+          this.error('შეცდომა', response['error']);
+        }
+      })
+      .catch(response => {
+        this.error('შეცდომა', response['error']);
+      });
+
   }
+
   editNewInventor() {
 
   }
@@ -156,7 +200,6 @@ export class InventorIncomeDialogComponent implements OnInit {
     this.operation.getItemData(this.newItem.selected, query )
       .then(response => {
         this.ItemData[this.newItem.selected] = response['data'];
-        console.log(this.ItemData)
       })
       .catch(response => {
         this.error('შეცდომა', response['error']);
@@ -179,6 +222,28 @@ export class InventorIncomeDialogComponent implements OnInit {
   }
   newInventorData($event) {
       this.newInventor.data.push($event)
-      console.log(this.newInventor)
+  }
+
+  name(inventorElement: any) {
+    if(this.notNull(inventorElement)){
+      return inventorElement;
+    }
+    return '';
+  }
+
+  onRemoveInventor(index) {
+    this.newInventor.data.splice(index,1);
+  }
+
+  lastBarCode(event: Array<any>) {
+    this.lastBarCodes = event[event.length - 1]['fullBarcode'];
+  }
+
+  closeTable() {
+    this.tableDialog=false
+  }
+
+  showTable() {
+    this.tableDialog=true
   }
 }

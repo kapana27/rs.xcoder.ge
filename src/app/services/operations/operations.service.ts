@@ -48,8 +48,8 @@ export class OperationsService {
   getLastCode(barcodeType) {
       return this.Request.Post(Config.baseURI + Config.List.post.lastBarCode + '?barCodeType=' + barcodeType, {});
   }
-  getFreeCodes(data) {
-    return this.Request.Post(Config.baseURI + Config.List.post.freeCodes + '?barCodeType=' + data['barCodeType'] + '&count=' + data['count'] + '&start=' + data['start']);
+  getFreeCodes(data, formData={}) {
+    return this.Request.Post(Config.baseURI + Config.List.post.freeCodes + '?barCodeType=' + data['barCodeType'] + '&count=' + data['count'] + '&start=' + data['start'],formData);
   }
 
   saveInventory(formdata) {
@@ -88,6 +88,9 @@ export class OperationsService {
   getAddonNumber(params: {type: string, subType?: string}) {
 
     return this.Request.Post(Config.baseURI + Config.List.post.addon + '?type=' + params.type + '&subType=' + params.subType, {});
+  }
+  getAddonNumberWithExcell(formdata) {
+    return this.Request.Post(Config.baseURI + Config.List.post.addon , formdata);
   }
 
   generaTeTransferToSection(formData, type= 'invoice') {

@@ -24,7 +24,7 @@
       <table>
         <tr>
           <td>
-            <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData"  field="generatedName" [size]="30"
+            <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData['supplier']"  field="generatedName" [size]="30"
                              placeholder="მიმწოდებელი" [minLength]="1" [(ngModel)]="newInventor.selectedSupplier" (completeMethod)="getSupplier($event)"  ></p-autoComplete>
           </td>
           <td>
@@ -45,7 +45,7 @@
   <div class="ui-g ui-fluid">
       <div class="ui-g-11">
           <p>კომენტარი</p>
-          <textarea pInputTextarea></textarea>
+          <textarea pInputTextarea [(ngModel)]="newInventor.comment" ></textarea>
       </div>
       <div class="ui-g-1">
         <button pButton type="button" label="დამატება" style="margin-top:20px" (click)="addNewInventor()" ></button>
@@ -54,7 +54,7 @@
 
   <div style="width: 100%; overflow: auto; height: auto; min-height: 300px; max-height: 380px" >
     <div class="tb_grid">
-      <p-table>
+      <p-table [value]="newInventor.data">
         <ng-template pTemplate="header">
           <tr>
             <th>დასახელება</th>
@@ -66,25 +66,25 @@
             <th>ქარხნული ნომერი</th>
             <th>ინვენტარის ტიპი</th>
             <th>ინვენტარის სტატუსი</th>
-            <th>ქარხნული ნომერი</th>
             <th>ფასი</th>
             <th>სულ ფასი</th>
+            <th width="30px"><span>x</span></th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body">
+        <ng-template pTemplate="body" let-inventor let-index="rowIndex">
           <tr>
-            <td>1</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>{{name(inventor['name'])}}</td>
+            <td>{{name(inventor['selectedMaker']['name'])}}</td>
+            <td>{{name(inventor['selectedModel']['name'])}}</td>
+            <td>{{name(inventor['amount'])}}</td>
+            <td>{{name(inventor['selectedMeasureUnit']['name'])}}</td>
+            <td>{{name(inventor['itemGroupName'])}}</td>
+            <td>{{name(inventor['factoryNumber'])}}</td>
+            <td>{{name(inventor['selectedItemType']['name'])}}</td>
+            <td>{{name(inventor['selectedItemStatus']['name'])}}</td>
+            <td>{{name(inventor['price'])}}</td>
+            <td>{{inventor['price'] * inventor['amount']}}</td>
+            <td><span (click)="onRemoveInventor(index)">x</span></td>
           </tr>
         </ng-template>
       </p-table>
@@ -95,8 +95,8 @@
   <p-footer style="width: 100%">
     <div class="actionButton">
       <div class="buttonBox tf">
-        <span>ბოლო შტრიხკოდი: {{newInventor.fullBarCode}}</span>
-        <span *ngIf="frustrate" style="margin-left: 30px;">ბოლო კოდი - {{lastCode}}</span>
+        <span>ბოლო შტრიხკოდი: {{lastBarCodes}}</span>
+        <span *ngIf="frustrate" style="margin-left: 30px;">ბოლო კოდი - {{lastBarCodes}}</span>
       </div>
       <div class="buttonBox">
         <button pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
@@ -104,9 +104,9 @@
       <div class="buttonBox">
       </div>
       <div class="buttonBox">
-        <button type="button" pButton icon="pi pi-save" *ngIf="frustrate && inventorOperation=='new'" (click)="saveNewInventor()" label="შენახვა" ></button>
+        <button type="button" pButton icon="pi pi-save" (click)="showTable()" label="ზედდებულის გენერაცია" ></button>
         <button type="button" pButton icon="pi pi-save" *ngIf="inventorOperation=='edit' || inventorOperation ==='multiple'" (click)="editNewInventor()" label="დამახსოვრება" ></button>
-        <button type="button" pButton icon="pi pi-save" *ngIf="!frustrate && inventorOperation=='new'" (click)="frustrateInventor()" label="ჩაშლა" ></button>
+        <!--button type="button" pButton icon="pi pi-save" *ngIf="!frustrate && inventorOperation=='new'" (click)="frustrateInventor()" label="ჩაშლა" ></button-->
         <button type="button" pButton icon="pi pi-close" *ngIf="frustrate" (click)="frustrate=false" label="დაბრუნება" class="ui-button-secondary"></button>
         <button type="button" pButton icon="pi pi-close" (click)="dialog=false" label="დახურვა" class="ui-button-secondary"></button>
       </div>
@@ -115,3 +115,26 @@
   </p-footer>
 </p-dialog>
 
+<div *ngIf="newInventorDialog">
+  <app-inventor-income-dialog-fields
+    [dialog]="newInventorDialog"
+    [BarCodes]="barcodes"
+    [ItemTypes]="itemTypes"
+    [ItemStatus]="itemStatus"
+    [MeasureUnits]="measureUnits"
+    (onInventorData)="newInventorData($event)"
+    (onCloseNewInventorDialog)="onCloseNewInventorDialog($event)"
+    (lastBarCode)="lastBarCode($event)"
+  ></app-inventor-income-dialog-fields>
+</div>
+
+<p-dialog [header]="header" *ngIf="tableDialog" [(visible)]="tableDialog"  [modal]="true" [responsive]="true" [style]="{width: '1150px', minWidth: '200px'}" [maximizable]="true" [draggable]="true" [baseZIndex]="10000" [closable]="false">
+  <div class="ui-g ui-fluid">
+    <app-inventor-table></app-inventor-table>
+  </div>
+
+  <p-footer>
+    <button  type="button" pButton icon="pi pi-check" (click)="saveNewInventor()" label="შენახვა"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="closeTable()" label="გაუქმება" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>

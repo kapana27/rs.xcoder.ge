@@ -2,11 +2,13 @@ import {Default} from "./default";
 import {NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 
 export interface Inventor {
+  comment?:'',
   vin?: any,
   isCar?: number,
   id?: number,
   data?: Array<Inventor>,
   selectedMeasureUnitName?: Default
+  selectedMeasureUnit?: Default
   date?: NgbDateStruct,
   inCart?: boolean,
   entryDate?: string,
@@ -46,4 +48,5 @@ export interface Inventor {
   consumption?: boolean,
   tmpAmount?: number,
   showAmount?: number,
+  lastBarCodes?: Array<any>
 }
