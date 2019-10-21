@@ -1876,6 +1876,10 @@ console.log(this.newInventor);
   selectCities() {
       console.log(this.selectedCities)
   }
+
+  closeInventorIncomeDialog($event: unknown) {
+    this.inventorDialogShow=false
+  }
 }
 function sortAndFilter(allOfTheData, sortModel, filterModel) {
   return sortData(sortModel, filterData(filterModel, allOfTheData));

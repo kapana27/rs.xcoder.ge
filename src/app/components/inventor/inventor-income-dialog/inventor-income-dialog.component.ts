@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Inventor} from "../../../models/inventor";
 import {Default} from "../../../models/default";
 import {OperationsService} from "../../../services/operations/operations.service";
@@ -27,6 +27,7 @@ export class InventorIncomeDialogComponent implements OnInit {
   @Input() dialog: boolean = false;
   @Input() addon: any = {};
   @Input() frustrate: boolean = false;
+  @Output() onClose = new EventEmitter();
   public lastCode: number = 0;
   public inventorOperation: string = 'new';
   uploadFiles: Array<any> = [];
@@ -58,6 +59,7 @@ export class InventorIncomeDialogComponent implements OnInit {
   newInventorDialog: boolean = false;
   lastBarCodes: any;
   tableDialog: boolean = false;
+  table: boolean = false;
 
   constructor(private operation: OperationsService, private confirmationService: ConfirmationService,) {
     this.operation.getListBarcodes()
@@ -112,9 +114,6 @@ export class InventorIncomeDialogComponent implements OnInit {
     }, 200);
   }
   saveNewInventor() {
-
-
-
     this.newInventor.entryDate = this.newInventor.date.day + '-' + this.newInventor.date.month + '-' + this.newInventor.date.year;
     this.newInventor.supplier = (this.newInventor.selectedSupplier !== undefined) ? this.newInventor.selectedSupplier['id'] : null;
     const formdata = new FormData();
@@ -142,7 +141,7 @@ export class InventorIncomeDialogComponent implements OnInit {
             },
             data: [ ]
           };
-          this.dialog=false;
+          this.onClose.emit('close')
           this.frustrate = false;
           alert('ოპერაცია წარმატებით დასრულდა');
         } else {
@@ -222,6 +221,7 @@ export class InventorIncomeDialogComponent implements OnInit {
   }
   newInventorData($event) {
       this.newInventor.data.push($event)
+    console.log($event)
   }
 
   name(inventorElement: any) {
@@ -235,15 +235,31 @@ export class InventorIncomeDialogComponent implements OnInit {
     this.newInventor.data.splice(index,1);
   }
 
-  lastBarCode(event: Array<any>) {
-    this.lastBarCodes = event[event.length - 1]['fullBarcode'];
+  lastBarCode(event: {barcode: Array<any>, addon: any}) {
+    this.lastBarCodes = event.barcode[event.barcode.length - 1]['fullBarcode'];
+    this.addon=event.addon;
   }
 
   closeTable() {
-    this.tableDialog=false
+    this.table=false
+
   }
 
   showTable() {
-    this.tableDialog=true
+    console.log(this.newInventor)
+    if(!this.table){
+      this.table=true;
+    }else{
+      this.saveNewInventor();
+    }
+    //this.tableDialog=true
+  }
+
+  closeInventorIncomeDialog($event) {
+    this.newInventorDialog=false;
+  }
+
+  closeDialog() {
+    this.onClose.emit('close')
   }
 }

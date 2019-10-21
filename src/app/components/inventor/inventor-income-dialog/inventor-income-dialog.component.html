@@ -4,111 +4,149 @@
       <h3 class="zednadebisheaderi">საწყობის შემოსავლის ელ. ზედდებული  № {{ addon['Left'] }} - {{ addon['Right'] }}</h3>
     </div>
   </div>
-  <div class="ui-g ui-fluid">
-    <div class="ui-g-3" >
-      <p>მიღების თარიღი</p>
-      <form class="form-inline">
-        <div class="form-group" style="width: 100%">
-          <div class="input-group" style="width: 100%">
-            <input class="form-control" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}" placeholder="" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
-                   name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d7="ngbDatepicker">
-            <div class="input-group-append">
-              <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d7.toggle()" ></button>
+  <div *ngIf="!table">
+    <div class="ui-g ui-fluid">
+      <div class="ui-g-3" >
+        <p>მიღების თარიღი</p>
+        <form class="form-inline">
+          <div class="form-group" style="width: 100%">
+            <div class="input-group" style="width: 100%">
+              <input class="form-control" [minDate]="{ year:1990, month: 01, day: 01}" [maxDate]="{ year:2050, month: 01, day: 01}" placeholder="" [ngClass]="{ 'red':if_error(formErrors,'date')?'1px solid red': '' }"
+                     name="dp" [(ngModel)]="newInventor.date" ngbDatepicker #d7="ngbDatepicker">
+              <div class="input-group-append">
+                <button pButton class="btn btn-outline-secondary "  type="button" icon="pi pi-calendar" (click)="d7.toggle()" ></button>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div class="ui-g-3">
+        <p>მიმწოდებელი</p>
+        <table>
+          <tr>
+            <td>
+              <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData['supplier']"  field="generatedName" [size]="30"
+                               placeholder="მიმწოდებელი" [minLength]="1" [(ngModel)]="newInventor.selectedSupplier" (completeMethod)="getSupplier($event)"  ></p-autoComplete>
+            </td>
+            <td>
+              <p-button icon="pi pi-plus" (click)="newRecordDialog('supplier', newInventor.selectedSupplier)"></p-button>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="ui-g-3">
+        <p>სასაქონლო ზედნადები</p>
+        <input type="text" pInputText style="width:100%;height: 35px;"  [(ngModel)]="newInventor.invoice"   [ngClass]="{ 'red':if_error(formErrors,'invoice')?'1px solid red': '' }" />
+      </div>
+      <div class="ui-g-3">
+        <p>ინსპექტირების დასკვნის ნომერი</p>
+        <input type="text" pInputText style="width:100%;height: 35px;" [(ngModel)]="newInventor.inspectionNumber" [ngClass]="{ 'red':if_error(formErrors,'inspectionNumber')?'1px solid red': '' }"/>
+      </div>
     </div>
-    <div class="ui-g-3">
-      <p>მიმწოდებელი</p>
-      <table>
-        <tr>
-          <td>
-            <p-autoComplete  [ngClass]="{ 'red':if_error(formErrors,'selectedSupplier')?'1px solid red': '' }"  [suggestions]="ItemData['supplier']"  field="generatedName" [size]="30"
-                             placeholder="მიმწოდებელი" [minLength]="1" [(ngModel)]="newInventor.selectedSupplier" (completeMethod)="getSupplier($event)"  ></p-autoComplete>
-          </td>
-          <td>
-            <p-button icon="pi pi-plus" (click)="newRecordDialog('supplier', newInventor.selectedSupplier)"></p-button>
-          </td>
-        </tr>
-      </table>
-    </div>
-    <div class="ui-g-3">
-      <p>სასაქონლო ზედნადები</p>
-      <input type="text" pInputText style="width:100%;height: 35px;"  [(ngModel)]="newInventor.invoice"   [ngClass]="{ 'red':if_error(formErrors,'invoice')?'1px solid red': '' }" />
-    </div>
-    <div class="ui-g-3">
-      <p>ინსპექტირების დასკვნის ნომერი</p>
-      <input type="text" pInputText style="width:100%;height: 35px;" [(ngModel)]="newInventor.inspectionNumber" [ngClass]="{ 'red':if_error(formErrors,'inspectionNumber')?'1px solid red': '' }"/>
-    </div>
-  </div>
-  <div class="ui-g ui-fluid">
+    <div class="ui-g ui-fluid">
       <div class="ui-g-11">
-          <p>კომენტარი</p>
-          <textarea pInputTextarea [(ngModel)]="newInventor.comment" ></textarea>
+        <p>კომენტარი</p>
+        <textarea pInputTextarea [(ngModel)]="newInventor.comment" ></textarea>
       </div>
       <div class="ui-g-1">
         <button pButton type="button" label="დამატება" style="margin-top:20px" (click)="addNewInventor()" ></button>
       </div>
-  </div>
+    </div>
 
-  <div style="width: 100%; overflow: auto; height: auto; min-height: 300px; max-height: 380px" >
-    <div class="tb_grid">
-      <p-table [value]="newInventor.data">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>დასახელება</th>
-            <th>მარკა</th>
-            <th>მოდელი</th>
-            <th>რაოდენობა</th>
-            <th>განზომილების ერთეული</th>
-            <th>საქონლის ჯგუფი</th>
-            <th>ქარხნული ნომერი</th>
-            <th>ინვენტარის ტიპი</th>
-            <th>ინვენტარის სტატუსი</th>
-            <th>ფასი</th>
-            <th>სულ ფასი</th>
-            <th width="30px"><span>x</span></th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-inventor let-index="rowIndex">
-          <tr>
-            <td>{{name(inventor['name'])}}</td>
-            <td>{{name(inventor['selectedMaker']['name'])}}</td>
-            <td>{{name(inventor['selectedModel']['name'])}}</td>
-            <td>{{name(inventor['amount'])}}</td>
-            <td>{{name(inventor['selectedMeasureUnit']['name'])}}</td>
-            <td>{{name(inventor['itemGroupName'])}}</td>
-            <td>{{name(inventor['factoryNumber'])}}</td>
-            <td>{{name(inventor['selectedItemType']['name'])}}</td>
-            <td>{{name(inventor['selectedItemStatus']['name'])}}</td>
-            <td>{{name(inventor['price'])}}</td>
-            <td>{{inventor['price'] * inventor['amount']}}</td>
-            <td><span (click)="onRemoveInventor(index)">x</span></td>
-          </tr>
-        </ng-template>
-      </p-table>
+    <div style="width: 100%; overflow: auto; height: auto; min-height: 300px; max-height: 380px" >
+      <div class="tb_grid">
+        <p-table [value]="newInventor.data">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>დასახელება</th>
+              <th>მარკა</th>
+              <th>მოდელი</th>
+              <th>რაოდენობა</th>
+              <th>განზომილების ერთეული</th>
+              <th>საქონლის ჯგუფი</th>
+              <th>ქარხნული ნომერი</th>
+              <th>ინვენტარის ტიპი</th>
+              <th>ინვენტარის სტატუსი</th>
+              <th>ფასი</th>
+              <th>სულ ფასი</th>
+              <th width="30px"><span>x</span></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-inventor let-index="rowIndex">
+            <tr>
+              <td>{{name(inventor['name'])}}</td>
+              <td>{{name(inventor['selectedMaker']['name'])}}</td>
+              <td>{{name(inventor['selectedModel']['name'])}}</td>
+              <td>{{name(inventor['amount'])}}</td>
+              <td>{{name(inventor['selectedMeasureUnit']['name'])}}</td>
+              <td>{{name(inventor['itemGroupName'])}}</td>
+              <td>{{name(inventor['factoryNumber'])}}</td>
+              <td>{{name(inventor['selectedItemType']['name'])}}</td>
+              <td>{{name(inventor['selectedItemStatus']['name'])}}</td>
+              <td>{{name(inventor['price'])}}</td>
+              <td>{{inventor['price'] * inventor['amount']}}</td>
+              <td><span (click)="onRemoveInventor(index)">x</span></td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="table">
+    <div class="col-md-12" style="text-align: center" >
+      <h3 class="zednadebisheaderi">საწყობის შემოსავლის ელ. ზედდებული  № {{ addon['Left'] }} - {{ addon['Right'] }}</h3>
+    </div>
+     {{ this.notNull(newInventor.selectedSupplier)? '&nbsp;&nbsp;&nbsp;,მომწოდებელი: '+newInventor.selectedSupplier['name']:''}}
+     {{ this.notNull(newInventor.invoice)? '&nbsp;&nbsp;&nbsp;სასაქონლო ზედნადები: '+newInventor.invoice:''}}
+     {{ this.notNull(newInventor.inspectionNumber)? '&nbsp;&nbsp;&nbsp;ინსპექტირების დასკვნის ნომერი: '+newInventor.inspectionNumber:''}}
+    <br>
+    <div style="width: 100%; overflow: auto; height: auto;" >
+      <div class="tb_grid">
+        <p-table [value]="newInventor.data">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>თარიღი</th>
+              <th>დასახელება</th>
+              <th>მარკა</th>
+              <th>მოდელი</th>
+              <th>რაოდენობა</th>
+              <th>ფასი</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-inventor let-index="rowIndex">
+            <tr>
+              <td>{{name(inventor['entryDate'])}}</td>
+              <td>{{name(inventor['name'])}}</td>
+              <td>{{name(inventor['selectedMaker']['name'])}}</td>
+              <td>{{name(inventor['selectedModel']['name'])}}</td>
+              <td>{{name(inventor['amount'])}}</td>
+              <td>{{name(inventor['price'])}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
     </div>
   </div>
 
 
   <p-footer style="width: 100%">
     <div class="actionButton">
-      <div class="buttonBox tf">
+      <!--div class="buttonBox tf">
         <span>ბოლო შტრიხკოდი: {{lastBarCodes}}</span>
         <span *ngIf="frustrate" style="margin-left: 30px;">ბოლო კოდი - {{lastBarCodes}}</span>
-      </div>
+      </div-->
       <div class="buttonBox">
         <button pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
       </div>
       <div class="buttonBox">
       </div>
       <div class="buttonBox">
-        <button type="button" pButton icon="pi pi-save" (click)="showTable()" label="ზედდებულის გენერაცია" ></button>
+        <button type="button" pButton icon="pi pi-save"  (click)="showTable()" label="ზედდებულის გენერაცია" ></button>
+        <button type="button" pButton icon="pi pi-save"  *ngIf="table" (click)="table=false" label="დაბრუნება" ></button>
         <button type="button" pButton icon="pi pi-save" *ngIf="inventorOperation=='edit' || inventorOperation ==='multiple'" (click)="editNewInventor()" label="დამახსოვრება" ></button>
         <!--button type="button" pButton icon="pi pi-save" *ngIf="!frustrate && inventorOperation=='new'" (click)="frustrateInventor()" label="ჩაშლა" ></button-->
         <button type="button" pButton icon="pi pi-close" *ngIf="frustrate" (click)="frustrate=false" label="დაბრუნება" class="ui-button-secondary"></button>
-        <button type="button" pButton icon="pi pi-close" (click)="dialog=false" label="დახურვა" class="ui-button-secondary"></button>
+        <button type="button" pButton icon="pi pi-close" (click)="closeDialog()" label="დახურვა" class="ui-button-secondary"></button>
       </div>
     </div>
 
@@ -128,13 +166,13 @@
   ></app-inventor-income-dialog-fields>
 </div>
 
-<p-dialog [header]="header" *ngIf="tableDialog" [(visible)]="tableDialog"  [modal]="true" [responsive]="true" [style]="{width: '1150px', minWidth: '200px'}" [maximizable]="true" [draggable]="true" [baseZIndex]="10000" [closable]="false">
+<p-dialog [header]="header" *ngIf="tableDialog" [(visible)]="tableDialog"  [modal]="true" [responsive]="true" [style]="{width: '1150px', minWidth: '200px', height: '300px'}" [maximizable]="true" [draggable]="true" [baseZIndex]="10000" [closable]="false">
   <div class="ui-g ui-fluid">
-    <app-inventor-table></app-inventor-table>
+test
   </div>
 
   <p-footer>
     <button  type="button" pButton icon="pi pi-check" (click)="saveNewInventor()" label="შენახვა"></button>
-    <button type="button" pButton icon="pi pi-close" (click)="closeTable()" label="გაუქმება" class="ui-button-secondary"></button>
+    <button type="button" pButton icon="pi pi-close" (click)="closeTable()" label="გაუქმება" class="ui-button-secondary"></button>ა
   </p-footer>
 </p-dialog>

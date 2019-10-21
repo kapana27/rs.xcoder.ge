@@ -8,6 +8,7 @@ import {ConfirmationService} from "primeng/api";
 import {NgbDateParserFormatter} from "@ng-bootstrap/ng-bootstrap";
 import {NgbDateCustomParserFormatter} from "../../../../views/management/warehouse/warehouse.component";
 import {Item} from "../../../../models/item";
+import {moment} from "ngx-bootstrap/chronos/test/chain";
 declare var $: any;
 interface Data {
   TotalCount: number;
@@ -25,7 +26,9 @@ interface Data {
 })
 export class InventorIncomeDialogFieldsComponent implements OnInit {
   @Input() formErrors: Array<string> = [];
-  @Input() newInventor: Inventor = {};
+  @Input() newInventor: Inventor = {
+    date: { year: (new Date().getFullYear()), month: (new Date().getMonth() + 1), day: (new Date().getDate())},
+  };
   @Output() onKeyUp = new EventEmitter();
   @Input() filteredInventorNames: Array<any> = [];
   public  ItemData: ItemData = {
@@ -52,7 +55,7 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
   @Input() dialog: boolean = false;
   frustrate: boolean= false;
   @Output() lastBarCode=new EventEmitter();
-  lastBarCodes: any;
+  lastBarCodes: Array<any> = [];
   private addon: any;
   uploadedFiles: any[] = [];
   constructor(private operation: OperationsService, private confirmationService: ConfirmationService) { }
@@ -184,18 +187,17 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
       this.newInventor.selectedItemStatus = (this.notNull( this.newInventor.fullname['itemStatus']) && typeof this.newInventor.fullname['itemStatus'] === "object")? this.newInventor.fullname['itemStatus']: {name:this.newInventor.fullname['itemStatus']} ;
       this.newInventor.barCodeType = this.newInventor.fullname['barCodeType']['id'];
     }
+    this.newInventor.entryDate=this.newInventor.date.day + '-' + this.newInventor.date.month + '-' + this.newInventor.date.year
 
     console.log(this.newInventor)
   }
   addNewInventor() {
 
     if(this.notNull(this.newInventor.fullname)){
-
       this.parseData();
+      console.log(this.newInventor)
       this.onInventorData.emit(this.newInventor);
       this.onCloseNewInventorDialog.emit('close');
-    }else{
-
     }
 
   }
@@ -248,7 +250,7 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
   }
   inventorFrustrate() {
     this.parseData();
-    console.log(this.uploadedFiles)
+    console.log(this.newInventor)
     this.operation.getAddonNumber({type: 'Stock/Income', subType: ''})
       .then(response => {
         if (response['status'] === 200) {
@@ -277,6 +279,7 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
                   value.factoryNumber = this.newInventor.factoryNumber;
                   return value;
                 });
+                // @ts-ignore
                 this.newInventor.list =this.lastBarCodes.map(value => {
                   return {
                     barCode: (value.barCodeVisualValue === undefined) ? null : value.barCodeVisualValue,
@@ -284,8 +287,11 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
                     amount: this.newInventor.showAmount
                   };
                 }),
-                  this.lastBarCode.emit(this.lastBarCodes);
+                this.lastBarCode.emit( {barcode: this.lastBarCodes, addon: this.addon});
+                this.onInventorData.emit(this.newInventor);
+
                 this.frustrate = true;
+                this.onCloseNewInventorDialog.emit('close')
               })
               .catch(response => {
                 this.frustrate = false;

@@ -136,9 +136,15 @@
     </div>
 </div>
   <p-footer>
+    <div class="actionButton">
+      <div class="buttonBox tf" *ngIf="(lastBarCodes.length)>0">
+        <span style="margin-left: 30px;">ბოლო კოდი - {{ lastBarCodes[lastBarCodes.length-1]['fullBarcode']}}</span>
+      </div>
+    </div>
     <button *ngIf="frustrate" type="button" pButton icon="pi pi-check" (click)="addNewInventor()" label="დამატება"></button>
     <button *ngIf="!frustrate" type="button" pButton icon="pi pi-check" (click)="inventorFrustrate()" label="ჩაშლა"></button>
-    <button type="button" pButton icon="pi pi-close" (click)="close()" label="გაუქმება" class="ui-button-secondary"></button>ა
+    <button type="button" pButton icon="pi pi-close" (click)="close()" label="გაუქმება" class="ui-button-secondary"></button>
+
   </p-footer>
 </p-dialog>
 
@@ -162,8 +168,13 @@
   <div style="margin-top:8px">Selected Node: {{newInventor.itemGroupName ? newInventor.itemGroupName : 'none'}}</div>
 
   <p-footer>
+    <div class="actionButton">
+      <div class="buttonBox tf">
+         <span style="margin-left: 30px;">ბოლო კოდი - {{lastBarCodes}}</span>
+       </div>
+      <button type="button" pButton icon="pi pi-check" (click)="itemGroupDialogShow=false" label="Yes"></button>
+      <button type="button" pButton icon="pi pi-close" (click)="itemGroupDialogShow=false" label="No" class="ui-button-secondary"></button>
+    </div>
 
-    <button type="button" pButton icon="pi pi-check" (click)="itemGroupDialogShow=false" label="Yes"></button>
-    <button type="button" pButton icon="pi pi-close" (click)="itemGroupDialogShow=false" label="No" class="ui-button-secondary"></button>ა
   </p-footer>
 </p-dialog>
