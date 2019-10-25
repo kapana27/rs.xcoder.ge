@@ -1,0 +1,28 @@
+/deep/ app-inventor-income-dialog{
+  .inventor_tb_grid {
+    width: 100%;
+    overflow: auto;
+    height: auto;
+    min-height: 300px;
+    max-height: 380px;
+
+    .ui-table-tbody {
+      tr {
+        td {
+          &:last-child {
+            padding: 0 !important;
+            font-size: 20px;
+            text-align: center;
+            color: #717171;
+
+            &:hover {
+              cursor: pointer;
+              color: red;
+            }
+          }
+        }
+      }
+    }
+  }
+
+}

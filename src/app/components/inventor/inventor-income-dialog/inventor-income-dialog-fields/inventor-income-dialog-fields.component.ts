@@ -54,7 +54,7 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
   @Input() header: any =" ";
   @Input() dialog: boolean = false;
   frustrate: boolean= false;
-  @Output() lastBarCode=new EventEmitter();
+  @Output() lastBarCode= new EventEmitter();
   lastBarCodes: Array<any> = [];
   private addon: any;
   uploadedFiles: any[] = [];
@@ -198,14 +198,10 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
       this.newInventor.barCodeType = this.newInventor.fullname['barCodeType']['id'];
     }
     this.newInventor.entryDate=this.newInventor.date.day + '-' + this.newInventor.date.month + '-' + this.newInventor.date.year
-
-    console.log(this.newInventor)
   }
   addNewInventor() {
-
     if(this.notNull(this.newInventor.fullname)){
       this.parseData();
-      console.log(this.newInventor)
       this.onInventorData.emit(this.newInventor);
       this.onCloseNewInventorDialog.emit('close');
     }
@@ -298,10 +294,7 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
                   };
                 }),
                 this.lastBarCode.emit( {barcode: this.lastBarCodes, addon: this.addon});
-                this.onInventorData.emit(this.newInventor);
-
                 this.frustrate = true;
-                this.onCloseNewInventorDialog.emit('close')
               })
               .catch(response => {
                 this.frustrate = false;

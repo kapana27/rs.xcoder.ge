@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Inventor} from "../../../models/inventor";
-import {Default} from "../../../models/default";
-import {OperationsService} from "../../../services/operations/operations.service";
-import {ConfirmationService} from "primeng/api";
-import {NgbDateParserFormatter} from "@ng-bootstrap/ng-bootstrap";
-import {NgbDateCustomParserFormatter} from "../../../views/management/warehouse/warehouse.component";
-import {Item} from "../../../models/item";
-import {Barcode} from "../../../models/barcode";
+import {Inventor} from '../../../models/inventor';
+import {Default} from '../../../models/default';
+import {OperationsService} from '../../../services/operations/operations.service';
+import {ConfirmationService} from 'primeng/api';
+import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDateCustomParserFormatter} from '../../../views/management/warehouse/warehouse.component';
+import {Item} from '../../../models/item';
+import {Barcode} from '../../../models/barcode';
 declare var $: any;
 interface Data {
   TotalCount: number;
@@ -23,9 +23,9 @@ interface Data {
 
 })
 export class InventorIncomeDialogComponent implements OnInit {
-  @Input() header: any = "";
+  @Input() header: any = '';
   @Input() dialog: boolean = false;
-  @Input() addon: any = {};
+  addon: any = {};
   @Input() frustrate: boolean = false;
   @Output() onClose = new EventEmitter();
   public lastCode: number = 0;
@@ -43,7 +43,7 @@ export class InventorIncomeDialogComponent implements OnInit {
       name: ''
     },
     data: [ ],
-    comment:''
+    comment: ''
   };
   newItem: {
     selected?: string,
@@ -58,10 +58,13 @@ export class InventorIncomeDialogComponent implements OnInit {
   itemStatus: Default[] = [];
   newInventorDialog: boolean = false;
   lastBarCodes: any;
+  lastAddon: any;
   tableDialog: boolean = false;
   table: boolean = false;
 
-  constructor(private operation: OperationsService, private confirmationService: ConfirmationService,) {
+  constructor(private operation: OperationsService, private confirmationService: ConfirmationService, ) {
+
+    this.lastAddon = 0;
     this.operation.getListBarcodes()
       .then(response => {
         this.barcodes = response['data'].map(v => {
@@ -95,7 +98,7 @@ export class InventorIncomeDialogComponent implements OnInit {
 
   }
   getSupplier($event: any) {
-       this.onFilterItem({query: $event.query, type:'supplier'} );
+       this.onFilterItem({query: $event.query, type: 'supplier'} );
   }
 
   notNull(value) {
@@ -120,7 +123,7 @@ export class InventorIncomeDialogComponent implements OnInit {
     for (const key in this.newInventor) {
 
       if (this.newInventor[key] !== null && this.newInventor[key] !== undefined) {
-        if (key == 'list' || typeof this.newInventor[key] === "object") {
+        if (key == 'list' || typeof this.newInventor[key] === 'object') {
           formdata.append(key, JSON.stringify(this.newInventor[key]).replace('null', '').replace('undefined', ''));
         } else {
           formdata.append(key, this.newInventor[key]);
@@ -141,7 +144,7 @@ export class InventorIncomeDialogComponent implements OnInit {
             },
             data: [ ]
           };
-          this.onClose.emit('close')
+          this.onClose.emit('close');
           this.frustrate = false;
           alert('ოპერაცია წარმატებით დასრულდა');
         } else {
@@ -174,7 +177,7 @@ export class InventorIncomeDialogComponent implements OnInit {
   }
 
   onSelectedInventorName(event) {
-    this.newInventor.fullname=event;
+    this.newInventor.fullname = event;
   }
 
   onFilterItem($event) {
@@ -214,52 +217,53 @@ export class InventorIncomeDialogComponent implements OnInit {
   addNewInventor() {
     this.newInventorDialog = true;
   }
-  onCloseNewInventorDialog(event){
-      if(event === 'close'){
+  onCloseNewInventorDialog(event) {
+      if (event === 'close') {
         this.newInventorDialog = false;
       }
   }
   newInventorData($event) {
-      this.newInventor.data.push($event)
-    console.log($event)
+      this.newInventor.data.push($event);
+    console.log($event);
   }
 
   name(inventorElement: any) {
-    if(this.notNull(inventorElement)){
+    if (this.notNull(inventorElement)) {
       return inventorElement;
     }
     return '';
   }
 
   onRemoveInventor(index) {
-    this.newInventor.data.splice(index,1);
+    this.newInventor.data.splice(index, 1);
   }
 
   lastBarCode(event: {barcode: Array<any>, addon: any}) {
     this.lastBarCodes = event.barcode[event.barcode.length - 1]['fullBarcode'];
-    this.addon=event.addon;
+    this.lastAddon = event['addon'];
+    this.addon = event['addon'];
   }
 
   closeTable() {
-    this.table=false
-
+    this.table = false;
   }
 
   showTable() {
-    console.log(this.newInventor)
-    if(!this.table){
-      this.table=true;
-    }else{
+    console.log(this.newInventor);
+    if (!this.table) {
+      this.table = true;
+    } else {
       this.saveNewInventor();
     }
-    //this.tableDialog=true
+    // this.tableDialog=true
   }
 
   closeInventorIncomeDialog($event) {
-    this.newInventorDialog=false;
+    this.newInventorDialog = false;
   }
 
   closeDialog() {
-    this.onClose.emit('close')
+    console.log('close')
+    this.onClose.emit('close');
   }
 }

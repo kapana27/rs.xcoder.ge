@@ -73,8 +73,8 @@ export class PropertyComponent implements OnInit {
   public filter: Filter = {};
 
   propertyList: Array<any> = [];
-  private location: any='';
-  private display1: boolean =false;
+  location: any = '';
+  display1: boolean = false;
   constructor(private http: HttpClient, private operation: OperationsService, private validator: ValidatorService, private confirmationService: ConfirmationService, private Request: RequestService) {
     this.Request.error$.subscribe((err) => {
       console.log(err)

@@ -1,4 +1,4 @@
-<p-dialog [header]="header" *ngIf="dialog" [(visible)]="dialog"  [modal]="true" [responsive]="true" [style]="{width: '1200px', minWidth: '200px', height: '600px'}" [maximizable]="true" [draggable]="true" [baseZIndex]="10000">
+<p-dialog [header]="header" *ngIf="dialog" [(visible)]="dialog"  [modal]="true" [responsive]="true" [style]="{width: '1200px', minWidth: '200px', height: '600px'}" [maximizable]="true" [draggable]="true" [baseZIndex]="10000" (visibleChange)="closeDialog()">
   <div class="row" style="text-align: center" *ngIf="addon !== undefined">
     <div class="col-md-12" style="text-align: center" *ngIf="frustrate">
       <h3 class="zednadebisheaderi">საწყობის შემოსავლის ელ. ზედდებული  № {{ addon['Left'] }} - {{ addon['Right'] }}</h3>
@@ -53,7 +53,7 @@
       </div>
     </div>
 
-    <div style="width: 100%; overflow: auto; height: auto; min-height: 300px; max-height: 380px" >
+    <div class="inventor_tb_grid">
       <div class="tb_grid">
         <p-table [value]="newInventor.data">
           <ng-template pTemplate="header">
@@ -69,7 +69,7 @@
               <th>ინვენტარის სტატუსი</th>
               <th>ფასი</th>
               <th>სულ ფასი</th>
-              <th width="30px"><span>x</span></th>
+              <th width="30px"><span></span></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-inventor let-index="rowIndex">
@@ -85,7 +85,7 @@
               <td>{{name(inventor['selectedItemStatus']['name'])}}</td>
               <td>{{name(inventor['price'])}}</td>
               <td>{{inventor['price'] * inventor['amount']}}</td>
-              <td><span (click)="onRemoveInventor(index)">x</span></td>
+              <td><span (click)="onRemoveInventor(index)"><i class="pi pi-times"></i></span></td>
             </tr>
           </ng-template>
         </p-table>
@@ -94,7 +94,9 @@
   </div>
   <div *ngIf="table">
     <div class="col-md-12" style="text-align: center" >
-      <h3 class="zednadebisheaderi">საწყობის შემოსავლის ელ. ზედდებული  № {{ addon['Left'] }} - <input type="text" [(ngModel)]="addon['Right']" style="width: 80px; border: 0px"></h3>
+      <h3 class="zednadebisheaderi">საწყობის შემოსავლის ელ. ზედდებული  № {{ addon.Left }} - <label>
+        <input type="text" [(ngModel)]="addon['Right']" style="width: 80px; border: 0px">
+      </label></h3>
     </div>
      {{ this.notNull(newInventor.selectedSupplier)? '&nbsp;&nbsp;&nbsp;,მომწოდებელი: '+newInventor.selectedSupplier['name']:''}}
      {{ this.notNull(newInventor.invoice)? '&nbsp;&nbsp;&nbsp;სასაქონლო ზედნადები: '+newInventor.invoice:''}}
@@ -132,7 +134,7 @@
   <p-footer style="width: 100%">
     <div class="actionButton">
       <div class="buttonBox tf" *ngIf="table">
-        <span>ბოლო კოდი: {{addon['Right']}}</span>
+        <span>ბოლო კოდი: {{lastAddon['Right']}}</span>
       </div>
       <div class="buttonBox">
         <button pButton type="button" icon="pi pi-file" label="დოკუმენტები ({{ uploadFiles.length}})" (click)="filesDialog=true"> </button>
@@ -140,7 +142,7 @@
       <div class="buttonBox">
       </div>
       <div class="buttonBox">
-        <button type="button" pButton icon="pi pi-save"  (click)="showTable()" label="ზედდებულის გენერაცია" ></button>
+        <button type="button" pButton icon="pi pi-save"  (click)="showTable()" [label]="(table)?'ზედდებულის გააქტიურება':'ზედდებულის გენერაცია'" ></button>
         <button type="button" pButton icon="pi pi-save"  *ngIf="table" (click)="table=false" label="დაბრუნება" ></button>
         <button type="button" pButton icon="pi pi-save" *ngIf="inventorOperation=='edit' || inventorOperation ==='multiple'" (click)="editNewInventor()" label="დამახსოვრება" ></button>
         <!--button type="button" pButton icon="pi pi-save" *ngIf="!frustrate && inventorOperation=='new'" (click)="frustrateInventor()" label="ჩაშლა" ></button-->
