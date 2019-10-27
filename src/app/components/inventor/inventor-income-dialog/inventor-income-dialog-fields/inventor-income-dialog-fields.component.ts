@@ -185,7 +185,7 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
           name: this.newInventor.selectedItemStatus
         }
         : {id: '', name: ''});
-      this.newInventor.barCodeType = this.newInventor.selectedBarcode['id'];
+      this.newInventor.barCodeType = (this.notNull(this.newInventor.selectedBarcode))?this.newInventor.selectedBarcode['id']:{id:'',name:''};
 
     }
     else {

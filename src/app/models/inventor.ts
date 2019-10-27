@@ -21,7 +21,7 @@ export interface Inventor {
   model?: any,
   price?: number,
   inStock?: number,
-  selectedBarcode?: {id?: number, name?: string, length?: number, startPoint?: number, value?: string},
+  selectedBarcode?: {id?: any, name?: string, length?: number, startPoint?: number, value?: string},
   barCodeType?: number,
   barCode?: string,
   fullBarCode?: string,

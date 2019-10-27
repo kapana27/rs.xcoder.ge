@@ -53,9 +53,9 @@
             <p-autoComplete [suggestions]="ItemData['marker']" [ngClass]="{ 'red':if_error(formErrors,'selectedMaker')?'1px solid red': '' }" (completeMethod)="filterItemSingle($event,'marker')" field="name" type="marker" [size]="30"
                             placeholder="მარკა" [minLength]="0" [(ngModel)]="newInventor.selectedMaker"></p-autoComplete>
           </td>
-          <td>
+          <!--td>
             <p-button icon="pi pi-plus" (click)="newRecordDialog('marker', newInventor.selectedMaker)"></p-button>
-          </td>
+          </td-->
         </tr>
       </table>
     </div>
@@ -178,9 +178,9 @@
 
   <p-footer>
     <div class="actionButton">
-      <div class="buttonBox tf">
+      <!--<div class="buttonBox tf">
          <span style="margin-left: 30px;">ბოლო კოდი - {{lastBarCodes}}</span>
-       </div>
+       </div>-->
       <button type="button" pButton icon="pi pi-check" (click)="itemGroupDialogShow=false" label="Yes"></button>
       <button type="button" pButton icon="pi pi-close" (click)="itemGroupDialogShow=false" label="No" class="ui-button-secondary"></button>
     </div>
