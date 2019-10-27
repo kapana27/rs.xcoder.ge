@@ -12,6 +12,7 @@ export class RequestService {
   constructor(private http: HttpClient) {
     this.error$ = this.errorSubject.asObservable();
   }
+
   Get(uri) {
     uri = this.prod + uri;
     return new Promise((resolve, reject) => {
