@@ -9,6 +9,7 @@ import {NgbDateParserFormatter} from "@ng-bootstrap/ng-bootstrap";
 import {NgbDateCustomParserFormatter} from "../../../../views/management/warehouse/warehouse.component";
 import {Item} from "../../../../models/item";
 import {moment} from "ngx-bootstrap/chronos/test/chain";
+import {RequestService} from "../../../../services/request.service";
 declare var $: any;
 interface Data {
   TotalCount: number;
@@ -58,7 +59,7 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
   lastBarCodes: Array<any> = [];
   private addon: any;
   uploadedFiles: any[] = [];
-  constructor(private operation: OperationsService, private confirmationService: ConfirmationService) { }
+  constructor(private operation: OperationsService, private confirmationService: ConfirmationService, private Request: RequestService) { }
   ngOnInit() {
   }
   if_error(data: Array<string>, field: string) {
@@ -107,12 +108,17 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
 
   }
   onLastCode() {
+    this.lastBarCodes=[];
+    console.log(this.newInventor)
     if (!this.newInventor.consumption) {
       this.newInventor.barCodeType = this.newInventor.selectedBarcode['id'];
       this.newInventor.selectedItemType =  ['rsk1', 'rs1'].indexOf(this.newInventor.selectedBarcode['name'].toLocaleLowerCase()) > -1 ? {id: 2, name: 'მცირე ფასიანი'} : {id: 1, name: 'ძირითადი საშუალებები'};
       this.operation.getLastCode(this.newInventor.barCodeType)
         .then(response => {
           this.newInventor.fullBarCode = response['data']['value'] + response['data']['barCodeVisualValue'];
+          response['fullBarcode']=this.newInventor.fullBarCode;
+          this.lastBarCodes.push(response)
+
         })
         .catch(response => {
           this.error('შეცდომა', response['error']);
@@ -201,9 +207,19 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
   }
   addNewInventor() {
     if(this.notNull(this.newInventor.fullname)){
-      this.parseData();
-      this.onInventorData.emit(this.newInventor);
-      this.onCloseNewInventorDialog.emit('close');
+      let formData= new FormData();
+      formData.append("data",JSON.stringify(this.newInventor));
+      this.Request.Post("/api/secured/Item/PreInsert/Add", formData).then(response => {
+        if(response['status']===200){
+            this.parseData();
+            this.onInventorData.emit(this.newInventor);
+            this.onCloseNewInventorDialog.emit('close');
+       }
+      }).catch(reason => {
+        alert(reason['error']);
+      });
+
+
     }
 
   }
@@ -211,6 +227,8 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
     this.onCloseNewInventorDialog.emit('close')
   }
   selectName($event: any) {
+
+
 
     if(typeof this.newInventor.fullname === "string"){
       this.newInventor.name = this.newInventor.fullname;
@@ -233,7 +251,6 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
       this.newInventor.selectedMaker = this.notNull(this.newInventor.fullname['maker']) ?  this.newInventor.fullname['maker']: {name: ''} ;
     }
 
-
     this.newInventor.amount = this.newInventor.fullname['amount'];
     this.newInventor.factoryNumber = this.newInventor.fullname['factoryNumber'];
     this.newInventor.selectedItemType = (typeof this.newInventor.fullname !== "string"  && this.notNull( this.newInventor.fullname['itemType']))? this.newInventor.fullname['itemType']: {name: ""};
@@ -253,11 +270,12 @@ export class InventorIncomeDialogFieldsComponent implements OnInit {
     this.newInventor.isCar = this.newInventor.fullname['itemGroup']['isCar'];
     this.newInventor.consumption = (this.newInventor.spend === 1);
     this.newInventor.fullBarCode = this.newInventor.fullname.fullBarcode;
+    this.onLastCode();
+
   }
   inventorFrustrate() {
     this.parseData();
-    console.log(this.newInventor)
-    this.operation.getAddonNumber({type: 'Stock/Income', subType: ''})
+    this.operation.getAddonNumber({type: 'Stock/Income', subType: 'last'})
       .then(response => {
         if (response['status'] === 200) {
           this.addon = response['data'];

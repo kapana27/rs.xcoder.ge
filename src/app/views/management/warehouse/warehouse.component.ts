@@ -721,10 +721,19 @@ export class WarehouseComponent implements OnInit {
        .catch();
   }
   inventorDialog() {
-    this.operation.getAddonNumber({type: 'Stock/Income', subType: 'last'})
+    this.Request.Get("/api/secured/Item/Insert/Start").then((response) => {
+      if (response['status'] === 200) {
+        this.inventorDialogShow = true;
+      }
+    }).catch(reason => {
+      this.inventorDialogShow = false;
+      this.error('შეცდომა', reason['error']);
+    });
+   /* this.operation.getAddonNumber({type: 'Stock/Income', subType: 'last'})
       .then(response => {
         if (response['status'] === 200) {
-          this.lastCode = response['data']['Right'];
+          this.inventorDialogShow = true;
+         this.lastCode = response['data']['Right'];
           console.log(this.lastCode);
           this.inventorOperation = 'new';
           this.uploadFiles = [];
@@ -764,7 +773,7 @@ export class WarehouseComponent implements OnInit {
             }).catch();
 
         }
-      });
+      });*/
 
   }
    async getDisabledFields(ids) {

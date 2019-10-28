@@ -146,4 +146,5 @@ export class OperationsService {
   getAllChiefUsersFinance($eventElement: any) {
     return  this.Request.Post(Config.document.get.financeUsers+"?name="+name,{});
   }
+
 }

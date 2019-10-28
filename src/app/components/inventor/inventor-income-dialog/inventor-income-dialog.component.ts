@@ -7,6 +7,8 @@ import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
 import {NgbDateCustomParserFormatter} from '../../../views/management/warehouse/warehouse.component';
 import {Item} from '../../../models/item';
 import {Barcode} from '../../../models/barcode';
+import {RequestService} from "../../../services/request.service";
+import {ValidatorService} from "../../../services/validator/validator.service";
 declare var $: any;
 interface Data {
   TotalCount: number;
@@ -62,7 +64,7 @@ export class InventorIncomeDialogComponent implements OnInit {
   tableDialog: boolean = false;
   table: boolean = false;
 
-  constructor(private operation: OperationsService, private confirmationService: ConfirmationService, ) {
+  constructor(private operation: OperationsService, private confirmationService: ConfirmationService,private Request: RequestService, private validator: ValidatorService ) {
 
     this.lastAddon = 0;
     this.operation.getListBarcodes()
@@ -234,14 +236,25 @@ export class InventorIncomeDialogComponent implements OnInit {
     return '';
   }
 
-  onRemoveInventor(index) {
-    this.newInventor.data.splice(index, 1);
+  onRemoveInventor(index, inventor) {
+    let formData =  new FormData();
+    formData.append("data", JSON.stringify(inventor));
+    this.Request.Post("/api/secured/Item/PreInsert/Remove", formData)
+      .then(response => {
+        if(response['status']===200){
+          this.newInventor.data.splice(index, 1);
+        }
+      })
+      .catch(reason => {
+        alert(reason['error'])
+      });
   }
 
   lastBarCode(event: {barcode: Array<any>, addon: any}) {
     this.lastBarCodes = event.barcode[event.barcode.length - 1]['fullBarcode'];
     this.lastAddon = event['addon'];
     this.addon = event['addon'];
+    this.newInventor.invoiceAddon=event['addon']['Right'];
   }
 
   closeTable() {
@@ -251,9 +264,15 @@ export class InventorIncomeDialogComponent implements OnInit {
   showTable() {
     console.log(this.newInventor);
     if (!this.table) {
-      this.table = true;
+      const filter = [
+        'selectedSupplier'
+      ];
+      this.formErrors = this.validator.checkObject(this.newInventor, filter);
+      if(this.formErrors.length===0 && this.newInventor.data.length>0){
+        this.table = true;
+      }
     } else {
-      this.saveNewInventor();
+        this.saveNewInventor();
     }
     // this.tableDialog=true
   }
